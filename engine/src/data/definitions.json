@@ -1,0 +1,379 @@
+[
+  {
+    "id": "ancient_scholar",
+    "name": "Ancient Scholar",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 7
+  },
+  {
+    "id": "archer_dan",
+    "name": "Archer Dan",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 6
+  },
+  {
+    "id": "big_foot",
+    "name": "Big Foot",
+    "cardType": "creature",
+    "land": "Rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 4
+  },
+  {
+    "id": "cool_dog",
+    "name": "Cool Dog",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 7
+  },
+  {
+    "id": "corn_dog",
+    "name": "Corn Dog",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 12
+  },
+  {
+    "id": "corn_lord",
+    "name": "Corn Lord",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 7
+  },
+  {
+    "id": "corn_ronin",
+    "name": "Corn Ronin",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 6
+  },
+  {
+    "id": "cornataur",
+    "name": "Cornataur",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10
+  },
+  {
+    "id": "dragon_claw",
+    "name": "Dragon Claw",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 8
+  },
+  {
+    "id": "drooling_dude",
+    "name": "Drooling Dude",
+    "cardType": "creature",
+    "land": "Rainbow",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9
+  },
+  {
+    "id": "embarrassing_bard",
+    "name": "Embarrassing Bard",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 2,
+    "attack": 1,
+    "defense": 5
+  },
+  {
+    "id": "evil_eye",
+    "name": "Evil Eye",
+    "cardType": "creature",
+    "land": "Rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 5
+  },
+  {
+    "id": "field_reaper",
+    "name": "Field Reaper",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 2,
+    "attack": 1,
+    "defense": 4
+  },
+  {
+    "id": "field_stalker",
+    "name": "Field Stalker",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 1,
+    "attack": 1,
+    "defense": 10
+  },
+  {
+    "id": "heavenly_gazer",
+    "name": "Heavenly Gazer",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 5
+  },
+  {
+    "id": "husker_knight",
+    "name": "Husker Knight",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 2,
+    "attack": 0,
+    "defense": 0
+  },
+  {
+    "id": "husker_worm",
+    "name": "Husker Worm",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 1,
+    "attack": 5,
+    "defense": 4
+  },
+  {
+    "id": "legion_of_earlings",
+    "name": "Legion of Earlings",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 8
+  },
+  {
+    "id": "nice_ice_baby",
+    "name": "Nice Ice Baby",
+    "cardType": "creature",
+    "land": "Rainbow",
+    "cost": 0,
+    "attack": 1,
+    "defense": 2
+  },
+  {
+    "id": "patchy_the_pumpkin",
+    "name": "Patchy the Pumpkin",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 1,
+    "attack": 0,
+    "defense": 5
+  },
+  {
+    "id": "phyllis",
+    "name": "Phyllis",
+    "cardType": "creature",
+    "land": "Rainbow",
+    "cost": 1,
+    "attack": 2,
+    "defense": 7
+  },
+  {
+    "id": "psionic_architect",
+    "name": "Psionic Architect",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6
+  },
+  {
+    "id": "punk_cat",
+    "name": "Punk Cat",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 1,
+    "attack": 2,
+    "defense": 6
+  },
+  {
+    "id": "struzann_djinn",
+    "name": "Struzann Djinn",
+    "cardType": "creature",
+    "land": "Rainbow",
+    "cost": 2,
+    "attack": 1,
+    "defense": 11
+  },
+  {
+    "id": "the_pig",
+    "name": "The Pig",
+    "cardType": "creature",
+    "land": "Rainbow",
+    "cost": 1,
+    "attack": 1,
+    "defense": 4
+  },
+  {
+    "id": "travelin_farmer",
+    "name": "Travelin' Farmer",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 2,
+    "attack": 2,
+    "defense": 12
+  },
+  {
+    "id": "uni_knight",
+    "name": "Uni-Knight",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 1,
+    "attack": 3,
+    "defense": 4
+  },
+  {
+    "id": "wall_of_ears",
+    "name": "Wall of Ears",
+    "cardType": "creature",
+    "land": "Cornfield",
+    "cost": 1,
+    "attack": 2,
+    "defense": 4
+  },
+  {
+    "id": "woadic_chief",
+    "name": "Woadic Chief",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 2,
+    "attack": 2,
+    "defense": 10
+  },
+  {
+    "id": "woadic_marauder",
+    "name": "Woadic Marauder",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 2,
+    "attack": 3,
+    "defense": 9
+  },
+  {
+    "id": "x_large_spirit_soldier",
+    "name": "X Large Spirit Soldier",
+    "cardType": "creature",
+    "land": "Blue Plains",
+    "cost": 1,
+    "attack": 1,
+    "defense": 9
+  },
+  {
+    "id": "blood_fortress",
+    "name": "Blood Fortress",
+    "cardType": "building",
+    "land": "Rainbow",
+    "cost": 1
+  },
+  {
+    "id": "celestial_fortress",
+    "name": "Celestial Fortress",
+    "cardType": "building",
+    "land": "Rainbow",
+    "cost": 1
+  },
+  {
+    "id": "cerebral_bloodstorm",
+    "name": "Cerebral Bloodstorm",
+    "cardType": "spell",
+    "land": "Rainbow",
+    "cost": 1
+  },
+  {
+    "id": "corn_scepter",
+    "name": "Corn Scepter",
+    "cardType": "spell",
+    "land": "Rainbow",
+    "cost": 1
+  },
+  {
+    "id": "cross_pollination",
+    "name": "Cross Pollination",
+    "cardType": "spell",
+    "land": "Rainbow",
+    "cost": 2
+  },
+  {
+    "id": "field_of_nightmares",
+    "name": "Field of Nightmares",
+    "cardType": "spell",
+    "land": "Cornfield",
+    "cost": 1
+  },
+  {
+    "id": "gnome_snot",
+    "name": "Gnome Snot",
+    "cardType": "spell",
+    "land": "Blue Plains",
+    "cost": 1
+  },
+  {
+    "id": "reclaim_landscape",
+    "name": "Reclaim Landscape",
+    "cardType": "spell",
+    "land": "Rainbow",
+    "cost": 0
+  },
+  {
+    "id": "schoolhouse",
+    "name": "Schoolhouse",
+    "cardType": "building",
+    "land": "Blue Plains",
+    "cost": 1
+  },
+  {
+    "id": "silo_of_truth",
+    "name": "Silo of Truth",
+    "cardType": "building",
+    "land": "Cornfield",
+    "cost": 1
+  },
+  {
+    "id": "teleport",
+    "name": "Teleport",
+    "cardType": "spell",
+    "land": "Rainbow",
+    "cost": 0
+  },
+  {
+    "id": "woad_blood",
+    "name": "Woad Blood",
+    "cardType": "spell",
+    "land": "Rainbow",
+    "cost": 0
+  },
+  {
+    "id": "woad_mobile_home",
+    "name": "Woad Mobile Home",
+    "cardType": "building",
+    "land": "Blue Plains",
+    "cost": 1
+  },
+  {
+    "id": "woad_talisman",
+    "name": "Woad Talisman",
+    "cardType": "spell",
+    "land": "Rainbow",
+    "cost": 0
+  }
+]

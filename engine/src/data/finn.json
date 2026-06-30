@@ -1,0 +1,28 @@
+{
+  "landscape": "blue_plains",
+  "deck": [
+    { "cardId": "ancient_scholar", "count": 2 },
+    { "cardId": "blood_fortress", "count": 1 },
+    { "cardId": "celestial_fortress", "count": 2 },
+    { "cardId": "cerebral_bloodstorm", "count": 2 },
+    { "cardId": "cool_dog", "count": 2 },
+    { "cardId": "dragon_claw", "count": 2 },
+    { "cardId": "embarrassing_bard", "count": 2 },
+    { "cardId": "gnome_snot", "count": 2 },
+    { "cardId": "heavenly_gazer", "count": 1 },
+    { "cardId": "nice_ice_baby", "count": 2 },
+    { "cardId": "the_pig", "count": 2 },
+    { "cardId": "psionic_architect", "count": 2 },
+    { "cardId": "punk_cat", "count": 2 },
+    { "cardId": "schoolhouse", "count": 1 },
+    { "cardId": "struzann_djinn", "count": 2 },
+    { "cardId": "teleport", "count": 2 },
+    { "cardId": "uni_knight", "count": 1 },
+    { "cardId": "woad_blood", "count": 1 },
+    { "cardId": "woad_mobile_home", "count": 2 },
+    { "cardId": "woad_talisman", "count": 2 },
+    { "cardId": "woadic_chief", "count": 1 },
+    { "cardId": "woadic_marauder", "count": 2 },
+    { "cardId": "x_large_spirit_soldier", "count": 2 }
+  ]
+}

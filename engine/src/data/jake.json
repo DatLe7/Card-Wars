@@ -1,0 +1,30 @@
+{
+  "landscape": "cornfield",
+  "deck": [
+    { "cardId": "archer_dan", "count": 1 },
+    { "cardId": "big_foot", "count": 2 },
+    { "cardId": "blood_fortress", "count": 2 },
+    { "cardId": "celestial_fortress", "count": 1 },
+    { "cardId": "corn_dog", "count": 1 },
+    { "cardId": "corn_lord", "count": 1 },
+    { "cardId": "corn_ronin", "count": 2 },
+    { "cardId": "corn_scepter", "count": 2 },
+    { "cardId": "cornataur", "count": 2 },
+    { "cardId": "cross_pollination", "count": 1 },
+    { "cardId": "drooling_dude", "count": 1 },
+    { "cardId": "evil_eye", "count": 1 },
+    { "cardId": "field_of_nightmares", "count": 2 },
+    { "cardId": "field_reaper", "count": 1 },
+    { "cardId": "field_stalker", "count": 2 },
+    { "cardId": "husker_knight", "count": 2 },
+    { "cardId": "husker_worm", "count": 2 },
+    { "cardId": "legion_of_earlings", "count": 2 },
+    { "cardId": "patchy_the_pumpkin", "count": 2 },
+    { "cardId": "phyllis", "count": 1 },
+    { "cardId": "reclaim_landscape", "count": 2 },
+    { "cardId": "silo_of_truth", "count": 1 },
+    { "cardId": "teleport", "count": 2 },
+    { "cardId": "travelin_farmer", "count": 2 },
+    { "cardId": "wall_of_ears", "count": 2 }
+  ]
+}
