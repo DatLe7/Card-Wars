@@ -64,28 +64,53 @@ describe('create game', () => {
   });
 });
 
-// describe('READY', () => {
-//   let game: Game;
-//   beforeEach(() => {
-//     game = new Game({
-//       gameId: 'game_321',
-//       players: [
-//         {
-//           id: 'p1',
-//           name: 'Player 1',
-//           decklist: jakeDecklist as Deck,
-//         },
-//         {
-//           id: 'p2',
-//           name: 'Player 2',
-//           decklist: finnDecklist as Deck,
-//         }
-//       ],
-//       firstPlayer: 'p1',
-//     });
-//   });
-//   it('5 cards initially in hand', () => {
-//     const view = game.getPlayerView('p1');
-//     expect(view.game.hand.length).toBe(5);
-//   });
-// });
+describe('READY', () => {
+  let game: Game;
+  beforeEach(() => {
+    game = new Game({
+      gameId: 'game_321',
+      players: [
+        {
+          id: 'p1',
+          name: 'Player 1',
+          decklist: jakeDecklist as Deck,
+        },
+        {
+          id: 'p2',
+          name: 'Player 2',
+          decklist: finnDecklist as Deck,
+        }
+      ],
+      firstPlayer: 'p1',
+    });
+  });
+  it('5 cards initially in hand', () => {
+    const view = game.getPlayerView('p1');
+    expect(view.game.hand.length).toBe(5);
+  });
+
+  it('35 cards initially in deck', () => {
+    const view = game.getPlayerView('p1');
+    expect(view.game.deckCardCount).toBe(35);
+  });
+
+  it('0 cards initially in graveyard', () => {
+    const view = game.getPlayerView('p1');
+    expect(view.game.graveyard.length).toBe(0);
+  });
+
+  it('first card in hand has an instance id', () => {
+    const view = game.getPlayerView('p1');
+    expect(view.game.hand[0]?.instanceId).toBeDefined();
+  });
+
+  it('second card in hand has an instance id', () => {
+    const view = game.getPlayerView('p1');
+    expect(view.game.hand[1]?.instanceId).toBeDefined();
+  });
+
+  it('first card in deck has a instance id in player 1', () => {
+    const view = game.getGlobalView();
+    expect(view.game.players.p1?.deck[0]?.instanceId).toBeDefined();
+  });
+});
