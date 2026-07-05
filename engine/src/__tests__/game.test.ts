@@ -1,29 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import finnDecklist from '../data/finn.json';
-import jakeDecklist from '../data/jake.json';
-import type { Deck } from '../game';
 import { Game } from '../game/game.js';
-
+import { createTestGame } from './testutils.js';
 
 describe('create game', () => {
   let game: Game;
   beforeEach(() => {
-    game = new Game({
+    game = createTestGame({
       gameId: 'game_123',
-      players: [
-        {
-          id: 'p1',
-          name: 'Me',
-          decklist: jakeDecklist as Deck,
-        },
-        {
-          id: 'p2',
-          name: 'Opponent',
-          decklist: finnDecklist as Deck,
-        }
-      ],
-      firstPlayer: 'p1',
+      playerOneName: 'Me',
+      playerTwoName: 'Opponent',
     });
   });
   it('returns object', () => {
@@ -64,24 +50,75 @@ describe('create game', () => {
   });
 });
 
+describe('getGlobalView', () => {
+  let game: Game;
+
+  beforeEach(() => {
+    game = createTestGame({
+      gameId: 'game_456',
+    });
+  });
+
+  it('returns the current turn', () => {
+    const view = game.getGlobalView();
+
+    expect(view.turn).toEqual({
+      number: 1,
+      activePlayerId: 'p1',
+      phase: 'READY',
+    });
+  });
+
+  it('returns game state for every player', () => {
+    const view = game.getGlobalView();
+
+    expect(Object.keys(view.game.players)).toEqual(['p1', 'p2']);
+  });
+
+  it('returns each player initial deck hand and graveyard', () => {
+    const view = game.getGlobalView();
+    const p1 = view.game.players.p1;
+    const p2 = view.game.players.p2;
+
+    expect(p1).toBeDefined();
+    expect(p2).toBeDefined();
+    expect(p1?.deck).toHaveLength(35);
+    expect(p1?.hand).toHaveLength(5);
+    expect(p1?.graveyard).toHaveLength(0);
+    expect(p2?.deck).toHaveLength(35);
+    expect(p2?.hand).toHaveLength(5);
+    expect(p2?.graveyard).toHaveLength(0);
+  });
+
+  it('returns cards owned by the matching player', () => {
+    const view = game.getGlobalView();
+
+    expect(view.game.players.p1?.hand.every((card) => card.ownerId === 'p1')).toBe(
+      true,
+    );
+    expect(view.game.players.p2?.hand.every((card) => card.ownerId === 'p2')).toBe(
+      true,
+    );
+  });
+
+  it('does not expose internal zone arrays', () => {
+    const view = game.getGlobalView();
+
+    view.game.players.p1?.hand.pop();
+    view.game.players.p1?.deck.pop();
+
+    const nextView = game.getGlobalView();
+
+    expect(nextView.game.players.p1?.hand).toHaveLength(5);
+    expect(nextView.game.players.p1?.deck).toHaveLength(35);
+  });
+});
+
 describe('READY', () => {
   let game: Game;
   beforeEach(() => {
-    game = new Game({
+    game = createTestGame({
       gameId: 'game_321',
-      players: [
-        {
-          id: 'p1',
-          name: 'Player 1',
-          decklist: jakeDecklist as Deck,
-        },
-        {
-          id: 'p2',
-          name: 'Player 2',
-          decklist: finnDecklist as Deck,
-        }
-      ],
-      firstPlayer: 'p1',
     });
   });
   it('5 cards initially in hand', () => {
@@ -107,6 +144,29 @@ describe('READY', () => {
   it('second card in hand has an instance id', () => {
     const view = game.getPlayerView('p1');
     expect(view.game.hand[1]?.instanceId).toBeDefined();
+  });
+
+  it('cards in hand match the card instance shape', () => {
+    const view = game.getPlayerView('p1');
+
+    view.game.hand.forEach((card) => {
+      expect(card).toEqual({
+        instanceId: expect.any(String),
+        ownerId: expect.any(String),
+        cardId: expect.any(String),
+        name: expect.any(String),
+        type: expect.any(String),
+        land: expect.any(String),
+        cost: expect.any(Number),
+        attack: expect.any(Number),
+        defence: expect.any(Number),
+        atkMod: expect.any(Number),
+        defMod: expect.any(Number),
+        damage: expect.any(Number),
+        canFloop: expect.any(Boolean),
+        isFlooped: expect.any(Boolean),
+      });
+    });
   });
 
   it('first card in deck has a instance id in player 1', () => {

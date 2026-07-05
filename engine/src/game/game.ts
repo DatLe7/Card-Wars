@@ -1,6 +1,9 @@
-import type { CreateGameInput, GlobalView, Player, PlayerView, Turn } from '.';
+import type { Actions } from '../actions';
 import type { GameState, PlayerGameState } from '.';
+import type { CreateGameInput, GlobalView, Player, PlayerView, Turn } from '.';
+import { getAvailableActions } from '../actions/availableActions';
 import { initializeDeck } from '../card/card';
+import { getGlobalView, getPlayerView } from './views';
 
 export class Game {
   private readonly players: Player[];
@@ -32,43 +35,14 @@ export class Game {
   }
 
   getPlayerView(playerId: string): PlayerView {
-    const player = this.players.find((candidate) => candidate.id === playerId);
-    const playerGame = this.game.players[playerId];
-
-    if (player === undefined || playerGame === undefined) {
-      throw new Error(`Player ${playerId} was not found in this game.`);
-    }
-
-    return {
-      ...player,
-      turn: { ...this.turn },
-      game: {
-        deckCardCount: playerGame.deck.length,
-        hand: [...playerGame.hand],
-        graveyard: [...playerGame.graveyard],
-      },
-    };
-  }
-
-  getTurn(): Turn {
-    return { ...this.turn };
+    return getPlayerView(playerId, this.players, this.game, this.turn);
   }
 
   getGlobalView(): GlobalView {
-    return {
-      turn: { ...this.turn },
-      game: {
-        players: Object.fromEntries(
-          Object.entries(this.game.players).map(([playerId, playerGame]) => [
-            playerId,
-            {
-              deck: [...playerGame.deck],
-              hand: [...playerGame.hand],
-              graveyard: [...playerGame.graveyard],
-            },
-          ]),
-        ),
-      },
-    };
+    return getGlobalView(this.game, this.turn);
+  }
+
+  getAvailableActions(playerId: string): Actions[] {
+    return getAvailableActions(playerId, this.turn);
   }
 }

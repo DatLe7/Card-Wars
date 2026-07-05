@@ -70,6 +70,15 @@ describe('card instance creation', () => {
   it('sets isFlooped', () => {
     expect(cardInstance.isFlooped).toBe(false);
   });
+
+  it('throws when the card definition does not exist', () => {
+    expect(() =>
+      createCardInstances('p1', {
+        cardId: 'missing_card',
+        count: 1,
+      }),
+    ).toThrow('Card definition missing_card was not found.');
+  });
 });
 
 describe('Initialize Deck', () => {
