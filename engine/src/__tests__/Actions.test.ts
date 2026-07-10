@@ -20,16 +20,29 @@ describe('Ready Phase', () => {
     expect(game.getAvailableActions('p2')).toEqual([]);
   });
 
-  // it('commanding next turn takes turn to main', () => {
-  //   const game = createTestGame();
+  it('commanding next turn takes turn to main', () => {
+    const game = createTestGame();
 
-  //   game.command({
-  //     type: 'NEXT_TURN',
-  //     playerId: 'p1',
-  //   });
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p1',
+    });
 
-  //   const view = game.getPlayerView('p1');
+    const view = game.getPlayerView('p2');
 
-  //   expect(view.turn.phase).toBe('MAIN');
-  // });
+    expect(view.turn.phase).toBe('MAIN');
+  });
+
+  it('does not allow non turn player use next turn command', () => {
+    const game = createTestGame();
+
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p2',
+    });
+
+    const view = game.getPlayerView('p1');
+
+    expect(view.turn.phase).toBe('READY');
+  });
 });

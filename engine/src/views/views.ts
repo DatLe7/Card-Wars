@@ -1,4 +1,5 @@
-import type { GameState, GlobalView, Player, PlayerView, Turn } from '.';
+import type { GameState, Player, Turn } from '../game';
+import type { GlobalView, PlayerView } from '.';
 
 export function getPlayerView(
   playerId: string,

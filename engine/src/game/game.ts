@@ -2,8 +2,9 @@ import type { Actions } from '../actions';
 import type { GameState, PlayerGameState } from '.';
 import type { CreateGameInput, GlobalView, Player, PlayerView, Turn } from '.';
 import { getAvailableActions } from '../actions/availableActions';
+import { commandActions } from '../actions/commandActions';
 import { initializeDeck } from '../card/card';
-import { getGlobalView, getPlayerView } from './views';
+import { getGlobalView, getPlayerView } from '../views';
 
 export class Game {
   private readonly players: Player[];
@@ -44,5 +45,17 @@ export class Game {
 
   getAvailableActions(playerId: string): Actions[] {
     return getAvailableActions(playerId, this.turn);
+  }
+
+  command(action: Actions): void {
+    const actionIsAvailable = this.getAvailableActions(action.playerId).some(
+      (availableAction) => availableAction.type === action.type,
+    );
+
+    if (!actionIsAvailable) {
+      return;
+    }
+
+    this.turn = commandActions(action, this.turn);
   }
 }

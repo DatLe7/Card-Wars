@@ -32,7 +32,7 @@ export type Player = {
   decklist: Deck;
 };
 
-export type TurnPhase = 'READY';
+export type TurnPhase = 'READY' | 'MAIN';
 
 export type Turn = {
   number: number;
@@ -46,24 +46,8 @@ export type PlayerGameState = {
   graveyard: CardInstance[];
 };
 
-export type PlayerGameView = {
-  deckCardCount: number;
-  hand: CardInstance[];
-  graveyard: CardInstance[];
-};
-
 export type GameState = {
   players: Record<string, PlayerGameState>;
-};
-
-export type GlobalView = {
-  turn: Turn;
-  game: GameState;
-};
-
-export type PlayerView = Player & {
-  turn: Turn;
-  game: PlayerGameView;
 };
 
 export type CreateGameInput = {
@@ -71,3 +55,5 @@ export type CreateGameInput = {
   players: Player[];
   firstPlayer: string;
 };
+
+export type { GlobalView, PlayerGameView, PlayerView } from '../views';
