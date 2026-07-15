@@ -1,5 +1,5 @@
 {
-  "landscape": "cornfield",
+  "landscape": ["Cornfield", "Cornfield", "Cornfield", "Cornfield"],
   "deck": [
     { "cardId": "archer_dan", "count": 1 },
     { "cardId": "big_foot", "count": 2 },

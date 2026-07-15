@@ -1,6 +1,6 @@
 import type { CardInstance } from '../card';
 
-export type LandscapeType = 'blue_plains' | 'cornfield';
+export type LandscapeType = 'Blue Plains' | 'Cornfield';
 
 export type CardLand = 'Blue Plains' | 'Cornfield' | 'Rainbow';
 
@@ -22,7 +22,7 @@ export type DecklistEntry = {
 };
 
 export type Deck = {
-  landscape: LandscapeType;
+  landscape: LandscapeType[];
   deck: DecklistEntry[];
 };
 
@@ -32,7 +32,7 @@ export type Player = {
   decklist: Deck;
 };
 
-export type TurnPhase = 'READY' | 'MAIN';
+export type TurnPhase = 'READY' |'MAIN';
 
 export type Turn = {
   number: number;
@@ -41,6 +41,7 @@ export type Turn = {
 };
 
 export type PlayerGameState = {
+  actionPoints: number;
   deck: CardInstance[];
   hand: CardInstance[];
   graveyard: CardInstance[];
@@ -55,5 +56,3 @@ export type CreateGameInput = {
   players: Player[];
   firstPlayer: string;
 };
-
-export type { GlobalView, PlayerGameView, PlayerView } from '../views';

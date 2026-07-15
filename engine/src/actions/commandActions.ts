@@ -1,13 +1,26 @@
-import type { Turn } from '../game';
+import type { GameState, Turn } from '../game';
 import type { Actions } from '.';
 
-export function commandActions(action: Actions, turn: Turn): Turn {
+export function commandActions(
+  action: Actions,
+  game: GameState,
+  turn: Turn,
+): void {
   if (action.type === 'NEXT_TURN') {
-    return {
-      ...turn,
-      phase: 'MAIN',
-    };
-  }
+    const playerGame = game.players[action.playerId];
 
-  return turn;
+    if (playerGame === undefined) {
+      return;
+    }
+
+    const drawnCard = playerGame.deck.shift();
+
+    playerGame.actionPoints = 2;
+
+    if (drawnCard !== undefined) {
+      playerGame.hand.push(drawnCard);
+    }
+
+    turn.phase = 'MAIN';
+  }
 }

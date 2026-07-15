@@ -1,10 +1,11 @@
 import type { Actions } from '../actions';
 import type { GameState, PlayerGameState } from '.';
-import type { CreateGameInput, GlobalView, Player, PlayerView, Turn } from '.';
+import type { CreateGameInput, Player, Turn } from '.';
 import { getAvailableActions } from '../actions/availableActions';
 import { commandActions } from '../actions/commandActions';
 import { initializeDeck } from '../card/card';
 import { getGlobalView, getPlayerView } from '../views';
+import type { GlobalView, PlayerView } from '../views';
 
 export class Game {
   private readonly players: Player[];
@@ -29,6 +30,7 @@ export class Game {
     const deck = initializeDeck(player.id, player.decklist.deck);
 
     return {
+      actionPoints: 0,
       deck: deck.slice(5),
       hand: deck.slice(0, 5),
       graveyard: [],
@@ -44,7 +46,10 @@ export class Game {
   }
 
   getAvailableActions(playerId: string): Actions[] {
-    return getAvailableActions(playerId, this.turn);
+    const player = this.players.find((candidate) => candidate.id === playerId);
+    const playerGame = this.game.players[playerId];
+
+    return getAvailableActions(playerId, this.turn, player, playerGame);
   }
 
   command(action: Actions): void {
@@ -56,6 +61,6 @@ export class Game {
       return;
     }
 
-    this.turn = commandActions(action, this.turn);
+    commandActions(action, this.game, this.turn);
   }
 }

@@ -1,5 +1,5 @@
 {
-  "landscape": "blue_plains",
+  "landscape": ["Blue Plains", "Blue Plains", "Blue Plains", "Blue Plains"],
   "deck": [
     { "cardId": "ancient_scholar", "count": 2 },
     { "cardId": "blood_fortress", "count": 1 },

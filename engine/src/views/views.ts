@@ -18,6 +18,7 @@ export function getPlayerView(
     ...player,
     turn: { ...turn },
     game: {
+      actionPoints: playerGame.actionPoints,
       deckCardCount: playerGame.deck.length,
       hand: [...playerGame.hand],
       graveyard: [...playerGame.graveyard],
@@ -33,6 +34,7 @@ export function getGlobalView(game: GameState, turn: Turn): GlobalView {
         Object.entries(game.players).map(([playerId, playerGame]) => [
           playerId,
           {
+            actionPoints: playerGame.actionPoints,
             deck: [...playerGame.deck],
             hand: [...playerGame.hand],
             graveyard: [...playerGame.graveyard],
