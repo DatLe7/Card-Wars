@@ -14,6 +14,20 @@ describe('Ready Phase', () => {
     ]);
   });
 
+  it('decks are shuffled on game start', () => {
+    const firstGame = createTestGame();
+    const secondGame = createTestGame();
+
+    const firstStartingHand = firstGame
+      .getPlayerView('p1')
+      .game.hand.map((card) => card.instanceId);
+    const secondStartingHand = secondGame
+      .getPlayerView('p1')
+      .game.hand.map((card) => card.instanceId);
+
+    expect(firstStartingHand).not.toEqual(secondStartingHand);
+  });
+
   it('ready phase non starting player no actions', () => {
     const game = createTestGame();
 
@@ -91,5 +105,35 @@ describe('MAIN', () => {
     );
 
     expect(playableCardIds.size).toBe(6);
+  });
+  it('a spell card has not land target', () => {
+    let game = createTestGame();
+    let spellCard = game
+      .getPlayerView('p1')
+      .game.hand.find((card) => card.type === 'spell');
+
+    while (spellCard === undefined) {
+      game = createTestGame();
+      spellCard = game
+        .getPlayerView('p1')
+        .game.hand.find((card) => card.type === 'spell');
+      console.log(spellCard);
+    }
+
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p1',
+    });
+
+    const playSpellAction = game
+      .getAvailableActions('p1')
+      .find(
+        (action) =>
+          action.type === 'PLAY_CARD' &&
+          action.cardInstanceId === spellCard.instanceId,
+      );
+
+    expect(playSpellAction).toBeDefined();
+    expect(playSpellAction).not.toHaveProperty('laneIndex');
   });
 });

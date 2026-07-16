@@ -33,6 +33,16 @@ export function getAvailableActions(
       return [];
     }
 
+    if (card.type === 'spell') {
+      return [
+        {
+          type: 'PLAY_CARD' as const,
+          playerId,
+          cardInstanceId: card.instanceId,
+        } as Actions,
+      ];
+    }
+
     return laneIndexes.map((laneIndex) => ({
       type: 'PLAY_CARD' as const,
       playerId,
