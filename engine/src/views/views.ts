@@ -9,8 +9,15 @@ export function getPlayerView(
 ): PlayerView {
   const player = players.find((candidate) => candidate.id === playerId);
   const playerGame = game.players[playerId];
+  const enemy = players.find((candidate) => candidate.id !== playerId);
+  const enemyGame = enemy === undefined ? undefined : game.players[enemy.id];
 
-  if (player === undefined || playerGame === undefined) {
+  if (
+    player === undefined ||
+    playerGame === undefined ||
+    enemy === undefined ||
+    enemyGame === undefined
+  ) {
     throw new Error(`Player ${playerId} was not found in this game.`);
   }
 
@@ -18,10 +25,17 @@ export function getPlayerView(
     ...player,
     turn: { ...turn },
     game: {
-      actionPoints: playerGame.actionPoints,
-      deckCardCount: playerGame.deck.length,
-      hand: [...playerGame.hand],
-      graveyard: [...playerGame.graveyard],
+      player: {
+        actionPoints: playerGame.actionPoints,
+        deckCardCount: playerGame.deck.length,
+        hand: [...playerGame.hand],
+        graveyard: [...playerGame.graveyard],
+      },
+      enemy: {
+        deckCardCount: enemyGame.deck.length,
+        handCardCount: enemyGame.hand.length,
+        graveyardCardCount: enemyGame.graveyard.length,
+      },
     },
   };
 }

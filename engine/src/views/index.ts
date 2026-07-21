@@ -8,6 +8,12 @@ export type PlayerGameView = {
   graveyard: CardInstance[];
 };
 
+export type EnemyGameView = {
+  deckCardCount: number;
+  handCardCount: number;
+  graveyardCardCount: number;
+};
+
 export type GlobalView = {
   turn: Turn;
   game: GameState;
@@ -15,7 +21,10 @@ export type GlobalView = {
 
 export type PlayerView = Player & {
   turn: Turn;
-  game: PlayerGameView;
+  game: {
+    player: PlayerGameView;
+    enemy: EnemyGameView;
+  };
 };
 
 export { getGlobalView, getPlayerView } from './views';

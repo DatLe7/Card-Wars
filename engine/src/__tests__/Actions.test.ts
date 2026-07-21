@@ -20,10 +20,10 @@ describe('Ready Phase', () => {
 
     const firstStartingHand = firstGame
       .getPlayerView('p1')
-      .game.hand.map((card) => card.instanceId);
+      .game.player.hand.map((card) => card.instanceId);
     const secondStartingHand = secondGame
       .getPlayerView('p1')
-      .game.hand.map((card) => card.instanceId);
+      .game.player.hand.map((card) => card.instanceId);
 
     expect(firstStartingHand).not.toEqual(secondStartingHand);
   });
@@ -57,7 +57,7 @@ describe('Ready Phase', () => {
 
     const view = game.getPlayerView('p1');
 
-    expect(view.game.actionPoints).toBe(2);
+    expect(view.game.player.actionPoints).toBe(2);
   });
 
   it('commanding next turn draws a card for the active player', () => {
@@ -70,8 +70,8 @@ describe('Ready Phase', () => {
 
     const view = game.getPlayerView('p1');
 
-    expect(view.game.hand).toHaveLength(6);
-    expect(view.game.deckCardCount).toBe(34);
+    expect(view.game.player.hand).toHaveLength(6);
+    expect(view.game.player.deckCardCount).toBe(34);
   });
 
   it('does not allow non turn player use next turn command', () => {
@@ -110,13 +110,13 @@ describe('MAIN', () => {
     let game = createTestGame();
     let spellCard = game
       .getPlayerView('p1')
-      .game.hand.find((card) => card.type === 'spell');
+      .game.player.hand.find((card) => card.type === 'spell');
 
     while (spellCard === undefined) {
       game = createTestGame();
       spellCard = game
         .getPlayerView('p1')
-        .game.hand.find((card) => card.type === 'spell');
+        .game.player.hand.find((card) => card.type === 'spell');
       console.log(spellCard);
     }
 
@@ -136,4 +136,178 @@ describe('MAIN', () => {
     expect(playSpellAction).toBeDefined();
     expect(playSpellAction).not.toHaveProperty('laneIndex');
   });
+
+  it('a creature card has a play card action', () => {
+    let game = createTestGame();
+    let creatureCard = game
+      .getPlayerView('p1')
+      .game.player.hand.find((card) => card.type === 'creature');
+
+    while (creatureCard === undefined) {
+      game = createTestGame();
+      creatureCard = game
+        .getPlayerView('p1')
+        .game.player.hand.find((card) => card.type === 'creature');
+    }
+
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p1',
+    });
+
+    const playCreatureAction = game
+      .getAvailableActions('p1')
+      .find(
+        (action) =>
+          action.type === 'PLAY_CARD' &&
+          action.cardInstanceId === creatureCard.instanceId,
+      );
+
+    expect(playCreatureAction).toBeDefined();
+  });
+
+  it('a building card has a play card action', () => {
+    let game = createTestGame();
+    let buildingCard = game
+      .getPlayerView('p1')
+      .game.player.hand.find((card) => card.type === 'building');
+
+    while (buildingCard === undefined) {
+      game = createTestGame();
+      buildingCard = game
+        .getPlayerView('p1')
+        .game.player.hand.find((card) => card.type === 'building');
+    }
+
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p1',
+    });
+
+    const playBuildingAction = game
+      .getAvailableActions('p1')
+      .find(
+        (action) =>
+          action.type === 'PLAY_CARD' &&
+          action.cardInstanceId === buildingCard.instanceId,
+      );
+
+    expect(playBuildingAction).toBeDefined();
+  });
+
+  it('commanding a play card action reduces action points by the cards cost', () => {
+    const game = createTestGame();
+
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p1',
+    });
+
+    const viewBeforePlayingCard = game.getPlayerView('p1');
+    const card = viewBeforePlayingCard.game.player.hand.find(
+      (handCard) => handCard.cost > 0,
+    );
+
+    expect(card).toBeDefined();
+
+    if (card === undefined) {
+      return;
+    }
+
+    const playCardAction = game
+      .getAvailableActions('p1')
+      .find(
+        (action) =>
+          action.type === 'PLAY_CARD' &&
+          action.cardInstanceId === card.instanceId,
+      );
+
+    expect(playCardAction).toBeDefined();
+
+    if (playCardAction === undefined) {
+      return;
+    }
+
+    game.command(playCardAction);
+
+    const viewAfterPlayingCard = game.getPlayerView('p1');
+
+    expect(viewAfterPlayingCard.game.player.actionPoints).toBe(
+      viewBeforePlayingCard.game.player.actionPoints - card.cost,
+    );
+  });
+
+  it('commanding a play card action removes the card from the hand', () => {
+    const game = createTestGame();
+
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p1',
+    });
+
+    const playCardAction = game
+      .getAvailableActions('p1')
+      .find((action) => action.type === 'PLAY_CARD');
+
+    expect(playCardAction).toBeDefined();
+
+    if (playCardAction === undefined) {
+      return;
+    }
+
+    game.command(playCardAction);
+
+    const view = game.getPlayerView('p1');
+    const cardInHand = view.game.player.hand.find(
+      (card) => card.instanceId === playCardAction.cardInstanceId,
+    );
+
+    expect(cardInHand).toBeUndefined();
+  });
+
+  it('commanding a play card on a spell moves it into the graveyard', () => {
+    let game = createTestGame();
+    let spellCard = game
+      .getPlayerView('p1')
+      .game.player.hand.find((card) => card.type === 'spell');
+
+    while (spellCard === undefined) {
+      game = createTestGame();
+      spellCard = game
+        .getPlayerView('p1')
+        .game.player.hand.find((card) => card.type === 'spell');
+    }
+
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p1',
+    });
+
+    const playSpellAction = game
+      .getAvailableActions('p1')
+      .find(
+        (action) =>
+          action.type === 'PLAY_CARD' &&
+          action.cardInstanceId === spellCard.instanceId,
+      );
+
+    expect(playSpellAction).toBeDefined();
+
+    if (playSpellAction === undefined) {
+      return;
+    }
+
+    game.command(playSpellAction);
+
+    const view = game.getPlayerView('p1');
+    const cardInGraveyard = view.game.player.graveyard.find(
+      (card) => card.instanceId === spellCard.instanceId,
+    );
+
+    expect(cardInGraveyard).toBeDefined();
+  });
+
+  // The following 2 dont implement yet. I need to determine some things first
+  // commanding a play card action on a creature moves it to the target land
+  // commanding a play card action on a building moves it to the target land
 });

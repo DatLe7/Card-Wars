@@ -123,33 +123,33 @@ describe('READY', () => {
   });
   it('5 cards initially in hand', () => {
     const view = game.getPlayerView('p1');
-    expect(view.game.hand.length).toBe(5);
+    expect(view.game.player.hand.length).toBe(5);
   });
 
   it('35 cards initially in deck', () => {
     const view = game.getPlayerView('p1');
-    expect(view.game.deckCardCount).toBe(35);
+    expect(view.game.player.deckCardCount).toBe(35);
   });
 
   it('0 cards initially in graveyard', () => {
     const view = game.getPlayerView('p1');
-    expect(view.game.graveyard.length).toBe(0);
+    expect(view.game.player.graveyard.length).toBe(0);
   });
 
   it('first card in hand has an instance id', () => {
     const view = game.getPlayerView('p1');
-    expect(view.game.hand[0]?.instanceId).toBeDefined();
+    expect(view.game.player.hand[0]?.instanceId).toBeDefined();
   });
 
   it('second card in hand has an instance id', () => {
     const view = game.getPlayerView('p1');
-    expect(view.game.hand[1]?.instanceId).toBeDefined();
+    expect(view.game.player.hand[1]?.instanceId).toBeDefined();
   });
 
   it('cards in hand match the card instance shape', () => {
     const view = game.getPlayerView('p1');
 
-    view.game.hand.forEach((card) => {
+    view.game.player.hand.forEach((card) => {
       expect(card).toEqual({
         instanceId: expect.any(String),
         ownerId: expect.any(String),
@@ -172,5 +172,22 @@ describe('READY', () => {
   it('first card in deck has a instance id in player 1', () => {
     const view = game.getGlobalView();
     expect(view.game.players.p1?.deck[0]?.instanceId).toBeDefined();
+  });
+  it('shows 35 cards in enemy deck', () => {
+    const view = game.getPlayerView('p1');
+
+    expect(view.game.enemy.deckCardCount).toBe(35);
+  });
+
+  it('shows 5 cards in enemy hand', () => {
+    const view = game.getPlayerView('p1');
+
+    expect(view.game.enemy.handCardCount).toBe(5);
+  });
+
+  it('shows 0 cards in enemy graveyard', () => {
+    const view = game.getPlayerView('p1');
+
+    expect(view.game.enemy.graveyardCardCount).toBe(0);
   });
 });

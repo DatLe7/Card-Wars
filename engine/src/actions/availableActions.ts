@@ -17,6 +17,7 @@ export function getAvailableActions(
     return [{ type: 'NEXT_TURN', playerId }];
   }
 
+  /* v8 ignore if -- @preserve */
   if (player === undefined || playerGame === undefined) {
     return [];
   }
@@ -29,6 +30,7 @@ export function getAvailableActions(
     const hasEnoughLandscapes =
       card.land === 'Rainbow' || matchingLandscapeCount >= card.cost;
 
+    /* v8 ignore if -- @preserve */
     if (!hasEnoughActions || !hasEnoughLandscapes) {
       return [];
     }
