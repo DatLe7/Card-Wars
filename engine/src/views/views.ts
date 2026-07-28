@@ -30,11 +30,13 @@ export function getPlayerView(
         deckCardCount: playerGame.deck.length,
         hand: [...playerGame.hand],
         graveyard: [...playerGame.graveyard],
+        lands: playerGame.lands.map((land) => ({ ...land })),
       },
       enemy: {
         deckCardCount: enemyGame.deck.length,
         handCardCount: enemyGame.hand.length,
         graveyardCardCount: enemyGame.graveyard.length,
+        lands: enemyGame.lands.map((land) => ({ ...land })),
       },
     },
   };
@@ -52,6 +54,7 @@ export function getGlobalView(game: GameState, turn: Turn): GlobalView {
             deck: [...playerGame.deck],
             hand: [...playerGame.hand],
             graveyard: [...playerGame.graveyard],
+            lands: playerGame.lands.map((land) => ({ ...land })),
           },
         ]),
       ),

@@ -6,6 +6,7 @@ import { commandActions } from '../actions/commandActions';
 import { initializeDeck } from '../card/card';
 import { getGlobalView, getPlayerView } from '../views';
 import type { GlobalView, PlayerView } from '../views';
+import { initializeLands } from './land';
 
 export class Game {
   private readonly players: Player[];
@@ -34,6 +35,7 @@ export class Game {
       deck: deck.slice(5),
       hand: deck.slice(0, 5),
       graveyard: [],
+      lands: initializeLands(player.decklist.landscape),
     };
   }
 

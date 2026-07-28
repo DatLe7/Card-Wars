@@ -1,17 +1,19 @@
 import type { CardInstance } from '../card';
-import type { GameState, Player, Turn } from '../game';
+import type { GameState, Land, Player, Turn } from '../game';
 
 export type PlayerGameView = {
   actionPoints: number;
   deckCardCount: number;
   hand: CardInstance[];
   graveyard: CardInstance[];
+  lands: Land[];
 };
 
 export type EnemyGameView = {
   deckCardCount: number;
   handCardCount: number;
   graveyardCardCount: number;
+  lands: Land[];
 };
 
 export type GlobalView = {

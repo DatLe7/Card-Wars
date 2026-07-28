@@ -6,6 +6,12 @@ export type CardLand = 'Blue Plains' | 'Cornfield' | 'Rainbow';
 
 export type CardType = 'building' | 'creature' | 'spell';
 
+export type Land = {
+  landscape: LandscapeType;
+  creature: CardInstance | undefined;
+  building: CardInstance | undefined;
+};
+
 export type CardDefinition = {
   id: string;
   name: string;
@@ -45,6 +51,7 @@ export type PlayerGameState = {
   deck: CardInstance[];
   hand: CardInstance[];
   graveyard: CardInstance[];
+  lands: Land[];
 };
 
 export type GameState = {

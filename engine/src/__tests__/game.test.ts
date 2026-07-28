@@ -112,6 +112,27 @@ describe('getGlobalView', () => {
     expect(nextView.game.players.p1?.hand).toHaveLength(5);
     expect(nextView.game.players.p1?.deck).toHaveLength(35);
   });
+
+  it('shows 4 lands', () => {
+    const view = game.getGlobalView();
+
+    expect(view.game.players.p1.lands.length).toBe(4);
+  });
+
+  it('has no creatures on lands', () => {
+    const view = game.getGlobalView();
+
+    expect(
+      view.game.players.p2.lands.every((land) => land.creature === undefined),
+    ).toBe(true);
+  });
+
+  it('has no buildings on your lands', () => {
+    const view = game.getGlobalView();
+    expect(
+      view.game.players.p1.lands.every((land) => land.building === undefined),
+    ).toBe(true);
+  });
 });
 
 describe('READY', () => {
@@ -189,5 +210,49 @@ describe('READY', () => {
     const view = game.getPlayerView('p1');
 
     expect(view.game.enemy.graveyardCardCount).toBe(0);
+  });
+
+  it('shows 4 lands on your side', () => {
+    const view = game.getPlayerView('p1');
+
+    expect(view.game.player.lands.length).toBe(4);
+  });
+
+  it('shows 4 lands on opponent side', () => {
+    const view = game.getPlayerView('p1');
+
+    expect(view.game.enemy.lands.length).toBe(4);
+  });
+
+  it('has no creatures on your lands', () => {
+    const view = game.getPlayerView('p1');
+
+    expect(
+      view.game.player.lands.every((land) => land.creature === undefined),
+    ).toBe(true);
+  });
+
+  it('has no creatures on opponent lands', () => {
+    const view = game.getPlayerView('p1');
+
+    expect(
+      view.game.enemy.lands.every((land) => land.creature === undefined),
+    ).toBe(true);
+  });
+
+  it('has no buildings on your lands', () => {
+    const view = game.getPlayerView('p1');
+
+    expect(
+      view.game.player.lands.every((land) => land.building === undefined),
+    ).toBe(true);
+  });
+
+  it('has no buildings on opponent lands', () => {
+    const view = game.getPlayerView('p1');
+
+    expect(
+      view.game.enemy.lands.every((land) => land.building === undefined),
+    ).toBe(true);
   });
 });
