@@ -44,6 +44,14 @@ export function commandActions(
       return;
     }
 
+    const cardToPlay = playerGameState.hand[cardIndex];
+    const targetLand = playerGameState.lands[action.laneIndex];
+
+    /* v8 ignore if -- @preserve */
+    if (cardToPlay?.type === 'creature' && targetLand === undefined) {
+      return;
+    }
+
     const [playedCard] = playerGameState.hand.splice(cardIndex, 1);
 
     /* v8 ignore if -- @preserve */
@@ -55,6 +63,10 @@ export function commandActions(
 
     if (playedCard.type === 'spell') {
       playerGameState.graveyard.push(playedCard);
+    }
+
+    if (playedCard.type === 'creature') {
+      targetLand!.creature = playedCard;
     }
 
     break;

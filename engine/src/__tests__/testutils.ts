@@ -1,6 +1,6 @@
 import finnDecklist from '../data/finn.json';
 import jakeDecklist from '../data/jake.json';
-import type { Deck } from '../game';
+import type { CardType, Deck } from '../game';
 import { Game } from '../game/game.js';
 
 type CreateTestGameOptions = {
@@ -30,4 +30,39 @@ export function createTestGame({
     ],
     firstPlayer: 'p1',
   });
+}
+
+export function createTestGameWithCardInHand(cardType: CardType) {
+  let game = createTestGame();
+  let card = game
+    .getPlayerView('p1')
+    .game.player.hand.find((handCard) => handCard.type === cardType);
+
+  while (card === undefined) {
+    game = createTestGame();
+    card = game
+      .getPlayerView('p1')
+      .game.player.hand.find((handCard) => handCard.type === cardType);
+  }
+
+  return { game, card };
+}
+
+export function createMainPhaseTestGameWithCardInHand(cardType: CardType) {
+  const { game, card } = createTestGameWithCardInHand(cardType);
+
+  game.command({
+    type: 'NEXT_TURN',
+    playerId: 'p1',
+  });
+
+  const playCardAction = game
+    .getAvailableActions('p1')
+    .find(
+      (action) =>
+        action.type === 'PLAY_CARD' &&
+        action.cardInstanceId === card.instanceId,
+    );
+
+  return { game, card, playCardAction };
 }

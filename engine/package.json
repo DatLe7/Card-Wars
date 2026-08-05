@@ -15,7 +15,7 @@
     "build": "tsc -p tsconfig.json",
     "pretest": "(npm run lint) && (npm run cpd)",
     "test": "vitest run src --no-file-parallelism --testTimeout=3000 --coverage",
-    "cpd": "jscpd src --silent",
+    "cpd": "jscpd --config .jscpd.json src",
     "lint": "eslint src/**/*.[jt]s --fix"
   }
 }

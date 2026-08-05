@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTestGame } from './testutils.js';
+import {
+  createMainPhaseTestGameWithCardInHand,
+  createTestGame,
+  createTestGameWithCardInHand,
+} from './testutils.js';
 
 describe('Ready Phase', () => {
   it('ready phase starting player actions', () => {
@@ -107,48 +111,16 @@ describe('MAIN', () => {
     expect(playableCardIds.size).toBe(6);
   });
   it('a spell card has not land target', () => {
-    let game = createTestGame();
-    let spellCard = game
-      .getPlayerView('p1')
-      .game.player.hand.find((card) => card.type === 'spell');
-
-    while (spellCard === undefined) {
-      game = createTestGame();
-      spellCard = game
-        .getPlayerView('p1')
-        .game.player.hand.find((card) => card.type === 'spell');
-      console.log(spellCard);
-    }
-
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
-
-    const playSpellAction = game
-      .getAvailableActions('p1')
-      .find(
-        (action) =>
-          action.type === 'PLAY_CARD' &&
-          action.cardInstanceId === spellCard.instanceId,
-      );
+    const { playCardAction: playSpellAction } =
+      createMainPhaseTestGameWithCardInHand('spell');
 
     expect(playSpellAction).toBeDefined();
     expect(playSpellAction).not.toHaveProperty('laneIndex');
   });
 
   it('a creature card has a play card action', () => {
-    let game = createTestGame();
-    let creatureCard = game
-      .getPlayerView('p1')
-      .game.player.hand.find((card) => card.type === 'creature');
-
-    while (creatureCard === undefined) {
-      game = createTestGame();
-      creatureCard = game
-        .getPlayerView('p1')
-        .game.player.hand.find((card) => card.type === 'creature');
-    }
+    const { game, card: creatureCard } =
+      createTestGameWithCardInHand('creature');
 
     game.command({
       type: 'NEXT_TURN',
@@ -167,17 +139,8 @@ describe('MAIN', () => {
   });
 
   it('a building card has a play card action', () => {
-    let game = createTestGame();
-    let buildingCard = game
-      .getPlayerView('p1')
-      .game.player.hand.find((card) => card.type === 'building');
-
-    while (buildingCard === undefined) {
-      game = createTestGame();
-      buildingCard = game
-        .getPlayerView('p1')
-        .game.player.hand.find((card) => card.type === 'building');
-    }
+    const { game, card: buildingCard } =
+      createTestGameWithCardInHand('building');
 
     game.command({
       type: 'NEXT_TURN',
@@ -266,30 +229,8 @@ describe('MAIN', () => {
   });
 
   it('commanding a play card on a spell moves it into the graveyard', () => {
-    let game = createTestGame();
-    let spellCard = game
-      .getPlayerView('p1')
-      .game.player.hand.find((card) => card.type === 'spell');
-
-    while (spellCard === undefined) {
-      game = createTestGame();
-      spellCard = game
-        .getPlayerView('p1')
-        .game.player.hand.find((card) => card.type === 'spell');
-    }
-
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
-
-    const playSpellAction = game
-      .getAvailableActions('p1')
-      .find(
-        (action) =>
-          action.type === 'PLAY_CARD' &&
-          action.cardInstanceId === spellCard.instanceId,
-      );
+    const { game, card: spellCard, playCardAction: playSpellAction } =
+      createMainPhaseTestGameWithCardInHand('spell');
 
     expect(playSpellAction).toBeDefined();
 
@@ -307,7 +248,72 @@ describe('MAIN', () => {
     expect(cardInGraveyard).toBeDefined();
   });
 
-  // The following 2 dont implement yet. I need to determine some things first
-  // commanding a play card action on a creature moves it to the target land
+  it('commanding a play card action on a creature moves it to the target land', () => {
+    const { game, card: creatureCard } =
+      createTestGameWithCardInHand('creature');
+
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p1',
+    });
+
+    const targetLandIndex = 2;
+    const playCreatureAction = game
+      .getAvailableActions('p1')
+      .find(
+        (action) =>
+          action.type === 'PLAY_CARD' &&
+          action.cardInstanceId === creatureCard.instanceId &&
+          action.laneIndex === targetLandIndex,
+      );
+
+    if (playCreatureAction === undefined) {
+      return;
+    }
+
+    game.command(playCreatureAction);
+
+    const view = game.getPlayerView('p1');
+
+    expect(
+      view.game.player.lands[targetLandIndex]?.creature?.instanceId,
+    ).toBe(creatureCard.instanceId);
+  });
+
+  it('opponent player view shows a played creature on the target land', () => {
+    const { game, card: creatureCard } =
+      createTestGameWithCardInHand('creature');
+
+    game.command({
+      type: 'NEXT_TURN',
+      playerId: 'p1',
+    });
+
+    const targetLandIndex = 1;
+    const playCreatureAction = game
+      .getAvailableActions('p1')
+      .find(
+        (action) =>
+          action.type === 'PLAY_CARD' &&
+          action.cardInstanceId === creatureCard.instanceId &&
+          action.laneIndex === targetLandIndex,
+      );
+
+    expect(playCreatureAction).toBeDefined();
+
+    if (playCreatureAction === undefined) {
+      return;
+    }
+
+    game.command(playCreatureAction);
+
+    const opponentView = game.getPlayerView('p2');
+
+    expect(
+      opponentView.game.enemy.lands[targetLandIndex]?.creature?.instanceId,
+    ).toBe(creatureCard.instanceId);
+  });
+
+  // The following test is not implemented yet
   // commanding a play card action on a building moves it to the target land
 });

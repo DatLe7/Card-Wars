@@ -1,0 +1,5 @@
+{
+  "path": ["src"],
+  "reporters": ["console", "html"],
+  "output": "copypaste"
+}
