@@ -48,7 +48,10 @@ export function commandActions(
     const targetLand = playerGameState.lands[action.laneIndex];
 
     /* v8 ignore if -- @preserve */
-    if (cardToPlay?.type === 'creature' && targetLand === undefined) {
+    if (
+      (cardToPlay?.type === 'creature' || cardToPlay?.type === 'building') &&
+      targetLand === undefined
+    ) {
       return;
     }
 
@@ -65,8 +68,12 @@ export function commandActions(
       playerGameState.graveyard.push(playedCard);
     }
 
-    if (playedCard.type === 'creature') {
-      targetLand!.creature = playedCard;
+    if (playedCard.type === 'creature' && targetLand !== undefined) {
+      targetLand.creature = playedCard;
+    }
+
+    if (playedCard.type === 'building' && targetLand !== undefined) {
+      targetLand.building = playedCard;
     }
 
     break;

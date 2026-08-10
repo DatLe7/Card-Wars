@@ -48,21 +48,23 @@ export function createTestGameWithCardInHand(cardType: CardType) {
   return { game, card };
 }
 
-export function createMainPhaseTestGameWithCardInHand(cardType: CardType) {
-  const { game, card } = createTestGameWithCardInHand(cardType);
-
-  game.command({
-    type: 'NEXT_TURN',
-    playerId: 'p1',
-  });
-
+export function playCard(
+  game: Game,
+  cardInstanceId: string,
+  landIndex?: number,
+): void {
   const playCardAction = game
     .getAvailableActions('p1')
     .find(
       (action) =>
         action.type === 'PLAY_CARD' &&
-        action.cardInstanceId === card.instanceId,
+        action.cardInstanceId === cardInstanceId &&
+        (landIndex === undefined || action.laneIndex === landIndex),
     );
 
-  return { game, card, playCardAction };
+  if (playCardAction === undefined) {
+    throw new Error(`No play action for card ${cardInstanceId}.`);
+  }
+
+  game.command(playCardAction);
 }
