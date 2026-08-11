@@ -1,5 +1,8 @@
 {
   "path": ["src"],
+	"threshold": 0,
+  "minLines": 10,
+  "minTokens": 100,
   "reporters": ["console", "html"],
   "output": "copypaste"
 }
