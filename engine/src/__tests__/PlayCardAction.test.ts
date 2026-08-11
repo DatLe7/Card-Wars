@@ -6,112 +6,11 @@ import {
   playCard,
 } from './testutils.js';
 
-describe('Ready Phase', () => {
-  it('ready phase starting player actions', () => {
-    const game = createTestGame();
-
-    expect(game.getAvailableActions('p1')).toEqual([
-      {
-        type: 'NEXT_TURN',
-        playerId: 'p1',
-      },
-    ]);
-  });
-
-  it('decks are shuffled on game start', () => {
-    const firstGame = createTestGame();
-    const secondGame = createTestGame();
-
-    const firstStartingHand = firstGame
-      .getPlayerView('p1')
-      .game.player.hand.map((card) => card.instanceId);
-    const secondStartingHand = secondGame
-      .getPlayerView('p1')
-      .game.player.hand.map((card) => card.instanceId);
-
-    expect(firstStartingHand).not.toEqual(secondStartingHand);
-  });
-
-  it('ready phase non starting player no actions', () => {
-    const game = createTestGame();
-
-    expect(game.getAvailableActions('p2')).toEqual([]);
-  });
-
-  it('commanding next turn takes turn to main', () => {
-    const game = createTestGame();
-
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
-
-    const view = game.getPlayerView('p2');
-
-    expect(view.turn.phase).toBe('MAIN');
-  });
-
-  it('commanding next turn gives the active player 2 action points', () => {
-    const game = createTestGame();
-
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
-
-    const view = game.getPlayerView('p1');
-
-    expect(view.game.player.actionPoints).toBe(2);
-  });
-
-  it('commanding next turn draws a card for the active player', () => {
-    const game = createTestGame();
-
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
-
-    const view = game.getPlayerView('p1');
-
-    expect(view.game.player.hand).toHaveLength(6);
-  });
-
-  it('drawing a card reduces deck size', () => {
-    const game = createTestGame();
-
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
-
-    const view = game.getPlayerView('p1');
-		
-    expect(view.game.player.deckCardCount).toBe(34);
-  });
-
-  it('does not allow non turn player use next turn command', () => {
-    const game = createTestGame();
-
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p2',
-    });
-
-    const view = game.getPlayerView('p1');
-
-    expect(view.turn.phase).toBe('READY');
-  });
-});
-
-describe('MAIN', () => {
+describe('PLAY_CARD', () => {
   it('has 6 playable cards', () => {
     const game = createTestGame();
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const playableCardIds = new Set(
       game
@@ -122,13 +21,11 @@ describe('MAIN', () => {
 
     expect(playableCardIds.size).toBe(6);
   });
+
   it('a spell card has no land target', () => {
     const { game, card: spellCard } = createTestGameWithCardInHand('spell');
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const playSpellAction = game
       .getAvailableActions('p1')
@@ -145,10 +42,7 @@ describe('MAIN', () => {
     const { game, card: creatureCard } =
       createTestGameWithCardInHand('creature');
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const playCreatureAction = game
       .getAvailableActions('p1')
@@ -165,10 +59,7 @@ describe('MAIN', () => {
     const { game, card: buildingCard } =
       createTestGameWithCardInHand('building');
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const playBuildingAction = game
       .getAvailableActions('p1')
@@ -184,10 +75,7 @@ describe('MAIN', () => {
   it('commanding a play card action reduces action points by the cards cost', () => {
     const game = createTestGame();
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const card = game.getPlayerView('p1').game.player.hand[0];
 
@@ -195,18 +83,13 @@ describe('MAIN', () => {
 
     const view = game.getPlayerView('p1');
 
-    expect(view.game.player.actionPoints).toBe(
-      2 - card.cost,
-    );
+    expect(view.game.player.actionPoints).toBe(2 - card.cost);
   });
 
   it('commanding a play card action removes the card from the hand', () => {
     const game = createTestGame();
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const card = game.getPlayerView('p1').game.player.hand[0];
 
@@ -223,11 +106,7 @@ describe('MAIN', () => {
   it('commanding a play card on a spell moves it into the graveyard', () => {
     const { game, card: spellCard } = createTestGameWithCardInHand('spell');
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
-
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
     playCard(game, spellCard.instanceId);
 
     const view = game.getPlayerView('p1');
@@ -242,10 +121,7 @@ describe('MAIN', () => {
     const { game, card: creatureCard } =
       createTestGameWithCardInHand('creature');
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const targetLandIndex = 2;
     playCard(game, creatureCard.instanceId, targetLandIndex);
@@ -261,10 +137,7 @@ describe('MAIN', () => {
     const { game, card: creatureCard } =
       createTestGameWithCardInHand('creature');
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p1',
-    });
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const targetLandIndex = 1;
     playCard(game, creatureCard.instanceId, targetLandIndex);

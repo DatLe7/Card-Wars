@@ -9,18 +9,14 @@ export function getAvailableActions(
   player?: Player,
   playerGame?: PlayerGameState,
 ): Actions[] {
-  if (playerId !== turn.activePlayerId) {
-    return [];
-  }
+  if (playerId !== turn.activePlayerId) return [];
 
   if (turn.phase === 'READY') {
     return [{ type: 'NEXT_TURN', playerId }];
   }
 
   /* v8 ignore if -- @preserve */
-  if (player === undefined || playerGame === undefined) {
-    return [];
-  }
+  if (player === undefined || playerGame === undefined) return [];
 
   return playerGame.hand.flatMap((card) => {
     const hasEnoughActions = card.cost <= playerGame.actionPoints;
@@ -31,9 +27,7 @@ export function getAvailableActions(
       card.land === 'Rainbow' || matchingLandscapeCount >= card.cost;
 
     /* v8 ignore if -- @preserve */
-    if (!hasEnoughActions || !hasEnoughLandscapes) {
-      return [];
-    }
+    if (!hasEnoughActions || !hasEnoughLandscapes) return [];
 
     if (card.type === 'spell') {
       return [

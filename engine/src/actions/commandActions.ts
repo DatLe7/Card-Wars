@@ -11,9 +11,7 @@ export function commandActions(
     const playerGameState = game.players[action.playerId];
 
     /* v8 ignore if -- @preserve */
-    if (playerGameState === undefined) {
-      return;
-    }
+    if (playerGameState === undefined) return;
 
     const drawnCard = playerGameState.deck.shift();
 
@@ -31,18 +29,14 @@ export function commandActions(
     const playerGameState = game.players[action.playerId];
 
     /* v8 ignore if -- @preserve */
-    if (playerGameState === undefined) {
-      return;
-    }
+    if (playerGameState === undefined) return;
 
     const cardIndex = playerGameState.hand.findIndex(
       (card) => card.instanceId === action.cardInstanceId,
     );
 
     /* v8 ignore if -- @preserve */
-    if (cardIndex === -1) {
-      return;
-    }
+    if (cardIndex === -1) return;
 
     const cardToPlay = playerGameState.hand[cardIndex];
     const targetLand = playerGameState.lands[action.laneIndex];
@@ -51,16 +45,12 @@ export function commandActions(
     if (
       (cardToPlay?.type === 'creature' || cardToPlay?.type === 'building') &&
       targetLand === undefined
-    ) {
-      return;
-    }
+    ) return;
 
     const [playedCard] = playerGameState.hand.splice(cardIndex, 1);
 
     /* v8 ignore if -- @preserve */
-    if (playedCard === undefined) {
-      return;
-    }
+    if (playedCard === undefined) return;
 
     playerGameState.actionPoints -= playedCard.cost;
 
