@@ -18,7 +18,7 @@ export function getAvailableActions(
   /* v8 ignore if -- @preserve */
   if (player === undefined || playerGame === undefined) return [];
 
-  return playerGame.hand.flatMap((card) => {
+  const playCardActions = playerGame.hand.flatMap((card) => {
     const hasEnoughActions = card.cost <= playerGame.actionPoints;
     const matchingLandscapeCount = player.decklist.landscape.filter(
       (landscape) => landscape === card.land,
@@ -46,4 +46,16 @@ export function getAvailableActions(
       laneIndex,
     }));
   });
+
+  const drawCardActions: Actions[] =
+    playerGame.actionPoints > 0
+      ? [
+        {
+          type: 'DRAW_CARD',
+          playerId,
+        },
+      ]
+      : [];
+
+  return [...drawCardActions, ...playCardActions];
 }

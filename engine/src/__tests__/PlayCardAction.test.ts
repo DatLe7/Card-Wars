@@ -178,4 +178,6 @@ describe('PLAY_CARD', () => {
       opponentView.game.enemy.lands[targetLandIndex]?.building?.instanceId,
     ).toBe(buildingCard.instanceId);
   });
+
+  // card with action cost cannot be in available actions when at 0 action points
 });

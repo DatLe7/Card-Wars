@@ -25,6 +25,23 @@ export function commandActions(
     turn.phase = 'MAIN';
     break;
   }
+  case 'DRAW_CARD': {
+    const playerGameState = game.players[action.playerId];
+
+    /* v8 ignore if -- @preserve */
+    if (playerGameState === undefined) return;
+
+    const drawnCard = playerGameState.deck.shift();
+
+    /* v8 ignore if -- @preserve */
+    if (drawnCard !== undefined) {
+      playerGameState.hand.push(drawnCard);
+    }
+
+    playerGameState.actionPoints -= 1;
+
+    break;
+  }
   case 'PLAY_CARD': {
     const playerGameState = game.players[action.playerId];
 

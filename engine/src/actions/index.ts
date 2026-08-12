@@ -3,6 +3,11 @@ export type NextTurnAction = {
   playerId: string;
 };
 
+export type DrawCardAction = {
+  type: 'DRAW_CARD';
+  playerId: string;
+};
+
 export type PlayCardAction = {
   type: 'PLAY_CARD';
   playerId: string;
@@ -10,4 +15,4 @@ export type PlayCardAction = {
   laneIndex: number;
 };
 
-export type Actions = NextTurnAction | PlayCardAction;
+export type Actions = NextTurnAction | DrawCardAction | PlayCardAction;
