@@ -2,6 +2,7 @@ import type { CardInstance } from '../card';
 import type { GameState, Land, Player, Turn } from '../game';
 
 export type PlayerGameView = {
+  life: number;
   actionPoints: number;
   deckCardCount: number;
   hand: CardInstance[];
@@ -10,6 +11,7 @@ export type PlayerGameView = {
 };
 
 export type EnemyGameView = {
+  life: number;
   deckCardCount: number;
   handCardCount: number;
   graveyardCardCount: number;

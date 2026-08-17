@@ -25,6 +25,7 @@ export function getPlayerView(
     turn: { ...game.turn },
     game: {
       player: {
+        life: playerGame.life,
         actionPoints: playerGame.actionPoints,
         deckCardCount: playerGame.deck.length,
         hand: [...playerGame.hand],
@@ -32,6 +33,7 @@ export function getPlayerView(
         lands: playerGame.lands.map((land) => ({ ...land })),
       },
       enemy: {
+        life: enemyGame.life,
         deckCardCount: enemyGame.deck.length,
         handCardCount: enemyGame.hand.length,
         graveyardCardCount: enemyGame.graveyard.length,
@@ -49,6 +51,7 @@ export function getGlobalView(game: GameState): GlobalView {
         Object.entries(game.players).map(([playerId, playerGame]) => [
           playerId,
           {
+            life: playerGame.life,
             actionPoints: playerGame.actionPoints,
             deck: [...playerGame.deck],
             hand: [...playerGame.hand],

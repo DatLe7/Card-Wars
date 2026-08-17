@@ -179,5 +179,31 @@ describe('PLAY_CARD', () => {
     ).toBe(buildingCard.instanceId);
   });
 
-  // card with action cost cannot be in available actions when at 0 action points
+  it('card with action cost is not available at 0 action points', () => {
+    let game = createTestGame();
+    let cardWithActionCost = game
+      .getPlayerView('p1')
+      .game.player.hand.find((card) => card.cost > 0);
+
+    while (cardWithActionCost === undefined) {
+      game = createTestGame();
+      cardWithActionCost = game
+        .getPlayerView('p1')
+        .game.player.hand.find((card) => card.cost > 0);
+    }
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+    game.command({ type: 'DRAW_CARD', playerId: 'p1' });
+    game.command({ type: 'DRAW_CARD', playerId: 'p1' });
+
+    const cardIsAvailable = game
+      .getAvailableActions('p1')
+      .some(
+        (action) =>
+          action.type === 'PLAY_CARD' &&
+          action.cardInstanceId === cardWithActionCost.instanceId,
+      );
+
+    expect(cardIsAvailable).toBe(false);
+  });
 });

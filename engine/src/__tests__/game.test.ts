@@ -113,6 +113,15 @@ describe('getGlobalView', () => {
     expect(nextView.game.players.p1?.deck).toHaveLength(35);
   });
 
+  it('both players start at 25 life', () => {
+    const view = game.getGlobalView();
+
+    expect([
+      view.game.players.p1?.life,
+      view.game.players.p2?.life,
+    ]).toEqual([25, 25]);
+  });
+
   it('shows 4 lands', () => {
     const view = game.getGlobalView();
 

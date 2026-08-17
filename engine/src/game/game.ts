@@ -30,6 +30,7 @@ export class Game {
     const deck = initializeDeck(player.id, player.decklist.deck);
 
     return {
+      life: 25,
       actionPoints: 0,
       deck: deck.slice(5),
       hand: deck.slice(0, 5),

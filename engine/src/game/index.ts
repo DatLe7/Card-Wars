@@ -47,6 +47,7 @@ export type Turn = {
 };
 
 export type PlayerGameState = {
+  life: number;
   actionPoints: number;
   deck: CardInstance[];
   hand: CardInstance[];

@@ -34,6 +34,20 @@ export function commandActions(
 
       playerGameState.hand.push(...drawnCards);
       playerGameState.actionPoints = 0;
+
+      if (game.turn.number === 1) {
+        const nextPlayerId = Object.keys(game.players).find(
+          (playerId) => playerId !== action.playerId,
+        );
+
+        /* v8 ignore if -- @preserve */
+        if (nextPlayerId === undefined) return;
+
+        game.turn.number++;
+        game.turn.activePlayerId = nextPlayerId;
+        game.turn.phase = 'READY';
+      }
+
       break;
     }
     }
