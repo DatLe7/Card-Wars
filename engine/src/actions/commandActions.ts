@@ -1,10 +1,9 @@
-import type { GameState, Turn } from '../game';
+import type { GameState } from '../game';
 import type { Actions } from '.';
 
 export function commandActions(
   action: Actions,
   game: GameState,
-  turn: Turn,
 ): void {
   switch (action.type) {
   case 'NEXT_TURN': {
@@ -13,16 +12,32 @@ export function commandActions(
     /* v8 ignore if -- @preserve */
     if (playerGameState === undefined) return;
 
-    const drawnCard = playerGameState.deck.shift();
+    switch (game.turn.phase) {
+    case 'READY': {
+      const drawnCard = playerGameState.deck.shift();
 
-    playerGameState.actionPoints = 2;
+      playerGameState.actionPoints = 2;
 
-    /* v8 ignore if -- @preserve */
-    if (drawnCard !== undefined) {
-      playerGameState.hand.push(drawnCard);
+      /* v8 ignore if -- @preserve */
+      if (drawnCard !== undefined) {
+        playerGameState.hand.push(drawnCard);
+      }
+
+      game.turn.phase = 'MAIN';
+      break;
+    }
+    case 'MAIN': {
+      const drawnCards = playerGameState.deck.splice(
+        0,
+        playerGameState.actionPoints,
+      );
+
+      playerGameState.hand.push(...drawnCards);
+      playerGameState.actionPoints = 0;
+      break;
+    }
     }
 
-    turn.phase = 'MAIN';
     break;
   }
   case 'DRAW_CARD': {

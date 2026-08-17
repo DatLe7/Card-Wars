@@ -56,6 +56,7 @@ export type PlayerGameState = {
 
 export type GameState = {
   players: Record<string, PlayerGameState>;
+  turn: Turn;
 };
 
 export type CreateGameInput = {

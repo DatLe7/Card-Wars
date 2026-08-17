@@ -57,5 +57,12 @@ export function getAvailableActions(
       ]
       : [];
 
-  return [...drawCardActions, ...playCardActions];
+  return [
+    {
+      type: 'NEXT_TURN',
+      playerId,
+    },
+    ...drawCardActions,
+    ...playCardActions,
+  ];
 }

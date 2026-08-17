@@ -1,11 +1,10 @@
-import type { GameState, Player, Turn } from '../game';
+import type { GameState, Player } from '../game';
 import type { GlobalView, PlayerView } from '.';
 
 export function getPlayerView(
   playerId: string,
   players: readonly Player[],
   game: GameState,
-  turn: Turn,
 ): PlayerView {
   const player = players.find((candidate) => candidate.id === playerId);
   const playerGame = game.players[playerId];
@@ -23,7 +22,7 @@ export function getPlayerView(
 
   return {
     ...player,
-    turn: { ...turn },
+    turn: { ...game.turn },
     game: {
       player: {
         actionPoints: playerGame.actionPoints,
@@ -42,9 +41,9 @@ export function getPlayerView(
   };
 }
 
-export function getGlobalView(game: GameState, turn: Turn): GlobalView {
+export function getGlobalView(game: GameState): GlobalView {
   return {
-    turn: { ...turn },
+    turn: { ...game.turn },
     game: {
       players: Object.fromEntries(
         Object.entries(game.players).map(([playerId, playerGame]) => [

@@ -58,6 +58,12 @@ describe('DRAW_CARD', () => {
 
     expect(drawCardActions).toHaveLength(0);
   });
-});
 
-// Next Turn action with 2 action points left in main draws 2 cards
+  it('next turn action with 2 action points left in main draws 2 cards', () => {
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+
+    const view = game.getPlayerView('p1');
+
+    expect(view.game.player.hand).toHaveLength(8);
+  });
+});

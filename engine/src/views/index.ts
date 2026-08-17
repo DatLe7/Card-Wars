@@ -18,7 +18,7 @@ export type EnemyGameView = {
 
 export type GlobalView = {
   turn: Turn;
-  game: GameState;
+  game: Pick<GameState, 'players'>;
 };
 
 export type PlayerView = Player & {
