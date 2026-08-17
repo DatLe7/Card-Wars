@@ -51,7 +51,7 @@ export class Game {
     const player = this.players.find((candidate) => candidate.id === playerId);
     const playerGame = this.game.players[playerId];
 
-    return getAvailableActions(playerId, this.game.turn, player, playerGame);
+    return getAvailableActions(playerId, this.game, player, playerGame);
   }
 
   command(action: Actions): void {

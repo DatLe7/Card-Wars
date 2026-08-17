@@ -38,7 +38,7 @@ export type Player = {
   decklist: Deck;
 };
 
-export type TurnPhase = 'READY' |'MAIN';
+export type TurnPhase = 'READY' | 'MAIN' | 'BATTLE';
 
 export type Turn = {
   number: number;

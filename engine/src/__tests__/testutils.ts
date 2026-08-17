@@ -50,11 +50,12 @@ export function createTestGameWithCardInHand(cardType: CardType) {
 
 export function playCard(
   game: Game,
+  playerId: string,
   cardInstanceId: string,
   landIndex?: number,
 ): void {
   const playCardAction = game
-    .getAvailableActions('p1')
+    .getAvailableActions(playerId)
     .find(
       (action) =>
         action.type === 'PLAY_CARD' &&

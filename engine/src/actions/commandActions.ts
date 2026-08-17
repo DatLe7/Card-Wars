@@ -46,6 +46,8 @@ export function commandActions(
         game.turn.number++;
         game.turn.activePlayerId = nextPlayerId;
         game.turn.phase = 'READY';
+      } else {
+        game.turn.phase = 'BATTLE';
       }
 
       break;

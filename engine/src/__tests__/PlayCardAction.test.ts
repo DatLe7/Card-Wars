@@ -79,7 +79,7 @@ describe('PLAY_CARD', () => {
 
     const card = game.getPlayerView('p1').game.player.hand[0];
 
-    playCard(game, card.instanceId);
+    playCard(game, 'p1', card.instanceId);
 
     const view = game.getPlayerView('p1');
 
@@ -93,7 +93,7 @@ describe('PLAY_CARD', () => {
 
     const card = game.getPlayerView('p1').game.player.hand[0];
 
-    playCard(game, card.instanceId);
+    playCard(game, 'p1', card.instanceId);
 
     const view = game.getPlayerView('p1');
     const cardInHand = view.game.player.hand.find(
@@ -107,7 +107,7 @@ describe('PLAY_CARD', () => {
     const { game, card: spellCard } = createTestGameWithCardInHand('spell');
 
     game.command({ type: 'NEXT_TURN', playerId: 'p1' });
-    playCard(game, spellCard.instanceId);
+    playCard(game, 'p1', spellCard.instanceId);
 
     const view = game.getPlayerView('p1');
     const cardInGraveyard = view.game.player.graveyard.find(
@@ -124,7 +124,7 @@ describe('PLAY_CARD', () => {
     game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const targetLandIndex = 2;
-    playCard(game, creatureCard.instanceId, targetLandIndex);
+    playCard(game, 'p1', creatureCard.instanceId, targetLandIndex);
 
     const view = game.getPlayerView('p1');
 
@@ -140,7 +140,7 @@ describe('PLAY_CARD', () => {
     game.command({ type: 'NEXT_TURN', playerId: 'p1' });
 
     const targetLandIndex = 1;
-    playCard(game, creatureCard.instanceId, targetLandIndex);
+    playCard(game, 'p1', creatureCard.instanceId, targetLandIndex);
 
     const opponentView = game.getPlayerView('p2');
 
@@ -155,7 +155,7 @@ describe('PLAY_CARD', () => {
       createTestGameWithCardInHand('building');
 
     game.command({ type: 'NEXT_TURN', playerId: 'p1' });
-    playCard(game, buildingCard.instanceId, targetLandIndex);
+    playCard(game, 'p1', buildingCard.instanceId, targetLandIndex);
 
     const view = game.getPlayerView('p1');
 
@@ -170,7 +170,7 @@ describe('PLAY_CARD', () => {
       createTestGameWithCardInHand('building');
 
     game.command({ type: 'NEXT_TURN', playerId: 'p1' });
-    playCard(game, buildingCard.instanceId, targetLandIndex);
+    playCard(game, 'p1', buildingCard.instanceId, targetLandIndex);
 
     const opponentView = game.getPlayerView('p2');
 

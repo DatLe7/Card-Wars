@@ -15,4 +15,14 @@ export type PlayCardAction = {
   laneIndex: number;
 };
 
-export type Actions = NextTurnAction | DrawCardAction | PlayCardAction;
+export type SelectBattleLaneAction = {
+  type: 'SELECT_BATTLE_LANE';
+  playerId: string;
+  laneIndex: number;
+};
+
+export type Actions =
+  | NextTurnAction
+  | DrawCardAction
+  | PlayCardAction
+  | SelectBattleLaneAction;
