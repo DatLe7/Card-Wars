@@ -1,4 +1,4 @@
-import type { GameState } from '../game';
+import type { GameState, LaneIndex } from '../game';
 import type { Actions } from '.';
 
 export function commandActions(
@@ -48,8 +48,27 @@ export function commandActions(
         game.turn.phase = 'READY';
       } else {
         game.turn.phase = 'BATTLE';
+        const laneIndexes: LaneIndex[] = [0,1,2,3];
+        game.remainingBattleLanes = laneIndexes.filter((laneIndex) =>
+          Object.values(game.players).some(
+            (player) => player.lands[laneIndex]?.creature !== undefined,
+          ),
+        );
       }
 
+      break;
+    }
+    case 'BATTLE': {
+      const nextPlayerId = Object.keys(game.players).find(
+        (playerId) => playerId !== action.playerId,
+      );
+
+      /* v8 ignore if -- @preserve */
+      if (nextPlayerId === undefined) return;
+
+      game.turn.number++;
+      game.turn.activePlayerId = nextPlayerId;
+      game.turn.phase = 'READY';
       break;
     }
     }
@@ -115,6 +134,28 @@ export function commandActions(
     }
 
     break;
+  }
+  case 'SELECT_BATTLE_LANE': {
+    const laneIndex = action.laneIndex;
+    const playerGameState = game.players[action.playerId];
+    const opponentGameState = Object.entries(game.players).find(
+      ([playerId]) => playerId !== action.playerId,
+    )?.[1];
+    const playerCreature = playerGameState?.lands[laneIndex]?.creature;
+    const opponentCreature = opponentGameState?.lands[laneIndex]?.creature;
+
+    /* v8 ignore if -- @preserve */
+    if (playerGameState === undefined || opponentGameState === undefined) return;
+
+    game.remainingBattleLanes = game.remainingBattleLanes.filter(index => index !== laneIndex);
+
+    if (playerCreature !== undefined && opponentCreature !== undefined) {
+      // 2 creatures
+    } else if (playerCreature !== undefined) {
+      opponentGameState.life -= (playerCreature.attack + playerCreature.atkMod);
+    } else if (opponentCreature !== undefined) {
+      playerGameState.life -= (opponentCreature.attack + opponentCreature.atkMod);
+    }
   }
   }
 }

@@ -1,7 +1,7 @@
-import type { GameState, Player, PlayerGameState } from '../game';
+import type { GameState, LaneIndex, Player, PlayerGameState } from '../game';
 import type { Actions } from '.';
 
-const laneIndexes = [0, 1, 2, 3] as const;
+const laneIndexes: LaneIndex[] = [0, 1, 2, 3];
 
 export function getAvailableActions(
   playerId: string,
@@ -15,18 +15,15 @@ export function getAvailableActions(
   case 'READY':
     return [{ type: 'NEXT_TURN', playerId }];
   case 'BATTLE':
-    return laneIndexes
-      .filter((laneIndex) =>
-        Object.values(game.players).some(
-          (playerState) =>
-            playerState.lands[laneIndex]?.creature !== undefined,
-        ),
-      )
-      .map((laneIndex) => ({
+    if (game.remainingBattleLanes.length === 0) {
+      return [{ type: 'NEXT_TURN', playerId }];
+    } else {
+      return game.remainingBattleLanes.map((laneIndex) => ({
         type: 'SELECT_BATTLE_LANE',
         playerId,
         laneIndex,
       }));
+    }
   case 'MAIN': {
     /* v8 ignore if -- @preserve */
     if (player === undefined || playerGame === undefined) return [];

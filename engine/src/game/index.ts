@@ -12,6 +12,8 @@ export type Land = {
   building: CardInstance | undefined;
 };
 
+export type LaneIndex = 0 | 1 | 2 | 3;
+
 export type CardDefinition = {
   id: string;
   name: string;
@@ -58,6 +60,7 @@ export type PlayerGameState = {
 export type GameState = {
   players: Record<string, PlayerGameState>;
   turn: Turn;
+	remainingBattleLanes: LaneIndex[];
 };
 
 export type CreateGameInput = {

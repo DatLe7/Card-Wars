@@ -23,6 +23,7 @@ export class Game {
         activePlayerId: input.firstPlayer,
         phase: 'READY',
       },
+      remainingBattleLanes: []
     };
   }
 
@@ -60,7 +61,7 @@ export class Game {
     );
 
     if (!actionIsAvailable) {
-      return;
+      throw new Error(`Invalid action: ${JSON.stringify(action)}`);
     }
 
     commandActions(action, this.game);

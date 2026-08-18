@@ -1,5 +1,6 @@
 import finnDecklist from '../data/finn.json';
 import jakeDecklist from '../data/jake.json';
+import type { CardInstance } from '../card';
 import type { CardType, Deck } from '../game';
 import { Game } from '../game/game.js';
 
@@ -32,7 +33,9 @@ export function createTestGame({
   });
 }
 
-export function createTestGameWithCardInHand(cardType: CardType) {
+export function createTestGameWithCardInHand(
+  cardType: CardType,
+): { game: Game; card: CardInstance } {
   let game = createTestGame();
   let card = game
     .getPlayerView('p1')
@@ -63,6 +66,7 @@ export function playCard(
         (landIndex === undefined || action.laneIndex === landIndex),
     );
 
+  /* v8 ignore if -- @preserve */
   if (playCardAction === undefined) {
     throw new Error(`No play action for card ${cardInstanceId}.`);
   }

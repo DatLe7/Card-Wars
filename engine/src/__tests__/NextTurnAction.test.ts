@@ -89,13 +89,11 @@ describe('NEXT_TURN', () => {
   it('does not allow non turn player use next turn command', () => {
     const game = createTestGame();
 
-    game.command({
-      type: 'NEXT_TURN',
-      playerId: 'p2',
-    });
-
-    const view = game.getPlayerView('p1');
-
-    expect(view.turn.phase).toBe('READY');
+    expect(() => {
+      game.command({
+        type: 'NEXT_TURN',
+        playerId: 'p2',
+      });
+    }).toThrow();
   });
 });

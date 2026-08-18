@@ -206,4 +206,36 @@ describe('PLAY_CARD', () => {
 
     expect(cardIsAvailable).toBe(false);
   });
+
+  it('card is not longer playable after being played', () => {
+    let game = createTestGame();
+    let card = game
+      .getPlayerView('p1')
+      .game.player.hand.find(
+        (card) => card.cost === 1 && card.type !== 'spell',
+      );
+
+    while (card === undefined) {
+      game = createTestGame();
+      card = game
+        .getPlayerView('p1')
+        .game.player.hand.find(
+          (card) => card.cost === 1 && card.type !== 'spell',
+        );
+    }
+    const targetLandIndex = 3;
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+    playCard(game, 'p1', card.instanceId, targetLandIndex);
+
+    const cardIsAvailable = game
+      .getAvailableActions('p1')
+      .some(
+        (action) =>
+          action.type === 'PLAY_CARD' &&
+          action.cardInstanceId === card.instanceId,
+      );
+
+    expect(cardIsAvailable).toBe(false);
+  });
 });
