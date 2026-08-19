@@ -152,6 +152,24 @@ export function commandActions(
     if (playerCreature !== undefined && opponentCreature !== undefined) {
       playerCreature.damage += opponentCreature.attack + opponentCreature.atkMod;
       opponentCreature.damage += playerCreature.attack + playerCreature.atkMod;
+
+      const playerCreatureDied =
+				playerCreature.damage >=
+				playerCreature.defence + playerCreature.defMod;
+
+      const opponentCreatureDied =
+				opponentCreature.damage >=
+				opponentCreature.defence + opponentCreature.defMod;
+
+      if (playerCreatureDied) {
+        playerGameState.graveyard.push(playerCreature);
+  			playerGameState.lands[laneIndex]!.creature = undefined;
+      }
+
+      if (opponentCreatureDied) {
+        opponentGameState.graveyard.push(opponentCreature);
+  			opponentGameState.lands[laneIndex]!.creature = undefined;
+      }
     } else if (playerCreature !== undefined) {
       opponentGameState.life -= (playerCreature.attack + playerCreature.atkMod);
     } else if (opponentCreature !== undefined) {

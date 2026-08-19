@@ -36,6 +36,46 @@ export function createTestGame({
   });
 }
 
+export function createTestGameWithCardsInHand(
+  playerOneCardId: string,
+  playerTwoCardId: string,
+): Game {
+  const moveCardToTop = (decklist: Deck, cardId: string): Deck => {
+    const cardEntry = decklist.deck.find((entry) => entry.cardId === cardId);
+
+    /* v8 ignore if -- @preserve */
+    if (cardEntry === undefined) {
+      throw new Error(`Card ${cardId} was not found in the test deck.`);
+    }
+
+    return {
+      ...decklist,
+      deck: [
+        cardEntry,
+        ...decklist.deck.filter((entry) => entry.cardId !== cardId),
+      ],
+    };
+  };
+
+  return new Game({
+    gameId: 'game_123',
+    players: [
+      {
+        id: 'p1',
+        name: 'Player 1',
+        decklist: moveCardToTop(jakeDecklist as Deck, playerOneCardId),
+      },
+      {
+        id: 'p2',
+        name: 'Player 2',
+        decklist: moveCardToTop(finnDecklist as Deck, playerTwoCardId),
+      },
+    ],
+    firstPlayer: 'p1',
+    shuffleDeck: false,
+  });
+}
+
 export function createTestGameWithCardInHand(
   cardType: CardType,
 ): { game: Game; card: CardInstance } {

@@ -3,10 +3,36 @@ import { describe, expect, it } from 'vitest';
 import {
   createTestGame,
   createTestGameWithCardInHand,
+  createTestGameWithCardsInHand,
   playCard,
 } from './testutils.js';
 import type { CardInstance } from '../card';
+import type { LaneIndex } from '../game';
 import type { Game } from '../game/game.js';
+
+function completeBattles(
+  game: Game,
+  numberOfBattles: number,
+  laneIndex: LaneIndex,
+): void {
+  for (let battle = 0; battle < numberOfBattles; battle += 1) {
+    const activePlayerId = game.getGlobalView().turn.activePlayerId;
+
+    game.command({
+      type: 'SELECT_BATTLE_LANE',
+      laneIndex,
+      playerId: activePlayerId,
+    });
+
+    if (battle < numberOfBattles - 1) {
+      game.command({ type: 'NEXT_TURN', playerId: activePlayerId });
+
+      const nextPlayerId = game.getGlobalView().turn.activePlayerId;
+      game.command({ type: 'NEXT_TURN', playerId: nextPlayerId });
+      game.command({ type: 'NEXT_TURN', playerId: nextPlayerId });
+    }
+  }
+}
 
 function createGameWithCreaturePlayed(
   targetLandIndex: number
@@ -179,5 +205,86 @@ describe('BATTLE', () => {
       opponentCreature.attack + opponentCreature.atkMod,
       playerCreature.attack + playerCreature.atkMod,
     ]);
+  });
+
+  it('a creature dies upon taking enough damage', () => {
+    const targetLandIndex = 0;
+    const game = createTestGame({ shuffleDeck: false });
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+    const playerCreature = game
+      .getPlayerView('p1')
+      .game.player.hand.find((card) => card.cardId === 'archer_dan')!;
+    playCard(game, 'p1', playerCreature.instanceId, targetLandIndex);
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p2' });
+    const opponentCreature = game
+      .getPlayerView('p2')
+      .game.player.hand.find((card) => card.cardId === 'ancient_scholar')!;
+    playCard(game, 'p2', opponentCreature.instanceId, targetLandIndex);
+    game.command({ type: 'NEXT_TURN', playerId: 'p2' });
+
+    completeBattles(game, 4, targetLandIndex);
+
+    const view = game.getPlayerView('p1');
+
+    expect(view.game.enemy.lands[targetLandIndex].creature).toBeUndefined();
+  });
+
+  it('a creature that dies moves to the graveyard', () => {
+    const targetLandIndex = 0;
+    const game = createTestGame({ shuffleDeck: false });
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+    const playerCreature = game
+      .getPlayerView('p1')
+      .game.player.hand.find((card) => card.cardId === 'big_foot')!;
+    playCard(game, 'p1', playerCreature.instanceId, targetLandIndex);
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p2' });
+    const opponentCreature = game
+      .getPlayerView('p2')
+      .game.player.hand.find((card) => card.cardId == 'ancient_scholar')!;
+    playCard(game, 'p2', opponentCreature.instanceId, targetLandIndex);
+    game.command({ type: 'NEXT_TURN', playerId: 'p2' });
+
+    completeBattles(game, 4, targetLandIndex);
+
+    const view = game.getPlayerView('p1');
+
+    expect(
+      view.game.player.graveyard.some(
+        (card) => card.instanceId === playerCreature.instanceId,
+      ),
+    ).toBe(true);
+  });
+
+  it('both creatures can die at the same time', () => {
+    const targetLandIndex = 0;
+    const game = createTestGameWithCardsInHand(
+      'archer_dan',
+      'uni_knight',
+    );
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+    const playerCreature = game.getPlayerView('p1').game.player.hand[0]!;
+    playCard(game, 'p1', playerCreature.instanceId, targetLandIndex);
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p2' });
+    const opponentCreature = game.getPlayerView('p2').game.player.hand[0]!;
+    playCard(game, 'p2', opponentCreature.instanceId, targetLandIndex);
+    game.command({ type: 'NEXT_TURN', playerId: 'p2' });
+
+    completeBattles(game, 2, targetLandIndex);
+
+    const view = game.getPlayerView('p1');
+
+    expect([
+      view.game.player.lands[targetLandIndex].creature,
+      view.game.enemy.lands[targetLandIndex].creature,
+    ]).toEqual([undefined, undefined]);
   });
 });
