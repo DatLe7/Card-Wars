@@ -67,4 +67,5 @@ export type CreateGameInput = {
   gameId: string;
   players: Player[];
   firstPlayer: string;
+	shuffleDeck?: boolean;
 };

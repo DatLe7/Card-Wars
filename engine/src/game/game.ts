@@ -13,10 +13,11 @@ export class Game {
   private game: GameState;
 
   constructor(input: CreateGameInput) {
+    const shuffleDeck = input.shuffleDeck ?? true;
     this.players = input.players.map((player) => ({ ...player }));
     this.game = {
       players: Object.fromEntries(
-        this.players.map((player) => [player.id, this.createPlayerGameState(player)]),
+        this.players.map((player) => [player.id, this.createPlayerGameState(player, shuffleDeck)]),
       ),
       turn: {
         number: 1,
@@ -27,8 +28,8 @@ export class Game {
     };
   }
 
-  private createPlayerGameState(player: Player): PlayerGameState {
-    const deck = initializeDeck(player.id, player.decklist.deck);
+  private createPlayerGameState(player: Player, shuffleDeck: boolean): PlayerGameState {
+    const deck = initializeDeck(player.id, player.decklist.deck, shuffleDeck);
 
     return {
       life: 25,

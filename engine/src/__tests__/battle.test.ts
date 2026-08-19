@@ -146,5 +146,38 @@ describe('BATTLE', () => {
 
     expect(view.game.enemy.life).toBe(25 - (2 * (card.attack + card.atkMod)));
   });
-  // selecting a battle lane with 2 creatures will cause both to take damage
+  it('selecting a battle lane with 2 creatures will cause both to take damage', () => {
+    const targetLandIndex = 0;
+    const game = createTestGame({ shuffleDeck: false });
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+    const playerCreature = game
+      .getPlayerView('p1')
+      .game.player.hand.find((card) => card.type === 'creature')!;
+    playCard(game, 'p1', playerCreature.instanceId, targetLandIndex);
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+
+    game.command({ type: 'NEXT_TURN', playerId: 'p2' });
+    const opponentCreature = game
+      .getPlayerView('p2')
+      .game.player.hand.find((card) => card.type === 'creature')!;
+    playCard(game, 'p2', opponentCreature.instanceId, targetLandIndex);
+    game.command({ type: 'NEXT_TURN', playerId: 'p2' });
+
+    game.command({
+      type: 'SELECT_BATTLE_LANE',
+      laneIndex: targetLandIndex,
+      playerId: 'p2',
+    });
+
+    const view = game.getPlayerView('p1');
+
+    expect([
+      view.game.player.lands[targetLandIndex].creature?.damage,
+      view.game.enemy.lands[targetLandIndex].creature?.damage,
+    ]).toEqual([
+      opponentCreature.attack + opponentCreature.atkMod,
+      playerCreature.attack + playerCreature.atkMod,
+    ]);
+  });
 });

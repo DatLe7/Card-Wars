@@ -150,7 +150,8 @@ export function commandActions(
     game.remainingBattleLanes = game.remainingBattleLanes.filter(index => index !== laneIndex);
 
     if (playerCreature !== undefined && opponentCreature !== undefined) {
-      // 2 creatures
+      playerCreature.damage += opponentCreature.attack + opponentCreature.atkMod;
+      opponentCreature.damage += playerCreature.attack + playerCreature.atkMod;
     } else if (playerCreature !== undefined) {
       opponentGameState.life -= (playerCreature.attack + playerCreature.atkMod);
     } else if (opponentCreature !== undefined) {

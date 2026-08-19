@@ -40,16 +40,19 @@ export function createCardInstances(
 export function initializeDeck(
   ownerId: string,
   decklist: readonly DecklistEntry[],
+  shuffleDeck: boolean = true
 ): CardInstance[] {
   const deck = decklist.flatMap((entry) => createCardInstances(ownerId, entry));
 
-  for (let index = deck.length - 1; index > 0; index -= 1) {
-    const randomIndex = Math.floor(Math.random() * (index + 1));
-    const currentCard = deck[index]!;
-    const randomCard = deck[randomIndex]!;
+  if (shuffleDeck) {
+    for (let index = deck.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      const currentCard = deck[index]!;
+      const randomCard = deck[randomIndex]!;
 
-    deck[index] = randomCard;
-    deck[randomIndex] = currentCard;
+      deck[index] = randomCard;
+      deck[randomIndex] = currentCard;
+    }
   }
 
   return deck;

@@ -8,12 +8,14 @@ type CreateTestGameOptions = {
   gameId?: string;
   playerOneName?: string;
   playerTwoName?: string;
+  shuffleDeck?: boolean;
 };
 
 export function createTestGame({
   gameId = 'game_123',
   playerOneName = 'Player 1',
   playerTwoName = 'Player 2',
+  shuffleDeck,
 }: CreateTestGameOptions = {}): Game {
   return new Game({
     gameId,
@@ -30,6 +32,7 @@ export function createTestGame({
       },
     ],
     firstPlayer: 'p1',
+    shuffleDeck,
   });
 }
 
