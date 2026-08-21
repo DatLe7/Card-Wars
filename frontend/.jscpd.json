@@ -1,0 +1,6 @@
+{
+  "threshold": 5,
+  "reporters": ["console"],
+  "ignore": ["**/*.test.ts", "**/*.test.tsx", "**/test/**"],
+  "absolute": true
+}
