@@ -1,0 +1,58 @@
+{
+  "devDependencies": {
+    "@emnapi/core": "^1.10.0",
+    "@emnapi/runtime": "^1.10.0",
+    "@eslint/js": "*",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "*",
+    "@types/express": "*",
+    "@types/node": "*",
+    "@types/pg": "*",
+    "@types/supertest": "*",
+    "@types/swagger-ui-express": "*",
+    "@vitest/coverage-v8": "*",
+    "concurrently": "*",
+    "eslint": "*",
+    "globals": "*",
+    "jscpd": "*",
+    "msw": "^2.14.3",
+    "nodemon": "*",
+    "supertest": "*",
+    "ts-node": "*",
+    "ts-postgres": "*",
+    "typescript": "*",
+    "typescript-eslint": "*",
+    "vitest": "*"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "*",
+    "dotenv": "*",
+    "express": "*",
+    "joi": "^18.2.1",
+    "pg": "*",
+    "swagger-ui-express": "*",
+    "tsoa": "*",
+    "zod": "*"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts",
+    "exec": "ts-node src/server.ts"
+  },
+  "scripts": {
+    "predev": "npm run swagger",
+    "dev": "concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
+    "swagger": "tsoa spec-and-routes",
+    "build": "tsc",
+    "prebuild": "npm run swagger",
+    "start": "node build/src/server.js",
+    "prestart": "npm run build",
+    "pretest": "npm run swagger",
+    "test": "npm run lint && npm run cpd && vitest run --no-file-parallelism --testTimeout=3000 --coverage",
+    "lint": "eslint src/**/*.[jt]s --fix",
+    "cpd": "jscpd src --silent"
+  }
+}

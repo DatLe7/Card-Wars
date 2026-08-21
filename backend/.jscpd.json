@@ -1,0 +1,14 @@
+{
+  "threshold": 3,
+  "minLines": 10,
+  "minTokens": 100,
+  "reporters": ["html", "console"],
+  "absolute": true,
+  "ignore": [
+    "**/node_modules/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/copypaste/**"
+  ],
+  "output": "copypaste"
+}

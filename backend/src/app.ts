@@ -1,0 +1,52 @@
+import express, {
+  Express,
+  Router,
+  Response as ExResponse,
+  Request as ExRequest,
+  ErrorRequestHandler
+} from 'express';
+import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import cookieParser from 'cookie-parser';
+
+import { RegisterRoutes } from '../build/routes'
+
+const app: Express = express();
+app.use(cors({ origin: ['http://localhost:5174', 'https://slugmarket.shop'], credentials: true, }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
+app.use(
+  '/api/v0/docs',
+  swaggerUi.serve,
+  async (_req: ExRequest, res: ExResponse) => {
+    res.send(swaggerUi.generateHTML(await import('../build/swagger.json')));
+  },
+);
+
+const router = Router();
+RegisterRoutes(router);
+app.use('/api/v0', router);
+
+const errorHandler: ErrorRequestHandler = (
+  err,
+  _req,
+  res,
+  next,
+) => {
+  if (res.headersSent) {
+    next(err);
+    return;
+  }
+
+  res.status(err.status || 500).json({
+    message: err.message,
+    errors: err.errors,
+    status: err.status || 500,
+  });
+};
+
+app.use(errorHandler);
+
+export default app;
