@@ -1,12 +1,9 @@
 import { useState } from 'react'
 import { joinLobby } from './model'
 
-interface LobbyListItemProps {
-	name: string
-	id: string
-}
+import { Lobby } from '.'
 
-function LobbyListItem({ name, id }: LobbyListItemProps) {
+function LobbyListItem({ name, id }: Lobby) {
 	const [joinFailed, setJoinFailed] = useState(false)
 
 	async function handleJoin() {
@@ -15,15 +12,12 @@ function LobbyListItem({ name, id }: LobbyListItemProps) {
 	}
 
 	return (
-		<div>
-			<button
-				type="button"
-				onClick={() => void handleJoin()}
-				aria-live="polite"
-			>
-				{joinFailed ? 'Failed to join lobby' : name}
-			</button>
-		</div>
+		<button
+			type="button"
+			onClick={() => void handleJoin()}
+		>
+			{joinFailed ? 'Failed to join lobby' : name}
+		</button>
 	)
 }
 
