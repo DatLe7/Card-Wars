@@ -23,4 +23,21 @@ describe("User Signup", () => {
       })
       .expect('Set-Cookie', /authToken=/)
   })
+  it('cannot signup with a used email', async () => {
+    await supertest(server)
+      .post('/api/v0/user/signup')
+      .send({ 
+        username: 'dat', 
+        email: 'dat@gmail.com', 
+        password: 'password'
+      });
+    const res = await supertest(server)
+      .post('/api/v0/user/signup')
+      .send({ 
+        username: 'dat', 
+        email: 'dat@gmail.com', 
+        password: 'password'
+      });
+    expect(res.status).toBe(409)
+  })
 })
