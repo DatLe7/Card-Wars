@@ -6,6 +6,7 @@
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "*",
     "@types/express": "*",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "*",
     "@types/pg": "*",
     "@types/supertest": "*",
@@ -30,6 +31,7 @@
     "dotenv": "*",
     "express": "*",
     "joi": "^18.2.1",
+    "jsonwebtoken": "^9.0.3",
     "pg": "*",
     "swagger-ui-express": "*",
     "tsoa": "*",
@@ -53,6 +55,7 @@
     "pretest": "npm run swagger",
     "test": "npm run lint && npm run cpd && vitest run --no-file-parallelism --testTimeout=3000 --coverage",
     "lint": "eslint src/**/*.[jt]s --fix",
-    "cpd": "jscpd src --silent"
+    "cpd": "jscpd src --silent",
+    "docker": "docker compose down -v && docker compose up -d"
   }
 }

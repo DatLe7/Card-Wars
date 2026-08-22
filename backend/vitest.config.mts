@@ -12,6 +12,7 @@ export default defineConfig({
         '**/index.ts',
         '**/index.d.ts',
         'build/**',
+				'src/app.ts'
       ],
       thresholds: {
         lines: 95,

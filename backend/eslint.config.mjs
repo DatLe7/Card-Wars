@@ -15,5 +15,8 @@ export default tseslint.config(
         ...globals.node,
       },
     },
+    rules: {
+      indent: ['error', 2, { SwitchCase: 1 }],
+    },
   },
 );

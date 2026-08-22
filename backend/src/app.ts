@@ -48,5 +48,6 @@ const errorHandler: ErrorRequestHandler = (
 };
 
 app.use(errorHandler);
+app.set('trust proxy', 1)
 
 export default app;
