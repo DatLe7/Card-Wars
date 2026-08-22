@@ -40,4 +40,14 @@ describe("User Signup", () => {
       });
     expect(res.status).toBe(409)
   })
+  it('cannot signup with invalid email', async () => {
+    const res = await supertest(server)
+      .post('/api/v0/user/signup')
+      .send({ 
+        username: 'dat', 
+        email: 'com', 
+        password: 'password'
+      });
+    expect(res.status).toBe(400)
+  })
 })

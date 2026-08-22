@@ -1,9 +1,8 @@
+import { Email } from "../types"
+
 export interface User {
 	username: string, 
-	/**
-	 * @format email
-	 */
-	email: string, 
+	email: Email, 
 	password: string
 }
 

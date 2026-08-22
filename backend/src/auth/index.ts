@@ -1,8 +1,7 @@
+import { Email } from "../types"
+
 export interface Credentials {
-    /**
-     * @format email
-     */
-    email: string,
+    email: Email,
     password: string
 }
 
