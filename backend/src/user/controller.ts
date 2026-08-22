@@ -1,5 +1,5 @@
 import { Body, Controller, Post, Route, SuccessResponse, Response, Res, TsoaResponse } from 'tsoa';
-import { User } from '.';
+import { User, Credentials } from '.';
 import { createJwt } from '../auth/service';
 import { UserService } from './service';
 
@@ -16,7 +16,7 @@ export class UserController extends Controller {
       { 'Set-Cookie': string }
     >,
   ): Promise<void> {
-    const created = await new UserService().create(user);
+    const created = await new UserService().signup(user);
 
     if (!created) {
       this.setStatus(409);
@@ -26,6 +26,31 @@ export class UserController extends Controller {
     const authToken = createJwt(created.id);
 
     return setCookie(201, undefined, {
+      'Set-Cookie': `authToken=${encodeURIComponent(authToken)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=1800`,
+    });
+  }
+
+	@Post('login')
+	@SuccessResponse('200', 'Logged in')
+	@Response('401', 'Bad credential')
+  public async login(
+		@Body() creds: Credentials,
+		@Res() setCookie: TsoaResponse<
+      200,
+      void,
+      { 'Set-Cookie': string }
+    >,
+  ) {
+    const user = await new UserService().login(creds)
+
+    if (!user) {
+      this.setStatus(401);
+      return;
+    }
+		
+    const authToken = createJwt(user.id);
+
+    return setCookie(200, undefined, {
       'Set-Cookie': `authToken=${encodeURIComponent(authToken)}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=1800`,
     });
   }

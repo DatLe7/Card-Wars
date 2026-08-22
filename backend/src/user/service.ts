@@ -1,4 +1,4 @@
-import type { PublicUser, User } from '.';
+import type { Auth, User, Credentials } from '.';
 import { pool } from '../db';
 
 interface UserRow {
@@ -7,10 +7,10 @@ interface UserRow {
 }
 
 export class UserService {
-  public async create(user: User): Promise<PublicUser | null> {
-    const { rows } = await pool.query<UserRow>({
+  public async signup(user: User): Promise<Auth | null> {
+    const { rows: created } = await pool.query<UserRow>({
       text: `
-        INSERT INTO "user" (email, username, password)
+        INSERT INTO "user" (email, username, pwhash)
         VALUES (
           lower($1),
           $2,
@@ -22,15 +22,28 @@ export class UserService {
       values: [user.email, user.username, user.password],
     });
 
-    const created = rows[0];
-
-    if (!created) {
+    if (!created[0]) {
       return null;
     }
 
     return {
-      id: created.id,
-      username: created.username,
+      id: created[0].id
     };
+  }
+
+  public async login(creds: Credentials): Promise<Auth | null> {
+    const { rows: user } = await pool.query({
+      text: `
+			SELECT id FROM "user"
+			WHERE email = $1
+			AND pwhash = crypt($2, pwhash);
+			`,
+      values: [creds.email, creds.password]
+    })
+    if (!user) {
+      return null
+    }
+
+    return user[0]
   }
 }

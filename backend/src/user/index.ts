@@ -6,7 +6,11 @@ export interface User {
 	password: string
 }
 
-export interface PublicUser {
+export interface Credentials {
+    email: Email,
+    password: string
+}
+
+export interface Auth {
   id: string
-  username: string
 }
