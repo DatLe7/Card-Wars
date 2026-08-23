@@ -1,5 +1,8 @@
+import { UUID } from '..';
+
 export interface SessionUser {
-  id: string;
+  id: UUID;
+  name: string;
 }
 
 declare global {

@@ -1,9 +1,10 @@
 /**
+ * @format uuid
  * @minLength 180
  * @maxLength 540
  * @pattern ^[A-Za-z0-9_-]{2,}(?:\.[A-Za-z0-9_-]{2,}){2}$
  */
-export type Midt = string
+export type UUID = string
 
 /**
  * @format email

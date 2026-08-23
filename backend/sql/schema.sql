@@ -5,3 +5,13 @@ CREATE TABLE "user" (
     username VARCHAR(50) NOT NULL UNIQUE,
     pwhash VARCHAR(255) NOT NULL
 );
+
+DROP TABLE IF EXISTS lobby;
+CREATE TABLE lobby (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(100) NOT NULL,
+  owner UUID NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+	player UUID DEFAULT NULL REFERENCES "user"(id) ON DELETE SET NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'waiting',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

@@ -25,7 +25,20 @@ export class AuthService {
       throw new AuthenticationError();
     }
 
-    const user: SessionUser = {id: authenticated.id};
+    const {rows} = await pool.query<SessionUser>({
+      text: `
+        SELECT id, username AS name
+        FROM "user"
+        WHERE id = $1;
+      `,
+      values: [authenticated.id],
+    });
+    const user = rows[0];
+
+    if (!user) {
+      throw new AuthenticationError();
+    }
+
     request.user = user;
 
     return user;
