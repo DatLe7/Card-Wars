@@ -10,12 +10,12 @@ export let server: http.Server<
 >;
 
 beforeAll(async () => {
-	server = http.createServer(app);
-	server.listen();
-	return db.reset();
+  server = http.createServer(app);
+  server.listen();
+  return db.reset();
 });
 
 afterAll(() => {
-	db.shutdown();
-	server.close();
+  db.shutdown();
+  server.close();
 });
