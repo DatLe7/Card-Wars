@@ -9,8 +9,10 @@ export class LobbyController extends Controller {
   @Get()
 	@SuccessResponse('200', 'All Lobbies')
   @Security('cookie')
-  public async getAll(): Promise<Lobby[]> {
-    return new LobbyService().getAll();
+  public async getAll(
+    @Request() request: express.Request,
+  ): Promise<Lobby[]> {
+    return new LobbyService().getAll(request.user);
   }
 	
 	@Post()

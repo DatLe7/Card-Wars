@@ -53,6 +53,8 @@ describe('Get Lobby', () => {
 
 describe('Create Lobby', () => {
   let res: supertest.Response;
+  let authCookie: string;
+  let otherAuthCookie: string;
 
   beforeAll(async () => {
     const signupResponse = await signup(server, {
@@ -60,7 +62,14 @@ describe('Create Lobby', () => {
       email: 'lobby-creator@gmail.com',
       password: 'password',
     }).expect(201);
-    const authCookie = signupResponse.headers['set-cookie'][0];
+    authCookie = signupResponse.headers['set-cookie'][0];
+
+    const otherSignupResponse = await signup(server, {
+      username: 'lobby-viewer',
+      email: 'lobby-viewer@gmail.com',
+      password: 'password',
+    }).expect(201);
+    otherAuthCookie = otherSignupResponse.headers['set-cookie'][0];
 
     res = await supertest(server)
       .post('/api/v0/lobby')
@@ -86,5 +95,23 @@ describe('Create Lobby', () => {
 
   it('returns player as null', () => {
     expect(res.body.player).toBeNull()
+  })
+
+  it('does not show the created lobby to its owner', async () => {
+    const getResponse = await supertest(server)
+      .get('/api/v0/lobby')
+      .set('Cookie', authCookie)
+      .expect(200);
+
+    expect(getResponse.body).not.toContainEqual(res.body)
+  })
+
+  it('shows the created lobby to another user', async () => {
+    const getResponse = await supertest(server)
+      .get('/api/v0/lobby')
+      .set('Cookie', otherAuthCookie)
+      .expect(200);
+
+    expect(getResponse.body).toContainEqual(res.body)
   })
 })
