@@ -1,4 +1,4 @@
-import {Controller, Get, Post, Route, Security, SuccessResponse, Request} from 'tsoa';
+import {Controller, Get, Post, Route, Security, SuccessResponse, Request, Response, Path} from 'tsoa';
 import {Lobby} from '.';
 import {LobbyService} from './service';
 
@@ -23,4 +23,23 @@ export class LobbyController extends Controller {
   ): Promise<Lobby> {
     return new LobbyService().create(request.user)
   }
+
+	@Post('{lobbyId}/join')
+	@SuccessResponse('200', 'Lobby Joined')
+	@Response('404', 'Lobby Not Found')
+	@Response('409', 'User Already Associated With Another Lobby')
+	@Security('cookie')
+	public async join(
+		@Path() lobbyId: string,
+		@Request() request: express.Request,
+	): Promise<Lobby | null> {
+	  const lobby = await new LobbyService().join(lobbyId, request.user);
+
+	  if (typeof lobby === 'number') {
+	    this.setStatus(lobby);
+	    return null;
+	  }
+
+	  return lobby;
+	}
 }

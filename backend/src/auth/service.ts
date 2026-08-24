@@ -62,7 +62,7 @@ export class AuthService {
     return rows[0] ?? null;
   }
 
-  public async login(credentials: LoginRequest): Promise<Authenticated | null> {
+  public async login(credentials: LoginRequest): Promise<Authenticated> {
     const { rows } = await pool.query<UserRow>({
       text: `
         SELECT id FROM "user"
