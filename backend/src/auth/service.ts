@@ -3,27 +3,30 @@ import { Request } from 'express';
 import { pool } from '../db';
 import { Authenticated, LoginRequest, SignupRequest } from '.';
 import { SessionUser } from '../types/express';
+import { HttpError } from '../errors/httperror';
 
 const JWT_ALGORITHM = 'HS256';
 
-interface UserRow {
-  id: string;
-}
+const secret = process.env.SECRET as string;
 
 export class AuthService {
   public async check(request: Request, scopes: string[]): Promise<SessionUser> {
     void scopes;
     const token = request.cookies?.authToken;
 
+    const user = await this.verify(token);
+
+    request.user = user;
+
+    return user;
+  }
+
+  public async verify(token: unknown): Promise<SessionUser> {
     if (typeof token !== 'string') {
-      throw new AuthenticationError();
+      throw new HttpError(401, 'Authentication required');
     }
 
     const authenticated = verifyJwt(token);
-
-    if (!authenticated) {
-      throw new AuthenticationError();
-    }
 
     const {rows} = await pool.query<SessionUser>({
       text: `
@@ -36,16 +39,14 @@ export class AuthService {
     const user = rows[0];
 
     if (!user) {
-      throw new AuthenticationError();
+      throw new HttpError(401, 'Authentication required');
     }
-
-    request.user = user;
 
     return user;
   }
 
-  public async signup(user: SignupRequest): Promise<Authenticated | null> {
-    const { rows } = await pool.query<UserRow>({
+  public async signup(user: SignupRequest): Promise<Authenticated> {
+    const { rows } = await pool.query({
       text: `
         INSERT INTO "user" (email, username, pwhash)
         VALUES (
@@ -59,11 +60,15 @@ export class AuthService {
       values: [user.email, user.username, user.password],
     });
 
-    return rows[0] ?? null;
+    if (!rows[0]) {
+      throw new HttpError(409, 'Email in use')
+    }
+
+    return rows[0];
   }
 
   public async login(credentials: LoginRequest): Promise<Authenticated> {
-    const { rows } = await pool.query<UserRow>({
+    const { rows } = await pool.query({
       text: `
         SELECT id FROM "user"
         WHERE email = lower($1)
@@ -72,32 +77,18 @@ export class AuthService {
       values: [credentials.email, credentials.password],
     });
 
-    return rows[0] ?? null;
+    if (!rows[0]) {
+      throw new HttpError(401, 'Bad credentials')
+    }
+
+    return rows[0];
   }
-}
-
-export class AuthenticationError extends Error {
-  public readonly status = 401;
-
-  public constructor() {
-    super('Authentication required');
-  }
-}
-
-function getJwtSecret(): string {
-  const secret = process.env.SECRET;
-
-  if (!secret) {
-    throw new Error('SECRET environment variable is required');
-  }
-
-  return secret;
 }
 
 export function createJwt(userId: string): string {
   return jwt.sign(
     { id: userId },
-    getJwtSecret(),
+    secret,
     {
       algorithm: JWT_ALGORITHM,
       expiresIn: '30m',
@@ -105,18 +96,18 @@ export function createJwt(userId: string): string {
   );
 }
 
-export function verifyJwt(token: string): Authenticated | undefined {
+export function verifyJwt(token: string): Authenticated {
   try {
-    const payload = jwt.verify(token, getJwtSecret(), {
+    const payload = jwt.verify(token, secret, {
       algorithms: [JWT_ALGORITHM],
     });
 
     if (typeof payload === 'string' || typeof payload.id !== 'string') {
-      return undefined;
+      throw new HttpError(401, 'Authentication required');
     }
 
     return { id: payload.id };
   } catch {
-    return undefined;
+    throw new HttpError(401, 'Authentication required');
   }
 }

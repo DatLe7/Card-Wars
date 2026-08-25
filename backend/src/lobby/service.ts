@@ -1,6 +1,7 @@
 import { Lobby } from '.';
 import {SessionUser} from '../types/express';
 import { pool } from '../db';
+import { HttpError } from '../errors/httperror';
 
 export class LobbyService {
   public async getAll(user: SessionUser): Promise<Lobby[]> {
@@ -41,7 +42,7 @@ export class LobbyService {
     };
   }
 
-  public async join(lobbyId: string, user: SessionUser): Promise<Lobby | number> {
+  public async join(lobbyId: string, user: SessionUser): Promise<Lobby> {
     const {rows: stateRows} = await pool.query({
       text: `
         SELECT
@@ -58,11 +59,11 @@ export class LobbyService {
     const state = stateRows[0];
 
     if (!state.exists || state.is_owner || state.is_full) {
-      return 404
+      throw new HttpError(404, 'Lobby Not Found')
     }
 
     if (state.already_in_lobby || state.owns_another_lobby) {
-      return 409
+      throw new HttpError(409, 'User Already Associated With Another Lobby')
     }
 
     const {rows} = await pool.query({

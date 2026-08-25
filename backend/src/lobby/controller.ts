@@ -32,14 +32,7 @@ export class LobbyController extends Controller {
 	public async join(
 		@Path() lobbyId: string,
 		@Request() request: express.Request,
-	): Promise<Lobby | null> {
-	  const lobby = await new LobbyService().join(lobbyId, request.user);
-
-	  if (typeof lobby === 'number') {
-	    this.setStatus(lobby);
-	    return null;
-	  }
-
-	  return lobby;
+	): Promise<Lobby> {
+	  return await new LobbyService().join(lobbyId, request.user);
 	}
 }

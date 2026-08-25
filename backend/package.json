@@ -3,6 +3,7 @@
     "@emnapi/core": "^1.10.0",
     "@emnapi/runtime": "^1.10.0",
     "@eslint/js": "*",
+    "@types/cookie": "^0.6.0",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "*",
     "@types/express": "*",
@@ -18,6 +19,7 @@
     "jscpd": "*",
     "msw": "^2.14.3",
     "nodemon": "*",
+    "socket.io-client": "^4.8.3",
     "supertest": "*",
     "ts-node": "*",
     "ts-postgres": "*",
@@ -26,6 +28,7 @@
     "vitest": "*"
   },
   "dependencies": {
+    "cookie": "^0.7.2",
     "cookie-parser": "^1.4.7",
     "cors": "*",
     "dotenv": "*",
@@ -33,6 +36,7 @@
     "joi": "^18.2.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "*",
+    "socket.io": "^4.8.3",
     "swagger-ui-express": "*",
     "tsoa": "*",
     "zod": "*"

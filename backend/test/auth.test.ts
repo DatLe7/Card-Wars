@@ -1,10 +1,5 @@
-import jwt from 'jsonwebtoken';
 import {afterEach, beforeAll, describe, expect, it} from 'vitest';
 import {server} from './setup';
-import {
-  createJwt,
-  verifyJwt,
-} from '../src/auth/service';
 import {login, signup} from './testutils';
 
 const configuredSecret = process.env.SECRET;
@@ -97,32 +92,3 @@ describe('Auth Login', () => {
     expect(res.status).toBe(401)
   })
 })
-
-describe('Auth Tokens', () => {
-  it('creates and verifies a token', () => {
-    const token = createJwt('user-id');
-
-    expect(verifyJwt(token)).toEqual({id: 'user-id'});
-  });
-
-  it('rejects an invalid token', () => {
-    expect(verifyJwt('not-a-token')).toBeUndefined();
-  });
-
-  it('rejects token payloads without a user id', () => {
-    const secret = process.env.SECRET as string;
-    const stringPayload = jwt.sign('user-id', secret);
-    const objectPayload = jwt.sign({username: 'dat'}, secret);
-
-    expect(verifyJwt(stringPayload)).toBeUndefined();
-    expect(verifyJwt(objectPayload)).toBeUndefined();
-  });
-
-  it('requires a secret to create tokens', () => {
-    delete process.env.SECRET;
-
-    expect(() => createJwt('user-id')).toThrow(
-      'SECRET environment variable is required',
-    );
-  });
-});

@@ -12,7 +12,7 @@ import cookieParser from 'cookie-parser';
 import { RegisterRoutes } from '../build/routes'
 
 const app: Express = express();
-app.use(cors({ origin: ['http://localhost:5174', 'https://slugmarket.shop'], credentials: true, }));
+app.use(cors({ origin: ['http://localhost:5174'], credentials: true, }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
