@@ -2,6 +2,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import type { Server as HttpServer } from 'node:http';
 
 import { socketAuth } from './middleware/socketAuth';
+import { registerLobbyHandlers } from './handlers/lobby.handler';
 
 export function createSocketServer(httpServer: HttpServer) {
   const io = new SocketIOServer(httpServer, {
@@ -14,9 +15,10 @@ export function createSocketServer(httpServer: HttpServer) {
   io.use(socketAuth);
 
   io.on('connection', (socket) => {
-    console.log('user connected')
+    registerLobbyHandlers(socket);
+
     socket.on('disconnect', () => {
-      console.log('user disconnected')
+      console.log('user disconnected');
     });
   });
 

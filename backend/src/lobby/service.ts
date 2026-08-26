@@ -4,6 +4,34 @@ import { pool } from '../db';
 import { HttpError } from '../errors/httperror';
 
 export class LobbyService {
+  public async getForUser(
+    lobbyId: string,
+    user: SessionUser,
+  ): Promise<Lobby> {
+    const {rows} = await pool.query<Lobby>({
+      text: `
+        SELECT
+          lobby.id,
+          lobby.name,
+          owner_user.username AS owner,
+          player_user.username AS player
+        FROM lobby
+        JOIN "user" AS owner_user ON owner_user.id = lobby.owner
+        LEFT JOIN "user" AS player_user ON player_user.id = lobby.player
+        WHERE lobby.id = $1
+          AND (lobby.owner = $2 OR lobby.player = $2);
+      `,
+      values: [lobbyId, user.id],
+    });
+    const lobby = rows[0];
+
+    if (!lobby) {
+      throw new HttpError(404, 'Lobby Not Found');
+    }
+
+    return lobby;
+  }
+
   public async getAll(user: SessionUser): Promise<Lobby[]> {
     const {rows} = await pool.query({
       text: `

@@ -3,22 +3,12 @@ import { io } from 'socket.io-client';
 
 import { signupRandomUser } from '../testutils';
 import { server, socketUrl } from '../setup';
+import { connectSocket } from './testutils';
 
 describe('WebSocket authentication', () => {
   it('connects with a valid auth token', async () => {
     const authCookie = await signupRandomUser(server);
-
-    const socket = io(socketUrl, {
-      extraHeaders: {
-        Cookie: authCookie,
-      },
-      transports: ['websocket'],
-    });
-
-    await new Promise<void>((resolve, reject) => {
-      socket.once('connect', resolve);
-      socket.once('connect_error', reject);
-    });
+    const socket = await connectSocket(socketUrl, authCookie);
 
     expect(socket.connected).toBe(true);
     socket.disconnect();
