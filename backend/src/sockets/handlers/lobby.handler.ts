@@ -17,7 +17,10 @@ export function registerLobbyHandlers(socket: Socket): void {
           socket.data.user,
         );
 
-        await socket.join(`lobby:${lobby.id}`);
+        const room = `lobby:${lobby.id}`;
+
+        await socket.join(room);
+        socket.to(room).emit('lobby:state', lobby);
         acknowledge(lobby);
       } catch (error) {
         if (error instanceof HttpError) {

@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
+// import supertest from 'supertest';
 
 import { createLobby, joinLobby, signupRandomUser } from '../testutils';
 import { server, socketUrl } from '../setup';
 import { connectSocket } from './testutils';
 
-describe('Lobby', () => {
+describe('Lobby Join', () => {
   it('Joining a lobby returns lobby name', async () => {
     const ownerAuthCookie = await signupRandomUser(server);
     const createResponse = await createLobby(server, ownerAuthCookie);
@@ -97,4 +98,64 @@ describe('Lobby', () => {
     expect(res.owner).toBe(createResponse.body.owner);
     socket.disconnect();
   });
+
+  it('Joining a lobby updates the owner', async () => {
+    const ownerAuthCookie = await signupRandomUser(server);
+    const createResponse = await createLobby(server, ownerAuthCookie);
+    const ownerSocket = await connectSocket(socketUrl, ownerAuthCookie);
+
+    await ownerSocket.timeout(1000).emitWithAck('lobby:join', {
+      lobbyId: createResponse.body.id,
+    });
+
+    const playerAuthCookie = await signupRandomUser(server);
+    const joinResponse = await joinLobby(
+      server,
+      createResponse.body.id,
+      playerAuthCookie,
+    );
+    const playerSocket = await connectSocket(socketUrl, playerAuthCookie);
+    const ownerUpdate = new Promise<{ player: string | null }>((resolve) => {
+      ownerSocket.once('lobby:state', resolve);
+    });
+
+    await playerSocket.timeout(1000).emitWithAck('lobby:join', {
+      lobbyId: createResponse.body.id,
+    });
+
+    const updatedLobby = await ownerUpdate;
+
+    expect(updatedLobby.player).toBe(joinResponse.body.player);
+    ownerSocket.disconnect();
+    playerSocket.disconnect();
+  });
 });
+
+// describe('Lobby Leave', () => {
+//   it('Leaving a lobby as the owner deletes the lobby', async () => {
+//     const ownerAuthCookie = await signupRandomUser(server);
+//     const createResponse = await createLobby(server, ownerAuthCookie);
+//     const socket = await connectSocket(socketUrl, ownerAuthCookie);
+
+//     await socket.timeout(1000).emitWithAck('lobby:join', {
+//       lobbyId: createResponse.body.id,
+//     });
+
+//     await socket.timeout(1000).emitWithAck('lobby:leave', {
+//       lobbyId: createResponse.body.id,
+//     });
+
+//     const otherAuthCookie = await signupRandomUser(server);
+//     const response = await supertest(server)
+//       .get('/api/v0/lobby')
+//       .set('Cookie', otherAuthCookie);
+
+//     expect(response.body).not.toContainEqual(
+//       expect.objectContaining({ id: createResponse.body.id }),
+//     );
+//     socket.disconnect();
+//   });
+//   // cannot leave a lobby you are not apart of (404)
+//   // leaving a lobby as player updates the owner
+//   // cannot leave a lobby if you arent in one (404)
+// });
