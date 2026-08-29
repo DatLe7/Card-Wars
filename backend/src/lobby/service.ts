@@ -3,7 +3,64 @@ import {SessionUser} from '../types/express';
 import { pool } from '../db';
 import { HttpError } from '../errors/httperror';
 
+type LeaveLobbyResult =
+  | {
+      kind: 'deleted';
+      lobbyId: string;
+    }
+  | {
+      kind: 'updated';
+      lobby: Lobby;
+    };
+
 export class LobbyService {
+  public async leave(
+    lobbyId: string,
+    user: SessionUser,
+  ): Promise<LeaveLobbyResult> {
+    const {rows: deletedRows} = await pool.query<{ id: string }>({
+      text: `
+        DELETE FROM lobby
+        WHERE id = $1 AND owner = $2
+        RETURNING id;
+      `,
+      values: [lobbyId, user.id],
+    });
+
+    if (deletedRows[0]) {
+      return {
+        kind: 'deleted',
+        lobbyId: deletedRows[0].id,
+      };
+    }
+
+    const {rows: updatedRows} = await pool.query<Lobby>({
+      text: `
+        UPDATE lobby
+        SET player = NULL
+        FROM "user" AS owner_user
+        WHERE lobby.id = $1
+          AND lobby.player = $2
+          AND owner_user.id = lobby.owner
+        RETURNING
+          lobby.id,
+          lobby.name,
+          owner_user.username AS owner,
+          NULL::text AS player;
+      `,
+      values: [lobbyId, user.id],
+    });
+
+    if (updatedRows[0]) {
+      return {
+        kind: 'updated',
+        lobby: updatedRows[0],
+      };
+    }
+
+    throw new HttpError(404, 'Lobby Not Found');
+  }
+
   public async getForUser(
     lobbyId: string,
     user: SessionUser,

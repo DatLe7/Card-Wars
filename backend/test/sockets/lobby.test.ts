@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-// import supertest from 'supertest';
+import supertest from 'supertest';
 
 import { createLobby, joinLobby, signupRandomUser } from '../testutils';
 import { server, socketUrl } from '../setup';
@@ -131,31 +131,85 @@ describe('Lobby Join', () => {
   });
 });
 
-// describe('Lobby Leave', () => {
-//   it('Leaving a lobby as the owner deletes the lobby', async () => {
-//     const ownerAuthCookie = await signupRandomUser(server);
-//     const createResponse = await createLobby(server, ownerAuthCookie);
-//     const socket = await connectSocket(socketUrl, ownerAuthCookie);
+describe('Lobby Leave', () => {
+  it('Leaving a lobby as the owner deletes the lobby', async () => {
+    const ownerAuthCookie = await signupRandomUser(server);
+    const createResponse = await createLobby(server, ownerAuthCookie);
+    const socket = await connectSocket(socketUrl, ownerAuthCookie);
 
-//     await socket.timeout(1000).emitWithAck('lobby:join', {
-//       lobbyId: createResponse.body.id,
-//     });
+    await socket.timeout(1000).emitWithAck('lobby:join', {
+      lobbyId: createResponse.body.id,
+    });
 
-//     await socket.timeout(1000).emitWithAck('lobby:leave', {
-//       lobbyId: createResponse.body.id,
-//     });
+    await socket.timeout(1000).emitWithAck('lobby:leave', {
+      lobbyId: createResponse.body.id,
+    });
 
-//     const otherAuthCookie = await signupRandomUser(server);
-//     const response = await supertest(server)
-//       .get('/api/v0/lobby')
-//       .set('Cookie', otherAuthCookie);
+    const otherAuthCookie = await signupRandomUser(server);
+    const response = await supertest(server)
+      .get('/api/v0/lobby')
+      .set('Cookie', otherAuthCookie);
 
-//     expect(response.body).not.toContainEqual(
-//       expect.objectContaining({ id: createResponse.body.id }),
-//     );
-//     socket.disconnect();
-//   });
-//   // cannot leave a lobby you are not apart of (404)
-//   // leaving a lobby as player updates the owner
-//   // cannot leave a lobby if you arent in one (404)
-// });
+    expect(response.body).not.toContainEqual(
+      expect.objectContaining({ id: createResponse.body.id }),
+    );
+    socket.disconnect();
+  });
+
+  it('Cannot leave a lobby the user is not part of', async () => {
+    const ownerAuthCookie = await signupRandomUser(server);
+    const createResponse = await createLobby(server, ownerAuthCookie);
+    const unrelatedAuthCookie = await signupRandomUser(server);
+    const socket = await connectSocket(socketUrl, unrelatedAuthCookie);
+
+    const response = await socket.timeout(1000).emitWithAck('lobby:leave', {
+      lobbyId: createResponse.body.id,
+    });
+
+    expect(response.status).toBe(404);
+    socket.disconnect();
+  });
+
+  it('Leaving a lobby as the player updates the owner', async () => {
+    const ownerAuthCookie = await signupRandomUser(server);
+    const createResponse = await createLobby(server, ownerAuthCookie);
+    const playerAuthCookie = await signupRandomUser(server);
+    await joinLobby(server, createResponse.body.id, playerAuthCookie);
+
+    const ownerSocket = await connectSocket(socketUrl, ownerAuthCookie);
+    const playerSocket = await connectSocket(socketUrl, playerAuthCookie);
+
+    await ownerSocket.timeout(1000).emitWithAck('lobby:join', {
+      lobbyId: createResponse.body.id,
+    });
+    await playerSocket.timeout(1000).emitWithAck('lobby:join', {
+      lobbyId: createResponse.body.id,
+    });
+
+    const ownerUpdate = new Promise<{ player: string | null }>((resolve) => {
+      ownerSocket.once('lobby:state', resolve);
+    });
+
+    await playerSocket.timeout(1000).emitWithAck('lobby:leave', {
+      lobbyId: createResponse.body.id,
+    });
+
+    const updatedLobby = await ownerUpdate;
+
+    expect(updatedLobby.player).toBeNull();
+    ownerSocket.disconnect();
+    playerSocket.disconnect();
+  });
+
+  it('Cannot leave a lobby that does not exist', async () => {
+    const authCookie = await signupRandomUser(server);
+    const socket = await connectSocket(socketUrl, authCookie);
+
+    const response = await socket.timeout(1000).emitWithAck('lobby:leave', {
+      lobbyId: '00000000-0000-0000-0000-000000000000',
+    });
+
+    expect(response.status).toBe(404);
+    socket.disconnect();
+  });
+});
