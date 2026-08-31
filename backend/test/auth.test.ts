@@ -1,6 +1,9 @@
 import {afterEach, beforeAll, describe, expect, it} from 'vitest';
+import jwt from 'jsonwebtoken';
 import {server} from './setup';
 import {login, signup} from './testutils';
+import {verifyJwt} from '../src/auth/service';
+import {HttpError} from '../src/errors/httperror';
 
 const configuredSecret = process.env.SECRET;
 
@@ -92,3 +95,20 @@ describe('Auth Login', () => {
     expect(res.status).toBe(401)
   })
 })
+
+describe('JWT verification', () => {
+  it('rejects a JWT with the wrong payload structure', () => {
+    const token = jwt.sign(
+      { userId: '00000000-0000-0000-0000-000000000000' },
+      process.env.SECRET as string,
+      { algorithm: 'HS256' },
+    );
+
+    try {
+      verifyJwt(token);
+      throw new Error('Expected verifyJwt to throw');
+    } catch (error) {
+      expect((error as HttpError).status).toBe(401);
+    }
+  });
+});

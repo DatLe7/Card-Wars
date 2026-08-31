@@ -1,9 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import supertest from 'supertest';
 
 import { createLobby, joinLobby, signupRandomUser } from '../testutils';
 import { server, socketUrl } from '../setup';
 import { connectSocket } from './testutils';
+import { LobbyService } from '../../src/lobby/service';
 
 describe('Lobby Join', () => {
   it('Joining a lobby returns lobby name', async () => {
@@ -211,5 +212,27 @@ describe('Lobby Leave', () => {
 
     expect(response.status).toBe(404);
     socket.disconnect();
+  });
+
+  it('Returns 500 when leaving fails unexpectedly', async () => {
+    const authCookie = await signupRandomUser(server);
+    const socket = await connectSocket(socketUrl, authCookie);
+    const leaveSpy = vi
+      .spyOn(LobbyService.prototype, 'leave')
+      .mockRejectedValueOnce(new Error('Database unavailable'));
+
+    try {
+      const response = await socket.timeout(1000).emitWithAck('lobby:leave', {
+        lobbyId: '00000000-0000-0000-0000-000000000000',
+      });
+
+      expect(response).toEqual({
+        error: 'Internal server error',
+        status: 500,
+      });
+    } finally {
+      leaveSpy.mockRestore();
+      socket.disconnect();
+    }
   });
 });
