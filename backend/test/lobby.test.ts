@@ -111,7 +111,34 @@ describe('Create Lobby', () => {
     expect(getResponse.body).toContainEqual(res.body)
   })
 
-  // TODO: creating a new lobby deletes the old one(Write once WS is implemented for lobby)
+  describe('Creating a replacement lobby', () => {
+    let oldLobby: supertest.Response;
+    let newLobby: supertest.Response;
+    let lobbyList: supertest.Response;
+
+    beforeAll(async () => {
+      const ownerAuthCookie = await signupRandomUser(server);
+      oldLobby = await createLobby(server, ownerAuthCookie);
+      newLobby = await createLobby(server, ownerAuthCookie);
+
+      const viewerAuthCookie = await signupRandomUser(server);
+      lobbyList = await supertest(server)
+        .get('/api/v0/lobby')
+        .set('Cookie', viewerAuthCookie);
+    });
+
+    it('deletes the old lobby', () => {
+      expect(lobbyList.body).not.toContainEqual(
+        expect.objectContaining({ id: oldLobby.body.id }),
+      );
+    });
+
+    it('creates the new lobby', () => {
+      expect(lobbyList.body).toContainEqual(
+        expect.objectContaining({ id: newLobby.body.id }),
+      );
+    });
+  });
 })
 
 describe('Join Lobby', () => {

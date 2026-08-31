@@ -1,23 +1,39 @@
-import { Lobby } from '.';
+import { Lobby, LeaveLobbyResult } from '.';
 import {SessionUser} from '../types/express';
 import { pool } from '../db';
 import { HttpError } from '../errors/httperror';
-
-type LeaveLobbyResult =
-  | {
-      kind: 'deleted';
-      lobbyId: string;
-    }
-  | {
-      kind: 'updated';
-      lobby: Lobby;
-    };
 
 export class LobbyService {
   public async leave(
     lobbyId: string,
     user: SessionUser,
   ): Promise<LeaveLobbyResult> {
+    const {rows: promotedRows} = await pool.query<Lobby>({
+      text: `
+        UPDATE lobby
+        SET owner = lobby.player,
+            player = NULL
+        FROM "user" AS new_owner
+        WHERE lobby.id = $1
+          AND lobby.owner = $2
+          AND lobby.player IS NOT NULL
+          AND new_owner.id = lobby.player
+        RETURNING
+          lobby.id,
+          lobby.name,
+          new_owner.username AS owner,
+          NULL::text AS player;
+      `,
+      values: [lobbyId, user.id],
+    });
+
+    if (promotedRows[0]) {
+      return {
+        kind: 'updated',
+        lobby: promotedRows[0],
+      };
+    }
+
     const {rows: deletedRows} = await pool.query<{ id: string }>({
       text: `
         DELETE FROM lobby
@@ -111,6 +127,10 @@ export class LobbyService {
   public async create(user: SessionUser): Promise<Lobby> {
     const {rows} = await pool.query({
       text: `
+        WITH deleted_lobby AS (
+          DELETE FROM lobby
+          WHERE owner = $2
+        )
         INSERT INTO lobby (name, owner)
         VALUES ($1, $2)
         RETURNING id, name, player;

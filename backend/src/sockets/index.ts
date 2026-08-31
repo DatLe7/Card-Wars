@@ -16,10 +16,6 @@ export function createSocketServer(httpServer: HttpServer) {
 
   io.on('connection', (socket) => {
     registerLobbyHandlers(socket);
-
-    socket.on('disconnect', () => {
-      console.log('user disconnected');
-    });
   });
 
   return io;

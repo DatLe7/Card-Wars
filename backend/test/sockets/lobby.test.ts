@@ -214,6 +214,44 @@ describe('Lobby Leave', () => {
     socket.disconnect();
   });
 
+  it('Leaving a lobby with a player makes the player the new owner', async () => {
+    const ownerAuthCookie = await signupRandomUser(server);
+    const createResponse = await createLobby(server, ownerAuthCookie);
+    const playerAuthCookie = await signupRandomUser(server);
+    const joinResponse = await joinLobby(
+      server,
+      createResponse.body.id,
+      playerAuthCookie,
+    );
+
+    const ownerSocket = await connectSocket(socketUrl, ownerAuthCookie);
+    const playerSocket = await connectSocket(socketUrl, playerAuthCookie);
+
+    await ownerSocket.timeout(1000).emitWithAck('lobby:join', {
+      lobbyId: createResponse.body.id,
+    });
+    await playerSocket.timeout(1000).emitWithAck('lobby:join', {
+      lobbyId: createResponse.body.id,
+    });
+
+    const playerUpdate = new Promise<{ owner: string; player: null }>(
+      (resolve) => {
+        playerSocket.once('lobby:state', resolve);
+      },
+    );
+
+    await ownerSocket.timeout(1000).emitWithAck('lobby:leave', {
+      lobbyId: createResponse.body.id,
+    });
+
+    const updatedLobby = await playerUpdate;
+
+    expect(updatedLobby.owner).toBe(joinResponse.body.player);
+    expect(updatedLobby.player).toBeNull();
+    ownerSocket.disconnect();
+    playerSocket.disconnect();
+  });
+
   it('Returns 500 when leaving fails unexpectedly', async () => {
     const authCookie = await signupRandomUser(server);
     const socket = await connectSocket(socketUrl, authCookie);
