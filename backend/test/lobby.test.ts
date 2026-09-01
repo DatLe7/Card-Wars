@@ -88,11 +88,16 @@ describe('Create Lobby', () => {
   })
 
   it('returns owner', () => {
-    expect(res.body.owner).toBe('lobby-creator')
+    expect(res.body.owner.name).toBe('lobby-creator')
   })
 
-  it('returns player as null', () => {
-    expect(res.body.player).toBeNull()
+  it('returns player name as null', () => {
+    expect(res.body.player.name).toBeNull()
+  })
+
+  it('owner and player deck is finn by default', () => {
+    expect(res.body.player.deck).toBe('finn')
+    expect(res.body.owner.deck).toBe('finn')
   })
 
   it('does not show the created lobby to its owner', async () => {
@@ -179,11 +184,11 @@ describe('Join Lobby', () => {
   })
 
   it('returns owner', () => {
-    expect(res.body.owner).toBe('join-lobby-creator')
+    expect(res.body.owner.name).toBe('join-lobby-creator')
   })
 
   it('returns player', () => {
-    expect(res.body.player).toBe('lobby-joiner')
+    expect(res.body.player.name).toBe('lobby-joiner')
   })
 
   it('cannot join own lobby', async () => {

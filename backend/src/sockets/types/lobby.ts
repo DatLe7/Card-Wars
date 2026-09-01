@@ -19,3 +19,12 @@ export type LeaveLobbyResponse = {
   error: string;
   status: number;
 };
+
+export interface ChangeDeckRequest {
+  lobbyId: string;
+}
+
+export type ChangeDeckResponse = Lobby | {
+  error: string;
+  status: number;
+};

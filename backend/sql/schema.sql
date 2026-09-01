@@ -3,7 +3,8 @@ CREATE TABLE "user" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) NOT NULL UNIQUE,
     username VARCHAR(50) NOT NULL UNIQUE,
-    pwhash VARCHAR(255) NOT NULL
+    pwhash VARCHAR(255) NOT NULL,
+    deck VARCHAR(10) NOT NULL DEFAULT 'finn'
 );
 
 DROP TABLE IF EXISTS lobby;

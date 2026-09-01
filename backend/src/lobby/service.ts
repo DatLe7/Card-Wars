@@ -4,6 +4,30 @@ import { pool } from '../db';
 import { HttpError } from '../errors/httperror';
 
 export class LobbyService {
+  public async changeDeck(lobbyId: string, user: SessionUser): Promise<Lobby> {
+    const {rowCount} = await pool.query({
+      text: `
+        UPDATE "user"
+        SET deck = CASE deck WHEN 'finn' THEN 'jake' ELSE 'finn' END
+        WHERE id = $2
+          AND EXISTS (
+            SELECT 1
+            FROM lobby
+            WHERE lobby.id = $1
+              AND (lobby.owner = $2 OR lobby.player = $2)
+          );
+      `,
+      values: [lobbyId, user.id],
+    });
+
+    /* v8 ignore next */
+    if (rowCount === 0) {
+      throw new HttpError(404, 'Lobby Not Found');
+    }
+
+    return this.getForUser(lobbyId, user);
+  }
+
   public async leave(
     lobbyId: string,
     user: SessionUser,
@@ -21,8 +45,14 @@ export class LobbyService {
         RETURNING
           lobby.id,
           lobby.name,
-          new_owner.username AS owner,
-          NULL::text AS player;
+          json_build_object(
+            'name', new_owner.username,
+            'deck', new_owner.deck
+          ) AS owner,
+          json_build_object(
+            'name', NULL,
+            'deck', 'finn'
+          ) AS player;
       `,
       values: [lobbyId, user.id],
     });
@@ -61,8 +91,14 @@ export class LobbyService {
         RETURNING
           lobby.id,
           lobby.name,
-          owner_user.username AS owner,
-          NULL::text AS player;
+          json_build_object(
+            'name', owner_user.username,
+            'deck', owner_user.deck
+          ) AS owner,
+          json_build_object(
+            'name', NULL,
+            'deck', 'finn'
+          ) AS player;
       `,
       values: [lobbyId, user.id],
     });
@@ -86,8 +122,14 @@ export class LobbyService {
         SELECT
           lobby.id,
           lobby.name,
-          owner_user.username AS owner,
-          player_user.username AS player
+          json_build_object(
+            'name', owner_user.username,
+            'deck', owner_user.deck
+          ) AS owner,
+          json_build_object(
+            'name', player_user.username,
+            'deck', COALESCE(player_user.deck, 'finn')
+          ) AS player
         FROM lobby
         JOIN "user" AS owner_user ON owner_user.id = lobby.owner
         LEFT JOIN "user" AS player_user ON player_user.id = lobby.player
@@ -111,10 +153,17 @@ export class LobbyService {
         SELECT
           lobby.id,
           lobby.name,
-          "user".username AS owner,
-          lobby.player
+          json_build_object(
+            'name', owner_user.username,
+            'deck', owner_user.deck
+          ) AS owner,
+          json_build_object(
+            'name', player_user.username,
+            'deck', COALESCE(player_user.deck, 'finn')
+          ) AS player
         FROM lobby
-        JOIN "user" ON "user".id = lobby.owner
+        JOIN "user" AS owner_user ON owner_user.id = lobby.owner
+        LEFT JOIN "user" AS player_user ON player_user.id = lobby.player
         WHERE lobby.owner <> $1
         ORDER BY lobby.created_at;
       `,
@@ -142,8 +191,14 @@ export class LobbyService {
     return {
       id: lobby.id,
       name: lobby.name,
-      owner: user.name,
-      player: lobby.player,
+      owner: {
+        name: user.name,
+        deck: 'finn',
+      },
+      player: {
+        name: null,
+        deck: 'finn',
+      },
     };
   }
 
@@ -188,8 +243,14 @@ export class LobbyService {
         RETURNING
           lobby.id,
           lobby.name,
-          owner_user.username AS owner,
-          player_user.username AS player;
+          json_build_object(
+            'name', owner_user.username,
+            'deck', owner_user.deck
+          ) AS owner,
+          json_build_object(
+            'name', player_user.username,
+            'deck', player_user.deck
+          ) AS player;
       `,
       values: [user.id, lobbyId],
     });

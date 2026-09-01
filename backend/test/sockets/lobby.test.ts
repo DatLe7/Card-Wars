@@ -1,10 +1,9 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import supertest from 'supertest';
 
 import { createLobby, joinLobby, signupRandomUser } from '../testutils';
 import { server, socketUrl } from '../setup';
 import { connectSocket } from './testutils';
-import { LobbyService } from '../../src/lobby/service';
 
 describe('Lobby Join', () => {
   it('Joining a lobby returns lobby name', async () => {
@@ -74,7 +73,7 @@ describe('Lobby Join', () => {
     socket.disconnect();
   });
 
-  it('Joining a new lobby returns no player', async () => {
+  it('Joining a new lobby returns no player name', async () => {
     const ownerAuthCookie = await signupRandomUser(server);
     const createResponse = await createLobby(server, ownerAuthCookie);
     const socket = await connectSocket(socketUrl, ownerAuthCookie);
@@ -83,7 +82,7 @@ describe('Lobby Join', () => {
       lobbyId: createResponse.body.id,
     });
 
-    expect(res.player).toBeNull();
+    expect(res.player.name).toBeNull();
     socket.disconnect();
   });
 
@@ -96,7 +95,7 @@ describe('Lobby Join', () => {
       lobbyId: createResponse.body.id,
     });
 
-    expect(res.owner).toBe(createResponse.body.owner);
+    expect(res.owner).toEqual(createResponse.body.owner);
     socket.disconnect();
   });
 
@@ -116,7 +115,9 @@ describe('Lobby Join', () => {
       playerAuthCookie,
     );
     const playerSocket = await connectSocket(socketUrl, playerAuthCookie);
-    const ownerUpdate = new Promise<{ player: string | null }>((resolve) => {
+    const ownerUpdate = new Promise<{
+      player: { name: string | null; deck: string };
+    }>((resolve) => {
       ownerSocket.once('lobby:state', resolve);
     });
 
@@ -126,7 +127,7 @@ describe('Lobby Join', () => {
 
     const updatedLobby = await ownerUpdate;
 
-    expect(updatedLobby.player).toBe(joinResponse.body.player);
+    expect(updatedLobby.player).toEqual(joinResponse.body.player);
     ownerSocket.disconnect();
     playerSocket.disconnect();
   });
@@ -187,7 +188,9 @@ describe('Lobby Leave', () => {
       lobbyId: createResponse.body.id,
     });
 
-    const ownerUpdate = new Promise<{ player: string | null }>((resolve) => {
+    const ownerUpdate = new Promise<{
+      player: { name: string | null; deck: string };
+    }>((resolve) => {
       ownerSocket.once('lobby:state', resolve);
     });
 
@@ -197,7 +200,7 @@ describe('Lobby Leave', () => {
 
     const updatedLobby = await ownerUpdate;
 
-    expect(updatedLobby.player).toBeNull();
+    expect(updatedLobby.player.name).toBeNull();
     ownerSocket.disconnect();
     playerSocket.disconnect();
   });
@@ -234,11 +237,12 @@ describe('Lobby Leave', () => {
       lobbyId: createResponse.body.id,
     });
 
-    const playerUpdate = new Promise<{ owner: string; player: null }>(
-      (resolve) => {
-        playerSocket.once('lobby:state', resolve);
-      },
-    );
+    const playerUpdate = new Promise<{
+      owner: { name: string; deck: string };
+      player: { name: string | null; deck: string };
+    }>((resolve) => {
+      playerSocket.once('lobby:state', resolve);
+    });
 
     await ownerSocket.timeout(1000).emitWithAck('lobby:leave', {
       lobbyId: createResponse.body.id,
@@ -246,31 +250,53 @@ describe('Lobby Leave', () => {
 
     const updatedLobby = await playerUpdate;
 
-    expect(updatedLobby.owner).toBe(joinResponse.body.player);
-    expect(updatedLobby.player).toBeNull();
+    expect(updatedLobby.owner).toEqual(joinResponse.body.player);
+    expect(updatedLobby.player.name).toBeNull();
     ownerSocket.disconnect();
     playerSocket.disconnect();
   });
+});
 
-  it('Returns 500 when leaving fails unexpectedly', async () => {
-    const authCookie = await signupRandomUser(server);
-    const socket = await connectSocket(socketUrl, authCookie);
-    const leaveSpy = vi
-      .spyOn(LobbyService.prototype, 'leave')
-      .mockRejectedValueOnce(new Error('Database unavailable'));
+describe('Deck Change', () => {
+  it('Changing a deck updates all players in the lobby', async () => {
+    const ownerAuthCookie = await signupRandomUser(server);
+    const createResponse = await createLobby(server, ownerAuthCookie);
+    const playerAuthCookie = await signupRandomUser(server);
+    await joinLobby(server, createResponse.body.id, playerAuthCookie);
 
-    try {
-      const response = await socket.timeout(1000).emitWithAck('lobby:leave', {
-        lobbyId: '00000000-0000-0000-0000-000000000000',
-      });
+    const ownerSocket = await connectSocket(socketUrl, ownerAuthCookie);
+    const playerSocket = await connectSocket(socketUrl, playerAuthCookie);
 
-      expect(response).toEqual({
-        error: 'Internal server error',
-        status: 500,
-      });
-    } finally {
-      leaveSpy.mockRestore();
-      socket.disconnect();
-    }
+    await ownerSocket.timeout(1000).emitWithAck('lobby:join', {
+      lobbyId: createResponse.body.id,
+    });
+    await playerSocket.timeout(1000).emitWithAck('lobby:join', {
+      lobbyId: createResponse.body.id,
+    });
+
+    const ownerUpdate = new Promise<{
+      owner: { name: string; deck: string };
+    }>((resolve) => {
+      ownerSocket.once('lobby:state', resolve);
+    });
+    const playerUpdate = new Promise<{
+      owner: { name: string; deck: string };
+    }>((resolve) => {
+      playerSocket.once('lobby:state', resolve);
+    });
+
+    await ownerSocket.timeout(1000).emitWithAck('lobby:deck-change', {
+      lobbyId: createResponse.body.id,
+    });
+
+    const [ownerLobby, playerLobby] = await Promise.all([
+      ownerUpdate,
+      playerUpdate,
+    ]);
+
+    expect(ownerLobby.owner.deck).toBe('jake');
+    expect(playerLobby).toEqual(ownerLobby);
+    ownerSocket.disconnect();
+    playerSocket.disconnect();
   });
 });

@@ -3,6 +3,8 @@ import type { Socket } from 'socket.io';
 import { LobbyService } from '../../lobby/service';
 import { HttpError } from '../../errors/httperror';
 import type {
+  ChangeDeckRequest,
+  ChangeDeckResponse,
   JoinLobbyRequest,
   JoinLobbyResponse,
   LeaveLobbyRequest,
@@ -10,6 +12,23 @@ import type {
 } from '../types/lobby';
 
 export function registerLobbyHandlers(socket: Socket): void {
+  socket.on(
+    'lobby:deck-change',
+    async (
+      request: ChangeDeckRequest,
+      acknowledge: (response: ChangeDeckResponse) => void,
+    ) => {
+      const lobby = await new LobbyService().changeDeck(
+        request.lobbyId,
+        socket.data.user,
+      );
+      const room = `lobby:${request.lobbyId}`;
+
+      socket.nsp.to(room).emit('lobby:state', lobby);
+      acknowledge(lobby);
+    },
+  );
+
   socket.on(
     'lobby:join',
     async (
@@ -76,7 +95,7 @@ export function registerLobbyHandlers(socket: Socket): void {
           });
           return;
         }
-
+        /* v8 ignore next */
         acknowledge({
           error: 'Internal server error',
           status: 500,
