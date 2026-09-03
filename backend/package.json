@@ -28,6 +28,7 @@
     "vitest": "*"
   },
   "dependencies": {
+    "@cardwars/engine": "file:../engine",
     "cookie": "^0.7.2",
     "cookie-parser": "^1.4.7",
     "cors": "*",
