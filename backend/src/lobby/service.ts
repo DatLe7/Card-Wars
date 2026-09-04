@@ -2,8 +2,68 @@ import { Lobby, LeaveLobbyResult } from '.';
 import {SessionUser} from '../types/express';
 import { pool } from '../db';
 import { HttpError } from '../errors/httperror';
+import {
+  finnDeck,
+  jakeDeck,
+  type CreateGameInput,
+  type Deck,
+} from '@cardwars/engine';
+
+function getDeck(deck: string): Deck {
+  return (deck === 'jake' ? jakeDeck : finnDeck) as Deck;
+}
 
 export class LobbyService {
+  public async start(
+    lobbyId: string,
+    user: SessionUser,
+  ): Promise<CreateGameInput> {
+    const {rows} = await pool.query({
+      text: `
+        UPDATE lobby
+        SET status = 'started'
+        FROM "user" AS owner_user, "user" AS player_user
+        WHERE lobby.id = $1
+          AND lobby.owner = $2
+          AND lobby.player IS NOT NULL
+          AND lobby.status = 'waiting'
+          AND owner_user.id = lobby.owner
+          AND player_user.id = lobby.player
+        RETURNING
+          lobby.id,
+          owner_user.id AS owner_id,
+          owner_user.username AS owner_name,
+          owner_user.deck AS owner_deck,
+          player_user.id AS player_id,
+          player_user.username AS player_name,
+          player_user.deck AS player_deck;
+      `,
+      values: [lobbyId, user.id],
+    });
+    const lobby = rows[0];
+
+    if (!lobby) {
+      throw new HttpError(409, 'Game cannot be started');
+    }
+
+    return {
+      gameId: lobby.id,
+      players: [
+        {
+          id: lobby.owner_id,
+          name: lobby.owner_name,
+          decklist: getDeck(lobby.owner_deck),
+        },
+        {
+          id: lobby.player_id,
+          name: lobby.player_name,
+          decklist: getDeck(lobby.player_deck),
+        },
+      ],
+      firstPlayer: lobby.owner_id,
+    };
+  }
+
   public async changeDeck(lobbyId: string, user: SessionUser): Promise<Lobby> {
     const {rowCount} = await pool.query({
       text: `

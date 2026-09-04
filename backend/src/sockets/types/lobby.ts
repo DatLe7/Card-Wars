@@ -28,3 +28,14 @@ export type ChangeDeckResponse = Lobby | {
   error: string;
   status: number;
 };
+
+export interface StartLobbyRequest {
+  lobbyId: string;
+}
+
+export type StartLobbyResponse = {
+  gameId: string;
+} | {
+  error: string;
+  status: number;
+};
