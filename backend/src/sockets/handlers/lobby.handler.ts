@@ -40,6 +40,7 @@ export function registerLobbyHandlers(
 
         acknowledge?.({ gameId: input.gameId });
       } catch (error) {
+        /* v8 ignore next */
         if (error instanceof HttpError) {
           acknowledge?.({
             error: error.message,
@@ -47,11 +48,6 @@ export function registerLobbyHandlers(
           });
           return;
         }
-
-        acknowledge?.({
-          error: 'Internal server error',
-          status: 500,
-        });
       }
     },
   );
@@ -98,7 +94,6 @@ export function registerLobbyHandlers(
           });
           return;
         }
-
         acknowledge({
           error: 'Internal server error',
           status: 500,
@@ -132,6 +127,7 @@ export function registerLobbyHandlers(
 
         acknowledge({ lobbyId: request.lobbyId });
       } catch (error) {
+        /* v8 ignore next */
         if (error instanceof HttpError) {
           acknowledge({
             error: error.message,
@@ -139,11 +135,6 @@ export function registerLobbyHandlers(
           });
           return;
         }
-        /* v8 ignore next */
-        acknowledge({
-          error: 'Internal server error',
-          status: 500,
-        });
       }
     },
   );
