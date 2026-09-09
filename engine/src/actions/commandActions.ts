@@ -45,6 +45,7 @@ export function commandActions(
 
         game.turn.number++;
         game.turn.activePlayerId = nextPlayerId;
+        game.players[nextPlayerId]!.actionPoints = 2;
         game.turn.phase = 'READY';
       } else {
         game.turn.phase = 'BATTLE';
@@ -68,6 +69,7 @@ export function commandActions(
 
       game.turn.number++;
       game.turn.activePlayerId = nextPlayerId;
+      game.players[nextPlayerId]!.actionPoints = 2;
       game.turn.phase = 'READY';
       break;
     }

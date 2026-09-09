@@ -221,6 +221,20 @@ describe('READY', () => {
     expect(view.game.enemy.graveyardCardCount).toBe(0);
   });
 
+  it('shows 0 action points for nonstarting player on starting player view', () => {
+    const view = game.getPlayerView('p2');
+
+    expect(view.game.enemy.actionPoints).toBe(0);
+  });
+  it('next turn resets action points and switches to player 2', () => {
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+    game.command({ type: 'NEXT_TURN', playerId: 'p1' });
+
+    const view = game.getPlayerView('p1');
+    expect(view.game.player.actionPoints).toBe(0);
+    expect(view.game.enemy.actionPoints).toBe(2);
+  });
+
   it('shows 4 lands on your side', () => {
     const view = game.getPlayerView('p1');
 

@@ -34,6 +34,7 @@ export function getPlayerView(
       },
       enemy: {
         life: enemyGame.life,
+        actionPoints: enemyGame.actionPoints,
         deckCardCount: enemyGame.deck.length,
         handCardCount: enemyGame.hand.length,
         graveyardCardCount: enemyGame.graveyard.length,

@@ -106,4 +106,12 @@ describe('Game Start', () => {
       status: 409,
     });
   });
+  // shows life for player and enemy
+  // shows action points for player and enemy
+  // shows deck count for player and enemy
+  // shows hand for player
+  // shows handCardCount for enemy
+  // shows graveyard for player
+  // shows graveyardCardCount for enemy
+  // shows lands for both player and enemy
 });

@@ -12,6 +12,7 @@ export type PlayerGameView = {
 
 export type EnemyGameView = {
   life: number;
+  actionPoints: number;
   deckCardCount: number;
   handCardCount: number;
   graveyardCardCount: number;
