@@ -35,7 +35,10 @@ export function registerLobbyHandlers(
 
         for (const lobbySocket of lobbySockets) {
           const view = game.getPlayerView(lobbySocket.data.user.id);
-          lobbySocket.emit('game:state', view);
+          lobbySocket.emit('game:state', {
+            ...view,
+            actions: game.getAvailableActions(lobbySocket.data.user.id),
+          });
         }
 
         acknowledge?.({ gameId: input.gameId });

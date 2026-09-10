@@ -60,7 +60,7 @@ export class LobbyService {
           decklist: getDeck(lobby.player_deck),
         },
       ],
-      firstPlayer: lobby.owner_id,
+      firstPlayer: Math.random() < 0.5 ? lobby.owner_id : lobby.player_id,
     };
   }
 

@@ -106,12 +106,107 @@ describe('Game Start', () => {
       status: 409,
     });
   });
-  // shows life for player and enemy
-  // shows action points for player and enemy
-  // shows deck count for player and enemy
-  // shows hand for player
-  // shows handCardCount for enemy
-  // shows graveyard for player
-  // shows graveyardCardCount for enemy
-  // shows lands for both player and enemy
+  describe('initial game state', () => {
+    let views: [PlayerView, PlayerView];
+
+    beforeEach(async () => {
+      const ownerView = new Promise<PlayerView>((resolve) => {
+        ownerSocket.once('game:state', resolve);
+      });
+      const playerView = new Promise<PlayerView>((resolve) => {
+        playerSocket.once('game:state', resolve);
+      });
+
+      await ownerSocket.timeout(1000).emitWithAck('lobby:start', { lobbyId });
+
+      views = await Promise.all([ownerView, playerView]);
+    });
+
+    it('shows life for player and enemy', () => {
+      for (const view of views) {
+        expect(view.game.player.life).toBe(25);
+        expect(view.game.enemy.life).toBe(25);
+      }
+    });
+
+    it('shows action points for player and enemy', () => {
+      for (const view of views) {
+        expect(view.game.player.actionPoints).toBe(0);
+        expect(view.game.enemy.actionPoints).toBe(0);
+      }
+    });
+
+    it('shows deck count for player and enemy', () => {
+      for (const view of views) {
+        expect(view.game.player.deckCardCount).toBe(35);
+        expect(view.game.enemy.deckCardCount).toBe(35);
+      }
+    });
+
+    it('shows hand for player', () => {
+      for (const view of views) {
+        expect(view.game.player.hand).toHaveLength(5);
+        for (const card of view.game.player.hand) {
+          expect(card).toMatchObject({
+            instanceId: expect.any(String),
+            ownerId: view.id,
+            cardId: expect.any(String),
+            name: expect.any(String),
+            type: expect.any(String),
+            cost: expect.any(Number),
+          });
+        }
+      }
+    });
+
+    it('shows handCardCount for enemy', () => {
+      for (const view of views) {
+        expect(view.game.enemy.handCardCount).toBe(5);
+        expect(view.game.enemy).not.toHaveProperty('hand');
+      }
+    });
+
+    it('shows graveyard for player', () => {
+      for (const view of views) {
+        expect(view.game.player.graveyard).toEqual([]);
+      }
+    });
+
+    it('shows graveyardCardCount for enemy', () => {
+      for (const view of views) {
+        expect(view.game.enemy.graveyardCardCount).toBe(0);
+      }
+    });
+
+    it('shows lands for both player and enemy', () => {
+      for (const [index, view] of views.entries()) {
+        const enemyView = views[1 - index];
+        expect(view.game.player.lands.map((land) => land.landscape))
+          .toEqual(view.decklist.landscape);
+        expect(view.game.enemy.lands).toEqual(enemyView.game.player.lands);
+        for (const lands of [view.game.player.lands, view.game.enemy.lands]) {
+          expect(lands).toHaveLength(4);
+          for (const land of lands) {
+            expect(land.creature).toBeUndefined();
+            expect(land.building).toBeUndefined();
+          }
+        }
+      }
+    });
+
+    it('shows actions for turn player', () => {
+      const turnPlayer = views.find((view) => view.id === view.turn.activePlayerId);
+      if (turnPlayer == undefined) throw new Error('Cant find active player')
+
+      expect(turnPlayer).toHaveProperty('actions', [
+        { type: 'NEXT_TURN', playerId: turnPlayer.id },
+      ]);
+    });
+
+    it('shows no actions for non turn player', () => {
+      const nonTurnPlayer = views.find((view) => view.id !== view.turn.activePlayerId);
+
+      expect(nonTurnPlayer).toHaveProperty('actions', []);
+    });
+  });
 });
