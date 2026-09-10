@@ -3,6 +3,7 @@ import type { Server as HttpServer } from 'node:http';
 
 import { socketAuth } from './middleware/socketAuth';
 import { registerLobbyHandlers } from './handlers/lobby.handler';
+import { registerGameHandlers } from './handlers/game.handler';
 import { GameStorage } from './game.storage';
 
 export function createSocketServer(httpServer: HttpServer) {
@@ -18,6 +19,7 @@ export function createSocketServer(httpServer: HttpServer) {
 
   io.on('connection', (socket) => {
     registerLobbyHandlers(socket, games);
+    registerGameHandlers(socket, games);
   });
 
   return io;

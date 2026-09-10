@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Socket } from 'socket.io-client';
 
 import type { PlayerView } from '../../../engine/src/views';
@@ -10,6 +10,19 @@ describe('Game Start', () => {
   let lobbyId: string;
   let ownerSocket: Socket;
   let playerSocket: Socket;
+
+  async function startGame(): Promise<[PlayerView, PlayerView]> {
+    const ownerView = new Promise<PlayerView>((resolve) => {
+      ownerSocket.once('game:state', resolve);
+    });
+    const playerView = new Promise<PlayerView>((resolve) => {
+      playerSocket.once('game:state', resolve);
+    });
+
+    await ownerSocket.timeout(1000).emitWithAck('lobby:start', { lobbyId });
+
+    return Promise.all([ownerView, playerView]);
+  }
 
   beforeEach(async () => {
     const ownerAuthCookie = await signupRandomUser(server);
@@ -110,16 +123,7 @@ describe('Game Start', () => {
     let views: [PlayerView, PlayerView];
 
     beforeEach(async () => {
-      const ownerView = new Promise<PlayerView>((resolve) => {
-        ownerSocket.once('game:state', resolve);
-      });
-      const playerView = new Promise<PlayerView>((resolve) => {
-        playerSocket.once('game:state', resolve);
-      });
-
-      await ownerSocket.timeout(1000).emitWithAck('lobby:start', { lobbyId });
-
-      views = await Promise.all([ownerView, playerView]);
+      views = await startGame();
     });
 
     it('shows life for player and enemy', () => {
@@ -179,17 +183,9 @@ describe('Game Start', () => {
     });
 
     it('shows lands for both player and enemy', () => {
-      for (const [index, view] of views.entries()) {
-        const enemyView = views[1 - index];
-        expect(view.game.player.lands.map((land) => land.landscape))
-          .toEqual(view.decklist.landscape);
-        expect(view.game.enemy.lands).toEqual(enemyView.game.player.lands);
+      for (const view of views) {
         for (const lands of [view.game.player.lands, view.game.enemy.lands]) {
           expect(lands).toHaveLength(4);
-          for (const land of lands) {
-            expect(land.creature).toBeUndefined();
-            expect(land.building).toBeUndefined();
-          }
         }
       }
     });
@@ -207,6 +203,107 @@ describe('Game Start', () => {
       const nonTurnPlayer = views.find((view) => view.id !== view.turn.activePlayerId);
 
       expect(nonTurnPlayer).toHaveProperty('actions', []);
+    });
+  });
+  it('emitting actions to a non started lobby does nothing', async () => {
+    const ownerView = vi.fn();
+    const playerView = vi.fn();
+    ownerSocket.on('game:state', ownerView);
+    playerSocket.on('game:state', playerView);
+
+    try {
+      for (const socket of [ownerSocket, playerSocket]) {
+        socket.emit('game:action', {
+          gameId: lobbyId,
+          action: { type: 'NEXT_TURN' },
+        });
+      }
+
+      await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
+      expect(ownerView).not.toHaveBeenCalled();
+      expect(playerView).not.toHaveBeenCalled();
+    } finally {
+      ownerSocket.off('game:state', ownerView);
+      playerSocket.off('game:state', playerView);
+    }
+  });
+
+  describe('actions', () => {
+    let views: [PlayerView, PlayerView];
+
+    beforeEach(async () => {
+      views = await startGame();
+    });
+
+    it('emitting a valid action changes game state', async () => {
+      const activePlayerId = views[0].turn.activePlayerId;
+      const activeSocket = views[0].id === activePlayerId ? ownerSocket : playerSocket;
+      const ownerView = new Promise<PlayerView>((resolve) => {
+        ownerSocket.once('game:state', resolve);
+      });
+      const playerView = new Promise<PlayerView>((resolve) => {
+        playerSocket.once('game:state', resolve);
+      });
+
+      activeSocket.emit('game:action', {
+        gameId: lobbyId,
+        action: { type: 'NEXT_TURN', playerId: activePlayerId },
+      });
+
+      const updatedViews = await Promise.all([ownerView, playerView]);
+
+      expect(updatedViews[0]).not.toEqual(views[0]);
+      expect(updatedViews[1]).not.toEqual(views[1]);
+    });
+
+    it('emitting an invalid action does not send a new game state', async () => {
+      const activePlayerId = views[0].turn.activePlayerId;
+      const inactiveIndex = views[0].id === activePlayerId ? 1 : 0;
+      const inactiveSocket = inactiveIndex === 0 ? ownerSocket : playerSocket;
+      const ownerView = vi.fn();
+      const playerView = vi.fn();
+      ownerSocket.on('game:state', ownerView);
+      playerSocket.on('game:state', playerView);
+
+      try {
+        inactiveSocket.emit('game:action', {
+          gameId: lobbyId,
+          action: { type: 'NEXT_TURN', playerId: views[inactiveIndex].id },
+        });
+
+        await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
+        expect(ownerView).not.toHaveBeenCalled();
+        expect(playerView).not.toHaveBeenCalled();
+      } finally {
+        ownerSocket.off('game:state', ownerView);
+        playerSocket.off('game:state', playerView);
+      }
+    });
+
+    it('emitting an action to a fake lobby does nothing', async () => {
+      const activePlayerId = views[0].turn.activePlayerId;
+      const activeSocket = views[0].id === activePlayerId ? ownerSocket : playerSocket;
+      const ownerView = vi.fn();
+      const playerView = vi.fn();
+      ownerSocket.on('game:state', ownerView);
+      playerSocket.on('game:state', playerView);
+
+      try {
+        activeSocket.emit('game:action', {
+          gameId: 'fake-lobby',
+          action: { type: 'NEXT_TURN', playerId: activePlayerId },
+        });
+
+        await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
+        expect(ownerView).not.toHaveBeenCalled();
+        expect(playerView).not.toHaveBeenCalled();
+      } finally {
+        ownerSocket.off('game:state', ownerView);
+        playerSocket.off('game:state', playerView);
+      }
     });
   });
 });

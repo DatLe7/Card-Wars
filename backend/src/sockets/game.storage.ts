@@ -10,9 +10,9 @@ export class GameStorage {
     return game;
   }
 
-  // public get(gameId: string): Game | undefined {
-  //   return this.games.get(gameId);
-  // }
+  public get(gameId: string): Game | undefined {
+    return this.games.get(gameId);
+  }
 
   // public delete(gameId: string): boolean {
   //   return this.games.delete(gameId);
