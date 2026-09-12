@@ -19,7 +19,7 @@ describe('Lobby List Item', () => {
 		const joinRequest = vi.fn()
 
 		server.use(
-			http.post('/api/lobby/:lobbyId', ({ params }) => {
+			http.post('/api/v0/lobby/:lobbyId/join', ({ params }) => {
 				joinRequest(params.lobbyId)
 				return HttpResponse.json({
 					success: true,
@@ -35,7 +35,7 @@ describe('Lobby List Item', () => {
 		const user = userEvent.setup()
 
 		server.use(
-			http.post('/api/lobby/:lobbyId', () => {
+			http.post('/api/v0/lobby/:lobbyId/join', () => {
 				return new HttpResponse(null, { status: 500 })
 			}),
 		)
@@ -49,7 +49,7 @@ describe('Lobby List Item', () => {
 		const user = userEvent.setup()
 
 		server.use(
-			http.post('/api/lobby/:lobbyId', () => {
+			http.post('/api/v0/lobby/:lobbyId/join', () => {
 				return new HttpResponse(null, { status: 500 })
 			}),
 		)
@@ -65,7 +65,7 @@ describe('Lobby List Item', () => {
 describe('Lobby List', () => {
 	it('shows lobbies', async () => {
 		server.use(
-			http.get('/api/lobby/', () => {
+			http.get('/api/v0/lobby', () => {
 				return HttpResponse.json([
 					{
 						name: 'Dat\'s Lobby',
@@ -86,7 +86,7 @@ describe('Lobby List', () => {
 
 	it('shows no lobby buttons when loading lobbies fails', async () => {
 		server.use(
-			http.get('/api/lobby/', () => {
+			http.get('/api/v0/lobby', () => {
 				return new HttpResponse(null, { status: 500 })
 			}),
 		)
