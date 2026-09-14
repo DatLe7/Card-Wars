@@ -196,7 +196,79 @@ describe('Cookie check', () => {
   });
 })
 
-// logout
+describe('logout', () => {
+  let authCookie: string;
+  let userId: string;
+
+  beforeAll(async () => {
+    const res = await signup(server, {
+      username: 'logout-user',
+      email: 'logout-user@example.com',
+      password: 'password',
+    }).expect(201);
+
+    authCookie = res.headers['set-cookie'][0].split(';')[0];
+    userId = verifyJwt(decodeURIComponent(authCookie.slice('authToken='.length))).id;
+  });
+
+  it('returns 204 for an authenticated user', async () => {
+    await supertest(server)
+      .post('/api/v0/auth/logout')
+      .set('Cookie', authCookie)
+      .expect(204);
+  });
+
+  it('expires the auth cookie immediately', async () => {
+    await supertest(server)
+      .post('/api/v0/auth/logout')
+      .set('Cookie', authCookie)
+      .expect('Set-Cookie', /authToken=;[^]*;\s*Max-Age=0(?:;|$)/i);
+  });
+
+  it('sets the auth cookie path to match the login cookie', async () => {
+    const res = await supertest(server)
+      .post('/api/v0/auth/logout')
+      .set('Cookie', authCookie);
+
+    const header = res.headers['set-cookie'];
+    const cookies = Array.isArray(header) ? header : [header];
+    const cookie = cookies.find((value) => value?.startsWith('authToken='));
+
+    expect(cookie?.split(';').map((part:string) => part.trim()))
+      .toContain('Path=/');
+  });
+
+  it('succeeds when the auth cookie is missing', async () => {
+    await supertest(server).post('/api/v0/auth/logout').expect(204);
+  });
+
+  it('succeeds when the auth cookie is malformed', async () => {
+    await supertest(server)
+      .post('/api/v0/auth/logout')
+      .set('Cookie', 'authToken=not-a-jwt')
+      .expect(204);
+  });
+
+  it('succeeds when the auth cookie has expired', async () => {
+    const token = jwt.sign({ id: userId }, process.env.SECRET as string, {
+      algorithm: 'HS256',
+      expiresIn: -60,
+    });
+
+    await supertest(server)
+      .post('/api/v0/auth/logout')
+      .set('Cookie', `authToken=${token}`)
+      .expect(204);
+  });
+
+  it('succeeds when called twice', async () => {
+    await supertest(server)
+      .post('/api/v0/auth/logout')
+      .set('Cookie', authCookie)
+      .expect(204);
+    await supertest(server).post('/api/v0/auth/logout').expect(204);
+  });
+})
 
 describe('JWT verification', () => {
   it('rejects a JWT with the wrong payload structure', () => {

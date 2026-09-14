@@ -16,7 +16,7 @@ import { AuthService, createJwt } from './service';
 import type * as express from 'express';
 import { SessionUser } from '../types/express';
 
-const AUTH_COOKIE_OPTIONS = 'HttpOnly; Secure; SameSite=Lax; Path=/; max-age=2592000';
+const AUTH_COOKIE_OPTIONS = 'HttpOnly; Secure; SameSite=Lax; Path=/';
 
 @Route('auth')
 export class AuthController extends Controller {
@@ -41,7 +41,7 @@ export class AuthController extends Controller {
     const authenticated = await new AuthService().signup(request);
     const jwt = createJwt(authenticated.id)
     return setCookie(201, undefined, {
-      'Set-Cookie': `authToken=${encodeURIComponent(jwt)}; ${AUTH_COOKIE_OPTIONS}`
+      'Set-Cookie': `authToken=${encodeURIComponent(jwt)}; ${AUTH_COOKIE_OPTIONS}; Max-Age=2592000`
     });
   }
 
@@ -56,7 +56,17 @@ export class AuthController extends Controller {
     const authenticated = await new AuthService().login(request);
     const jwt = createJwt(authenticated.id)
     return setCookie(200, undefined, {
-      'Set-Cookie': `authToken=${encodeURIComponent(jwt)}; ${AUTH_COOKIE_OPTIONS}`
+      'Set-Cookie': `authToken=${encodeURIComponent(jwt)}; ${AUTH_COOKIE_OPTIONS}; Max-Age=2592000`
+    });
+  }
+
+  @Post('logout')
+  @SuccessResponse('204', 'Logged out')
+  public async logout(
+    @Res() setCookie: TsoaResponse<204, void, { 'Set-Cookie': string }>,
+  ): Promise<void> {
+    return setCookie(204, undefined, {
+      'Set-Cookie': `authToken=; ${AUTH_COOKIE_OPTIONS}; Max-Age=0`
     });
   }
 }
