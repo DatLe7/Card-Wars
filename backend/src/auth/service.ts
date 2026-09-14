@@ -46,6 +46,10 @@ export class AuthService {
   }
 
   public async signup(user: SignupRequest): Promise<Authenticated> {
+    if (!user.username.trim() || user.username.length > 50) {
+      throw new HttpError(400, 'Invalid username');
+    }
+
     const { rows } = await pool.query({
       text: `
         INSERT INTO "user" (email, username, pwhash)
@@ -61,6 +65,13 @@ export class AuthService {
     });
 
     if (!rows[0]) {
+      const { rows: existingUsers } = await pool.query({
+        text: 'SELECT id FROM "user" WHERE username = $1;',
+        values: [user.username],
+      });
+      if (existingUsers[0]) {
+        throw new HttpError(400, 'Username in use');
+      }
       throw new HttpError(409, 'Email in use')
     }
 
@@ -68,13 +79,18 @@ export class AuthService {
   }
 
   public async login(credentials: LoginRequest): Promise<Authenticated> {
+    const identifier = credentials.identifier;
+    if (!identifier?.trim()) {
+      throw new HttpError(400, 'Email or username required');
+    }
+
     const { rows } = await pool.query({
       text: `
         SELECT id FROM "user"
-        WHERE email = lower($1)
+        WHERE (email = lower($1) OR username = $1)
         AND pwhash = crypt($2, pwhash);
       `,
-      values: [credentials.email, credentials.password],
+      values: [identifier, credentials.password],
     });
 
     if (!rows[0]) {

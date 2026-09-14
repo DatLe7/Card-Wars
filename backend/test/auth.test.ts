@@ -14,8 +14,8 @@ afterEach(() => {
 describe('Auth Signup', () => {
   it('return code', async () => {
     const res = await signup(server, {
-      username: 'dat', 
-      email: 'dat@gmail.com', 
+      username: 'dat',
+      email: 'dat@gmail.com',
       password: 'password'
     });
     expect(res.status).toBe(201)
@@ -30,21 +30,42 @@ describe('Auth Signup', () => {
   })
   it('cannot signup with a used email', async () => {
     await signup(server, {
-      username: 'dat', 
-      email: 'dat@gmail.com', 
+      username: 'dat1',
+      email: 'datDupe@gmail.com',
       password: 'password'
     });
     const res = await signup(server, {
-      username: 'dat', 
-      email: 'dat@gmail.com', 
+      username: 'dat3',
+      email: 'datDupe@gmail.com',
       password: 'password'
     });
     expect(res.status).toBe(409)
   })
   it('cannot signup with invalid email', async () => {
     const res = await signup(server, {
-      username: 'dat', 
-      email: 'com', 
+      username: 'dat1',
+      email: 'com',
+      password: 'password'
+    });
+    expect(res.status).toBe(400)
+  })
+  it('cannot signup using a invalid username', async () => {
+    const res = await signup(server, {
+      username: '',
+      email: 'invalid-username@gmail.com',
+      password: 'password'
+    });
+    expect(res.status).toBe(400)
+  })
+  it('cannot signup using a used username', async () => {
+    await signup(server, {
+      username: 'usernameDupe',
+      email: 'usernameDupe1@gmail.com',
+      password: 'password'
+    });
+    const res = await signup(server, {
+      username: 'usernameDupe',
+      email: 'usernameDupe2@gmail.com',
       password: 'password'
     });
     expect(res.status).toBe(400)
@@ -54,42 +75,49 @@ describe('Auth Signup', () => {
 describe('Auth Login', () => {
   beforeAll(async () => {
     await signup(server, {
-      username: 'dat', 
-      email: 'dat@gmail.com', 
+      username: 'dat',
+      email: 'dat@gmail.com',
       password: 'password'
     });
   })
   it('return code', async () => {
     const res = await login(server, {
-      email: 'dat@gmail.com', 
+      identifier: 'dat@gmail.com',
       password: 'password'
     })
     expect(res.status).toBe(200)
   })
   it('returns auth token', async () => {
     await login(server, {
-      email: 'dat@gmail.com',
+      identifier: 'dat@gmail.com',
       password: 'password'
     })
       .expect('Set-Cookie', /authToken=/)
   })
-  it('cannot login with invalid email', async () => {
+  it('can login using username', async () => {
     const res = await login(server, {
-      email: 'com', 
+      identifier: 'dat',
+      password: 'password'
+    })
+    expect(res.status).toBe(200)
+  })
+  it('cannot login with invalid identifier', async () => {
+    const res = await login(server, {
+      identifier: '',
       password: 'password'
     });
     expect(res.status).toBe(400)
   })
   it('cannot login to fake user', async () => {
     const res = await login(server, {
-      email: 'fake@fakes.com', 
+      identifier: 'fake@fakes.com',
       password: 'password'
     });
     expect(res.status).toBe(401)
   })
   it('cannot login with wrong password', async () => {
     const res = await login(server, {
-      email: 'dat@gmail.com', 
+      identifier: 'dat@gmail.com',
       password: 'fakepass'
     })
     expect(res.status).toBe(401)

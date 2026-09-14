@@ -17,6 +17,7 @@ const AUTH_COOKIE_OPTIONS = 'HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=180
 export class AuthController extends Controller {
   @Post('signup')
   @SuccessResponse('201', 'User created')
+  @Response('400', 'Invalid signup details or username in use')
   @Response('409', 'Email in use')
   public async signup(
     @Body() request: SignupRequest,
@@ -31,6 +32,7 @@ export class AuthController extends Controller {
 
   @Post('login')
   @SuccessResponse('200', 'Logged in')
+  @Response('400', 'Invalid login details')
   @Response('401', 'Bad credentials')
   public async login(
     @Body() request: LoginRequest,
