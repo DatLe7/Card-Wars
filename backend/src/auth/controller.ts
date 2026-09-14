@@ -1,20 +1,35 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
+  Request,
   Res,
   Response,
   Route,
+  Security,
   SuccessResponse,
   TsoaResponse,
 } from 'tsoa';
 import { LoginRequest, SignupRequest } from '.';
 import { AuthService, createJwt } from './service';
+import type * as express from 'express';
+import { SessionUser } from '../types/express';
 
-const AUTH_COOKIE_OPTIONS = 'HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=1800';
+const AUTH_COOKIE_OPTIONS = 'HttpOnly; Secure; SameSite=Lax; Path=/; max-age=2592000';
 
 @Route('auth')
 export class AuthController extends Controller {
+  @Get('me')
+  @SuccessResponse('200', 'Authenticated user')
+  @Response('401', 'Authentication required')
+  @Security('cookie')
+  public async me(
+    @Request() request: express.Request,
+  ): Promise<SessionUser> {
+    return request.user;
+  }
+
   @Post('signup')
   @SuccessResponse('201', 'User created')
   @Response('400', 'Invalid signup details or username in use')
