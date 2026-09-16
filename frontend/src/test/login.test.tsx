@@ -47,4 +47,21 @@ describe('Login', () => {
 
 		expect(mockNavigate).toHaveBeenCalledWith('/');
 	})
+
+	it('error message shown on failed login', async () => {
+		server.use(
+			http.post('/api/v0/auth/login', () => {
+				return HttpResponse.json(
+					{ message: 'Bad credentials' },
+					{ status: 401 }
+				)
+			})
+		)
+
+		render(<Login />)
+
+		await login('dat', 'password')
+
+		expect(await screen.findByText('Bad credentials')).toBeInTheDocument()
+	})
 })
