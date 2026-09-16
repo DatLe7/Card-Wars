@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { ChangeEvent } from 'react'
 
 import { signup } from './model'
 import { useNavigate } from 'react-router'
@@ -27,6 +28,14 @@ const Signup = () => {
 		}
 	}
 
+	const handleChange = (
+		event: ChangeEvent<HTMLInputElement>,
+		setValue: (value: string) => void,
+	) => {
+		setValue(event.currentTarget.value)
+		setError('')
+	}
+
 	return (
 		<form onSubmit={handleSubmit}>
 			{error && <div>{error}</div>}
@@ -36,7 +45,7 @@ const Signup = () => {
 				name="username"
 				placeholder="Enter Username"
 				value={username}
-				onChange={(e) => setUsername(e.target.value)}
+				onChange={(e) => handleChange(e, setUsername)}
 			/>
 
 			<label htmlFor="email">Email</label>
@@ -46,7 +55,7 @@ const Signup = () => {
 				type="email"
 				placeholder="Enter Email"
 				value={email}
-				onChange={(e) => setEmail(e.target.value)}
+				onChange={(e) => handleChange(e, setEmail)}
 			/>
 
 			<label htmlFor="password">Password</label>
@@ -57,7 +66,7 @@ const Signup = () => {
 				autoComplete="new-password"
 				placeholder="Enter Password"
 				value={password}
-				onChange={(e) => setPassword(e.target.value)}
+				onChange={(e) => handleChange(e, setPassword)}
 			/>
 
 			<button type="submit">Sign up</button>

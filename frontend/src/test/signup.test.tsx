@@ -82,6 +82,29 @@ describe('Signup', () => {
 		expect(await screen.findByText('Invalid signup details or username in use')
 		).toBeInTheDocument()
 	})
-	// Error message clears when typing on input
+	it('Error message clears when typing on input', async () => {
+		server.use(
+			http.post('/api/v0/auth/signup', () => {
+				return HttpResponse.json(
+					{ message: 'Invalid signup details or username in use' },
+					{ status: 400 },
+				)
+			})
+		)
+		render(
+			<MemoryRouter>
+				<Signup />
+			</MemoryRouter>
+		)
+		await signup('fail', 'fail@email.com', 'password')
+
+		const error = await screen.findByText('Invalid signup details or username in use')
+
+		const username = screen.getByLabelText('Username')
+		await userEvent.clear(username)
+		await userEvent.type(username, 'Not Fails')
+
+		expect(error).not.toBeInTheDocument()
+	})
 	// Requires username, email, password
 })
