@@ -9,17 +9,27 @@ const Signup = () => {
 	const [username, setUsername] = useState('')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
+	const [error, setError] = useState('')
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault()
-		const res = await signup(username, email, password)
-		if (res) {
+		try {
+			await signup(username, email, password)
 			navigate('/')
+		} catch (err) {
+			/* v8 ignore if */
+			if (err instanceof Error) {
+				setError(err.message)
+			} else {
+				/* v8 ignore next */
+				setError('Something went wrong')
+			}
 		}
 	}
 
 	return (
 		<form onSubmit={handleSubmit}>
+			{error && <div>{error}</div>}
 			<label htmlFor="username">Username</label>
 			<input
 				id="username"

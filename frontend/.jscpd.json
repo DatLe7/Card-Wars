@@ -1,6 +1,17 @@
 {
-  "threshold": 5,
-  "reporters": ["console"],
-  "ignore": ["**/*.test.ts", "**/*.test.tsx", "**/test/**"],
-  "absolute": true
+  "threshold": 3,
+  "minLines": 10,
+  "minTokens": 100,
+  "reporters": ["html", "console"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/build/**",
+    "**/coverage/**",
+    "**/copypaste/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/test/**"
+  ],
+  "absolute": true,
+  "output": "copypaste"
 }
