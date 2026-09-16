@@ -6,21 +6,9 @@ import { http, HttpResponse } from 'msw'
 
 import userEvent from '@testing-library/user-event';
 
+import { signup } from './testutils';
+
 import Signup from '../auth/signup'
-
-const signup = async (username: string, email: string, password: string) => {
-	const user = userEvent.setup()
-
-	const usernameInput = screen.getByLabelText('Username')
-	const emailInput = screen.getByLabelText('Email')
-	const passwordInput = screen.getByLabelText('Password')
-	const signupButton = screen.getByRole('button', { name: 'Sign up' })
-
-	if (username) await user.type(usernameInput, username)
-	if (email) await user.type(emailInput, email)
-	if (password) await user.type(passwordInput, password)
-	await user.click(signupButton)
-}
 
 
 const mockNavigate = vi.fn();
