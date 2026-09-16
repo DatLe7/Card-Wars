@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import type { ChangeEvent } from 'react'
+import { useState, ChangeEvent, SubmitEvent } from 'react'
 
 import { signup } from './model'
 import { useNavigate } from 'react-router'
@@ -12,9 +11,20 @@ const Signup = () => {
 	const [password, setPassword] = useState('')
 	const [error, setError] = useState('')
 
-	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
 		event.preventDefault()
 		try {
+			const missing = [
+				!username.trim() ? 'Username' : '',
+				!email.trim() ? 'Email' : '',
+				!password.trim() ? 'Password' : '',
+			].filter(Boolean)
+
+			if (missing.length > 0) {
+				setError(`${missing.join(', ')} Required`)
+				return
+			}
+
 			await signup(username, email, password)
 			navigate('/')
 		} catch (err) {

@@ -16,9 +16,9 @@ const signup = async (username: string, email: string, password: string) => {
 	const passwordInput = screen.getByLabelText('Password')
 	const signupButton = screen.getByRole('button', { name: 'Sign up' })
 
-	await user.type(usernameInput, username)
-	await user.type(emailInput, email)
-	await user.type(passwordInput, password)
+	if (username) await user.type(usernameInput, username)
+	if (email) await user.type(emailInput, email)
+	if (password) await user.type(passwordInput, password)
 	await user.click(signupButton)
 }
 
@@ -106,5 +106,32 @@ describe('Signup', () => {
 
 		expect(error).not.toBeInTheDocument()
 	})
-	// Requires username, email, password
+	it('requires username', async () => {
+		render(<Signup />)
+		await signup('', 'fail@email.com', 'password')
+
+		expect(await screen.findByText('Username Required'))
+			.toBeInTheDocument()
+	})
+	it('requires email', async () => {
+		render(<Signup />)
+		await signup('fail', '', 'password')
+
+		expect(await screen.findByText('Email Required'))
+			.toBeInTheDocument()
+	})
+	it('requires password', async () => {
+		render(<Signup />)
+		await signup('fail', 'fail@email.com', '')
+
+		expect(await screen.findByText('Password Required'))
+			.toBeInTheDocument()
+	})
+	it('requires all fields', async () => {
+		render(<Signup />)
+		await signup('', '', '')
+
+		expect(await screen.findByText('Username, Email, Password Required'))
+			.toBeInTheDocument()
+	})
 })
