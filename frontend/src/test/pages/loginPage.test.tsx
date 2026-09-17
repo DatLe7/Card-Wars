@@ -2,8 +2,9 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { MemoryRouter, Routes, Route } from 'react-router';
 
-import LoginPage from '../../pages/login'
 import userEvent from '@testing-library/user-event';
+
+import LoginPage from '../../pages/login'
 
 describe('Login Page', () => {
 	it('renders login', () => {
