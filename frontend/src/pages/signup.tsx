@@ -1,10 +1,12 @@
+import { Link } from 'react-router';
+
 import Signup from '../auth/signup'
 
 const SignupPage = () => {
 	return (
 		<div>
 			<Signup />
-			<p>Already have an account? Log in.</p>
+			<Link to="/login">Already have an account? Log in.</Link>
 		</div>
 	)
 }
