@@ -88,5 +88,26 @@ describe('Login', () => {
 
 		expect(error).not.toBeInTheDocument()
 	})
+	it('requires identifier', async () => {
+		render(<Login />)
+
+		await login('', 'password')
+
+		expect(await screen.findByText('Username Or Email Required'))
+	})
+	it('requires password', async () => {
+		render(<Login />)
+
+		await login('dat', '')
+
+		expect(await screen.findByText('Password Required'))
+	})
+	it('requires all fields', async () => {
+		render(<Login />)
+
+		await login('', '')
+
+		expect(await screen.findByText('Username Or Email, Password Required'))
+	})
 	// requires all fields
 })

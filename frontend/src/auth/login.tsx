@@ -12,6 +12,16 @@ const Login = () => {
 	const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
 		event.preventDefault()
 		try {
+			const missing = [
+				!identifier.trim() ? 'Username Or Email' : '',
+				!password.trim() ? 'Password' : '',
+			].filter(Boolean)
+
+			if (missing.length > 0) {
+				setError(`${missing.join(', ')} Required`)
+				return
+			}
+
 			await login(identifier, password)
 			navigate('/')
 		} catch (err) {
