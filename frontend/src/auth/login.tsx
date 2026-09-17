@@ -1,4 +1,4 @@
-import { useState, SubmitEvent } from 'react'
+import { useState, SubmitEvent, ChangeEvent } from 'react'
 import { login } from './model'
 import { useNavigate } from 'react-router'
 
@@ -25,6 +25,14 @@ const Login = () => {
 		}
 	}
 
+	const handleChange = (
+		event: ChangeEvent<HTMLInputElement>,
+		setValue: (value: string) => void,
+	) => {
+		setValue(event.currentTarget.value)
+		setError('')
+	}
+
 	return (
 		<form onSubmit={handleSubmit}>
 			{error && <div>{error}</div>}
@@ -34,7 +42,7 @@ const Login = () => {
 				name="identifier"
 				placeholder="Enter Username Or Email"
 				value={identifier}
-				onChange={(e) => setIdentifier(e.currentTarget.value)}
+				onChange={(e) => handleChange(e, setIdentifier)}
 			/>
 			<label htmlFor="password">Password</label>
 			<input
@@ -43,7 +51,7 @@ const Login = () => {
 				type="password"
 				placeholder="Enter Password"
 				value={password}
-				onChange={(e) => setPassword(e.currentTarget.value)}
+				onChange={(e) => handleChange(e, setPassword)}
 			/>
 			<button type="submit">Log in</button>
 		</form>

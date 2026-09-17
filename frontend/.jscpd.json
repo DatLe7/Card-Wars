@@ -1,7 +1,7 @@
 {
-  "threshold": 3,
-  "minLines": 10,
-  "minTokens": 100,
+  "threshold": 5,
+  "minLines": 15,
+  "minTokens": 150,
   "reporters": ["html", "console"],
   "ignore": [
     "**/node_modules/**",

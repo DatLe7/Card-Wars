@@ -7,6 +7,7 @@ import { http, HttpResponse } from 'msw'
 import { login } from './testutils';
 
 import Login from '../auth/login'
+import userEvent from '@testing-library/user-event';
 
 const mockNavigate = vi.fn();
 
@@ -64,4 +65,28 @@ describe('Login', () => {
 
 		expect(await screen.findByText('Bad credentials')).toBeInTheDocument()
 	})
+
+	it('error message gets clear on typing', async () => {
+		server.use(
+			http.post('/api/v0/auth/login', () => {
+				return HttpResponse.json(
+					{ message: 'Bad credentials' },
+					{ status: 401 }
+				)
+			})
+		)
+
+		render(<Login />)
+
+		await login('dat', 'password')
+
+		const error = await screen.findByText('Bad credentials')
+
+		const passwordInput = screen.getByLabelText('Password')
+		await userEvent.clear(passwordInput)
+		await userEvent.type(passwordInput, 'realPassword')
+
+		expect(error).not.toBeInTheDocument()
+	})
+	// requires all fields
 })
