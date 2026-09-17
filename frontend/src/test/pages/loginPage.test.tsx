@@ -1,8 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter, Routes, Route } from 'react-router';
 
 import LoginPage from '../../pages/login'
+import userEvent from '@testing-library/user-event';
 
 describe('Login Page', () => {
 	it('renders login', () => {
@@ -23,4 +24,27 @@ describe('Login Page', () => {
 		)
 		expect(screen.getByText('Create an account'))
 	})
+	it('clicking create account routes to signup', async () => {
+		const user = userEvent.setup();
+
+		render(
+			<MemoryRouter initialEntries={['/login']}>
+				<Routes>
+					<Route path="/login" element={<LoginPage />} />
+					<Route
+						path="/signup"
+						element={<h1>Signup page</h1>}
+					/>
+				</Routes>
+			</MemoryRouter>
+		);
+
+		await user.click(
+			screen.getByRole('link', { name: 'Create an account' })
+		);
+
+		expect(
+			screen.getByRole('heading', { name: 'Signup page' })
+		).toBeInTheDocument();
+	});
 })
