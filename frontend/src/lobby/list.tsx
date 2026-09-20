@@ -5,15 +5,25 @@ import { getLobbies } from './model'
 
 const LobbyList = () => {
 	const [lobbies, setLobbies] = useState<Lobby[]>([])
+	const [error, setError] = useState('')
 
 	useEffect(() => {
-		void getLobbies().then((availableLobbies) => {
-			setLobbies(availableLobbies ?? [])
-		})
+		let active = true
+		void getLobbies()
+			.then((availableLobbies) => {
+				/* v8 ignore next */
+				if (active) setLobbies(availableLobbies)
+			})
+			.catch(() => {
+				if (active) setError('Failed to load lobbies')
+			})
+
+		return () => { active = false }
 	}, [])
 
 	return (
 		<div>
+			{error && <div role="alert">{error}</div>}
 			{lobbies.map((lobby) => (
 				<LobbyListItem key={lobby.id} {...lobby} />
 			))}

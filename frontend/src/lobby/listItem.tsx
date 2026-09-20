@@ -1,14 +1,22 @@
 import { useState } from 'react'
-import { joinLobby } from './model'
+import { useNavigate } from 'react-router'
 
-import { Lobby } from '.'
+import { joinLobby } from './model'
+import type { Lobby } from '.'
 
 function LobbyListItem({ name, id }: Lobby) {
-	const [joinFailed, setJoinFailed] = useState(false)
+	const navigate = useNavigate()
+
+	const [error, setError] = useState('')
 
 	async function handleJoin() {
-		const joined = await joinLobby(id)
-		setJoinFailed(!joined)
+		setError('')
+		try {
+			const joined = await joinLobby(id)
+			navigate(`/room/${joined}`)
+		} catch (err) {
+			setError((err as Error).message)
+		}
 	}
 
 	return (
@@ -16,7 +24,7 @@ function LobbyListItem({ name, id }: Lobby) {
 			type="button"
 			onClick={() => void handleJoin()}
 		>
-			{joinFailed ? 'Failed to join lobby' : name}
+			{error || name}
 		</button>
 	)
 }

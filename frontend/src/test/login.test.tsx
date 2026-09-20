@@ -109,5 +109,4 @@ describe('Login', () => {
 
 		expect(await screen.findByText('Username Or Email, Password Required'))
 	})
-	// requires all fields
 })
