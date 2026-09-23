@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event';
 
 import LobbyListItem from '../lobby/listItem'
 import LobbyList from '../lobby/list'
+import LobbyCreate from '../lobby/create'
 
 const mockNavigate = vi.fn();
 
@@ -153,4 +154,17 @@ describe('Lobby List', () => {
 		await userEvent.click(await screen.findByRole('button', { name: 'Dat\'s Lobby' }))
 		expect(mockNavigate).toHaveBeenCalledWith('/room/123')
 	})
+})
+
+
+describe('create lobby', () => {
+	it('renders', () => {
+		render(<LobbyCreate />)
+
+		expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument()
+		expect(screen.getByLabelText('Lobby Name')).toBeInTheDocument()
+	})
+	// Test that a lobby name is required before submitting.
+	// Test that successful creation navigates to the new lobby's room.
+	// Test that failed creation displays an error.
 })
