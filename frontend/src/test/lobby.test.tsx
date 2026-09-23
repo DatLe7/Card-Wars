@@ -159,6 +159,7 @@ describe('Lobby List', () => {
 
 describe('create lobby', () => {
 	beforeEach(() => {
+		mockNavigate.mockClear()
 		render(<LobbyCreate />)
 	})
 	it('renders', () => {
@@ -175,5 +176,20 @@ describe('create lobby', () => {
 
 		expect(await screen.findByText('Failed to create lobby')).toBeInTheDocument()
 	})
-	// Test that successful creation navigates to the new lobby's room.
+	it('routes to room upon creating lobby', async () => {
+		server.use(
+			http.post('/api/v0/lobby', () => {
+				return HttpResponse.json(
+					{
+						name: 'Dat\'s Lobby',
+						id: '123'
+					},
+				)
+			}),
+		)
+
+		await userEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+		expect(mockNavigate).toHaveBeenCalledWith('/room/123')
+	})
 })
