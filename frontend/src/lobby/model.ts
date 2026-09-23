@@ -13,3 +13,11 @@ export async function getLobbies(): Promise<Lobby[]> {
 	if (!res.ok) throw new Error('Failed to load lobbies');
 	return res.json();
 }
+
+export async function createLobby(): Promise<Lobby> {
+	const res = await fetch('/api/v0/lobby', {
+		method: 'POST',
+	});
+	if (!res.ok) throw Error('Failed to create lobby');
+	return res.json();
+}

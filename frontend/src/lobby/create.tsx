@@ -1,14 +1,23 @@
+import { useState } from 'react'
+import { createLobby } from './model'
+
 const LobbyCreate = () => {
+	const [error, setError] = useState('')
+
+	const handleCreate = async () => {
+		try {
+			// const lobby = 
+			await createLobby()
+		} catch (err) {
+			setError((err as Error).message)
+		}
+	}
+
 	return (
-		<form>
-			<label htmlFor="lobbyname">Lobby Name</label>
-			<input
-				id="lobbyname"
-				name="lobbyname"
-				placeholder="Enter Lobby Name"
-			/>
-			<button type="submit">Create</button>
-		</form>
+		<div>
+			{error && <div role="alert">{error}</div>}
+			<button onClick={handleCreate}>Create</button>
+		</div>
 	)
 }
 

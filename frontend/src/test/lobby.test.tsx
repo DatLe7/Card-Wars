@@ -158,13 +158,22 @@ describe('Lobby List', () => {
 
 
 describe('create lobby', () => {
-	it('renders', () => {
+	beforeEach(() => {
 		render(<LobbyCreate />)
-
-		expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument()
-		expect(screen.getByLabelText('Lobby Name')).toBeInTheDocument()
 	})
-	// Test that a lobby name is required before submitting.
+	it('renders', () => {
+		expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument()
+	})
+	it('shows error on failure', async () => {
+		server.use(
+			http.post('/api/v0/lobby', () => {
+				return HttpResponse.json({ success: false }, { status: 500 })
+			}),
+		)
+
+		await userEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+		expect(await screen.findByText('Failed to create lobby')).toBeInTheDocument()
+	})
 	// Test that successful creation navigates to the new lobby's room.
-	// Test that failed creation displays an error.
 })

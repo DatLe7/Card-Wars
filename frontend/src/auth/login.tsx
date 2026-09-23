@@ -25,13 +25,7 @@ const Login = () => {
 			await login(identifier, password)
 			navigate('/')
 		} catch (err) {
-			/* v8 ignore if */
-			if (err instanceof Error) {
-				setError(err.message)
-			} else {
-				/* v8 ignore next */
-				setError('Something went wrong')
-			}
+			setError((err as Error).message)
 		}
 	}
 
