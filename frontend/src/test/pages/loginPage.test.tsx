@@ -4,7 +4,7 @@ import { MemoryRouter, Routes, Route } from 'react-router';
 
 import userEvent from '@testing-library/user-event';
 
-import LoginPage from '../../pages/login'
+import LoginPage from '../../pages/login';
 
 describe('Login Page', () => {
 	it('renders login', () => {
@@ -12,19 +12,19 @@ describe('Login Page', () => {
 			<MemoryRouter>
 				<LoginPage />
 			</MemoryRouter>
-		)
-		expect(screen.getByLabelText('Username Or Email'))
-		expect(screen.getByLabelText('Password'))
-		expect(screen.getByRole('button', { name: 'Log in' }))
-	})
+		);
+		expect(screen.getByLabelText('Username Or Email'));
+		expect(screen.getByLabelText('Password'));
+		expect(screen.getByRole('button', { name: 'Log in' }));
+	});
 	it('renders create account option', () => {
 		render(
 			<MemoryRouter>
 				<LoginPage />
 			</MemoryRouter>
-		)
-		expect(screen.getByText('Create an account'))
-	})
+		);
+		expect(screen.getByText('Create an account'));
+	});
 	it('clicking create account routes to signup', async () => {
 		const user = userEvent.setup();
 
@@ -48,4 +48,4 @@ describe('Login Page', () => {
 			screen.getByRole('heading', { name: 'Signup page' })
 		).toBeInTheDocument();
 	});
-})
+});

@@ -10,14 +10,14 @@ export async function signup(
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ username, email, password }),
-	})
+	});
 
   if (!res.ok) {
 		const error = await res.json();
 		throw new Error(error.message);
 	}
 
-	return 'User Created'
+	return 'User Created';
 }
 
 export async function login(
@@ -29,25 +29,25 @@ export async function login(
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ identifier, password }),
-	})
+	});
 
   if (!res.ok) {
 		const error = await res.json();
 		throw new Error(error.message);
 	}
 
-	return 'Logged In'
+	return 'Logged In';
 }
 
 export async function check(): Promise<SessionUser> {
   const res = await fetch('/api/v0/auth/me', {
     credentials: 'include',
-  })
+  });
 
   if (!res.ok) {
-    const error = await res.json()
-    throw new Error(error.message)
+    const error = await res.json();
+    throw new Error(error.message);
   }
 
-  return res.json()
+  return res.json();
 }

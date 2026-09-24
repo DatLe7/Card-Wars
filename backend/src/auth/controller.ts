@@ -39,7 +39,7 @@ export class AuthController extends Controller {
     @Res() setCookie: TsoaResponse<201, void, { 'Set-Cookie': string }>,
   ): Promise<void> {
     const authenticated = await new AuthService().signup(request);
-    const jwt = createJwt(authenticated.id)
+    const jwt = createJwt(authenticated.id);
     return setCookie(201, undefined, {
       'Set-Cookie': `authToken=${encodeURIComponent(jwt)}; ${AUTH_COOKIE_OPTIONS}; Max-Age=2592000`
     });
@@ -54,7 +54,7 @@ export class AuthController extends Controller {
     @Res() setCookie: TsoaResponse<200, void, { 'Set-Cookie': string }>,
   ): Promise<void> {
     const authenticated = await new AuthService().login(request);
-    const jwt = createJwt(authenticated.id)
+    const jwt = createJwt(authenticated.id);
     return setCookie(200, undefined, {
       'Set-Cookie': `authToken=${encodeURIComponent(jwt)}; ${AUTH_COOKIE_OPTIONS}; Max-Age=2592000`
     });

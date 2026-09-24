@@ -1,50 +1,50 @@
-import { useState, ChangeEvent, SubmitEvent } from 'react'
+import { useState, ChangeEvent, SubmitEvent } from 'react';
 
-import { signup } from './model'
-import { useNavigate } from 'react-router'
+import { signup } from './model';
+import { useNavigate } from 'react-router';
 
 const Signup = () => {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 
-	const [username, setUsername] = useState('')
-	const [email, setEmail] = useState('')
-	const [password, setPassword] = useState('')
-	const [error, setError] = useState('')
+	const [username, setUsername] = useState('');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [error, setError] = useState('');
 
 	const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
-		event.preventDefault()
+		event.preventDefault();
 		try {
 			const missing = [
 				!username.trim() ? 'Username' : '',
 				!email.trim() ? 'Email' : '',
 				!password.trim() ? 'Password' : '',
-			].filter(Boolean)
+			].filter(Boolean);
 
 			if (missing.length > 0) {
-				setError(`${missing.join(', ')} Required`)
-				return
+				setError(`${missing.join(', ')} Required`);
+				return;
 			}
 
-			await signup(username, email, password)
-			navigate('/')
+			await signup(username, email, password);
+			navigate('/');
 		} catch (err) {
 			/* v8 ignore if */
 			if (err instanceof Error) {
-				setError(err.message)
+				setError(err.message);
 			} else {
 				/* v8 ignore next */
-				setError('Something went wrong')
+				setError('Something went wrong');
 			}
 		}
-	}
+	};
 
 	const handleChange = (
 		event: ChangeEvent<HTMLInputElement>,
 		setValue: (value: string) => void,
 	) => {
-		setValue(event.currentTarget.value)
-		setError('')
-	}
+		setValue(event.currentTarget.value);
+		setError('');
+	};
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -81,7 +81,7 @@ const Signup = () => {
 
 			<button type="submit">Sign up</button>
 		</form>
-	)
-}
+	);
+};
 
-export default Signup
+export default Signup;

@@ -1,4 +1,4 @@
-import LobbyList from '@/lobby/list'
+import LobbyList from '@/lobby/list';
 
 const LobbyPage = () => {
 	return (
@@ -6,7 +6,7 @@ const LobbyPage = () => {
 			Lobbies
 			<LobbyList />
 		</div>
-	)
-}
+	);
+};
 
-export default LobbyPage
+export default LobbyPage;

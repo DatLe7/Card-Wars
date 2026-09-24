@@ -9,7 +9,7 @@ import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
 
-import { RegisterRoutes } from '../build/routes'
+import { RegisterRoutes } from '../build/routes';
 
 const app: Express = express();
 app.use(cors({ origin: ['http://localhost:5174'], credentials: true, }));
@@ -48,6 +48,6 @@ const errorHandler: ErrorRequestHandler = (
 };
 
 app.use(errorHandler);
-app.set('trust proxy', 1)
+app.set('trust proxy', 1);
 
 export default app;

@@ -1,4 +1,4 @@
-import type { Lobby } from '.';
+import type { Lobby, LobbySummary } from '.';
 
 export async function joinLobby(id: string): Promise<string> {
 	const res = await fetch(`/api/v0/lobby/${id}/join`, {
@@ -8,8 +8,8 @@ export async function joinLobby(id: string): Promise<string> {
 	return id;
 }
 
-export async function getLobbies(): Promise<Lobby[]> {
-	const res = await fetch('/api/v0/lobby')
+export async function getLobbies(): Promise<LobbySummary[]> {
+	const res = await fetch('/api/v0/lobby');
 	if (!res.ok) throw new Error('Failed to load lobbies');
 	return res.json();
 }

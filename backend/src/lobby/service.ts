@@ -279,11 +279,11 @@ export class LobbyService {
     const state = stateRows[0];
 
     if (!state.exists || state.is_owner || state.is_full) {
-      throw new HttpError(404, 'Lobby Not Found')
+      throw new HttpError(404, 'Lobby Not Found');
     }
 
     if (state.already_in_lobby || state.owns_another_lobby) {
-      throw new HttpError(409, 'User Already Associated With Another Lobby')
+      throw new HttpError(409, 'User Already Associated With Another Lobby');
     }
 
     const {rows} = await pool.query({

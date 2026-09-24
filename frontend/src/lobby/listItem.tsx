@@ -1,21 +1,21 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
-import { joinLobby } from './model'
-import type { Lobby } from '.'
+import { joinLobby } from './model';
+import type { LobbySummary } from '.';
 
-function LobbyListItem({ name, id }: Lobby) {
-	const navigate = useNavigate()
+function LobbyListItem({ name, id }: LobbySummary) {
+	const navigate = useNavigate();
 
-	const [error, setError] = useState('')
+	const [error, setError] = useState('');
 
 	async function handleJoin() {
-		setError('')
+		setError('');
 		try {
-			const joined = await joinLobby(id)
-			navigate(`/room/${joined}`)
+			const joined = await joinLobby(id);
+			navigate(`/room/${joined}`);
 		} catch (err) {
-			setError((err as Error).message)
+			setError((err as Error).message);
 		}
 	}
 
@@ -26,7 +26,7 @@ function LobbyListItem({ name, id }: Lobby) {
 		>
 			{error || name}
 		</button>
-	)
+	);
 }
 
-export default LobbyListItem
+export default LobbyListItem;

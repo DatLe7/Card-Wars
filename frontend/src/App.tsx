@@ -1,10 +1,10 @@
-import { Routes, Route } from 'react-router'
+import { Routes, Route } from 'react-router';
 
 
-import ProtectedRoute from './auth/protectedRoute'
-import LobbyPage from './pages/lobby'
-import Room from './pages/room'
-import LoginPage from './pages/login'
+import ProtectedRoute from './auth/protectedRoute';
+import LobbyPage from './pages/lobby';
+import Room from './pages/room';
+import LoginPage from './pages/login';
 
 const App = () => {
 	return (
@@ -27,7 +27,7 @@ const App = () => {
 				}
 			/>
 		</Routes>
-	)
-}
+	);
+};
 
-export default App
+export default App;

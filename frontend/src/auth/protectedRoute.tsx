@@ -1,35 +1,35 @@
-import { useEffect, useState, type ReactNode } from 'react'
-import { Navigate } from 'react-router'
-import { check } from './model'
+import { useEffect, useState, type ReactNode } from 'react';
+import { Navigate } from 'react-router';
+import { check } from './model';
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-	const [loading, setLoading] = useState(true)
-	const [user, setUser] = useState(false)
+	const [loading, setLoading] = useState(true);
+	const [user, setUser] = useState(false);
 
 	useEffect(() => {
 		const run = async () => {
 			try {
-				const session = await check()
-				setUser(!!session)
+				const session = await check();
+				setUser(!!session);
 			} catch {
-				setUser(false)
+				setUser(false);
 			} finally {
-				setLoading(false)
+				setLoading(false);
 			}
-		}
+		};
 
-		run()
-	}, [])
+		run();
+	}, []);
 
 	if (loading) {
-		return <div>Loading...</div>
+		return <div>Loading...</div>;
 	}
 
 	if (!user) {
-		return <Navigate to="/login" replace />
+		return <Navigate to="/login" replace />;
 	}
 
-	return <>{children}</>
-}
+	return <>{children}</>;
+};
 
-export default ProtectedRoute
+export default ProtectedRoute;

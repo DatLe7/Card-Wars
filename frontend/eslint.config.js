@@ -18,6 +18,7 @@ export default tseslint.config(
       'react-refresh': reactRefresh,
     },
     rules: {
+			semi: ['error', 'always'],
       ...reactHooks.configs.recommended.rules,
       quotes: ['error', 'single', {
         avoidEscape: false,

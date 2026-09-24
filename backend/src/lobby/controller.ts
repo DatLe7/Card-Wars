@@ -21,7 +21,7 @@ export class LobbyController extends Controller {
   public async create(
 		@Request() request: express.Request,
   ): Promise<Lobby> {
-    return new LobbyService().create(request.user)
+    return new LobbyService().create(request.user);
   }
 
 	@Post('{lobbyId}/join')

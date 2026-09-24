@@ -72,7 +72,7 @@ export class AuthService {
       if (existingUsers[0]) {
         throw new HttpError(400, 'Username in use');
       }
-      throw new HttpError(409, 'Email in use')
+      throw new HttpError(409, 'Email in use');
     }
 
     return rows[0];
@@ -94,7 +94,7 @@ export class AuthService {
     });
 
     if (!rows[0]) {
-      throw new HttpError(401, 'Bad credentials')
+      throw new HttpError(401, 'Bad credentials');
     }
 
     return rows[0];

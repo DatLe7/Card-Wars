@@ -17,7 +17,7 @@ export function registerGameHandlers(socket: Socket, games: GameStorage): void {
       try {
         game.command({ ...request.action, playerId: socket.data.user.id });
       } catch {
-        return
+        return;
       }
 
       const gameSockets = await socket.nsp.in(room).fetchSockets();

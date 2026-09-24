@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 
 import userEvent from '@testing-library/user-event';
 
-import SignupPage from '../../pages/signup'
+import SignupPage from '../../pages/signup';
 
 describe('Signup Page', () => {
 	it('renders signup', () => {
@@ -12,24 +12,24 @@ describe('Signup Page', () => {
 			<MemoryRouter>
 				<SignupPage />
 			</MemoryRouter>
-		)
+		);
 
-		expect(screen.getByLabelText('Username')).toBeInTheDocument()
-		expect(screen.getByLabelText('Email')).toBeInTheDocument()
-		expect(screen.getByLabelText('Password')).toBeInTheDocument()
+		expect(screen.getByLabelText('Username')).toBeInTheDocument();
+		expect(screen.getByLabelText('Email')).toBeInTheDocument();
+		expect(screen.getByLabelText('Password')).toBeInTheDocument();
 		expect(
 			screen.getByRole('button', { name: 'Sign up' })
 		).toBeInTheDocument();
-	})
+	});
 	it('renders login link', () => {
 		render(
 			<MemoryRouter>
 				<SignupPage />
 			</MemoryRouter>
-		)
+		);
 
-		expect(screen.getByText('Already have an account? Log in.')).toBeInTheDocument()
-	})
+		expect(screen.getByText('Already have an account? Log in.')).toBeInTheDocument();
+	});
 	it('already have account links to login page', async () => {
 		const user = userEvent.setup();
 
@@ -52,5 +52,5 @@ describe('Signup Page', () => {
 		expect(
 			screen.getByRole('heading', { name: 'Login page' })
 		).toBeInTheDocument();
-	})
-})
+	});
+});

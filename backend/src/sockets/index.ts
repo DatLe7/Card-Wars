@@ -9,7 +9,7 @@ import { GameStorage } from './game.storage';
 export function createSocketServer(httpServer: HttpServer) {
   const io = new SocketIOServer(httpServer, {
     cors: {
-      origin: 'http://localhost:5174',
+      origin: 'http://localhost:3000',
       credentials: true,
     },
   });

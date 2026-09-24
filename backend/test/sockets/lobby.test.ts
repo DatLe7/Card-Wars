@@ -28,7 +28,7 @@ describe('Lobby Join', () => {
 
     expect(res.status).toBe(404);
     socket.disconnect();
-  })
+  });
   it('Must use valid id for lobby', async () => {
     const ownerAuthCookie = await signupRandomUser(server);
     const socket = await connectSocket(socketUrl, ownerAuthCookie);
@@ -39,12 +39,12 @@ describe('Lobby Join', () => {
 
     expect(res.status).toBe(500);
     socket.disconnect();
-  })
+  });
   it('Can Join Someone elses Lobby', async () => {
     const ownerAuthCookie = await signupRandomUser(server);
     const joinerAuthCookie = await signupRandomUser(server);
     const createResponse = await createLobby(server, ownerAuthCookie);
-    const joinResponse = await joinLobby(server, createResponse.body.id, joinerAuthCookie)
+    const joinResponse = await joinLobby(server, createResponse.body.id, joinerAuthCookie);
     const ownerSocket = await connectSocket(socketUrl, ownerAuthCookie);
     const joinerSocket = await connectSocket(socketUrl, joinerAuthCookie);
 
@@ -59,7 +59,7 @@ describe('Lobby Join', () => {
     expect(res.player).toBeDefined();
     ownerSocket.disconnect();
     joinerSocket.disconnect();
-  })
+  });
   it('Joining a lobby returns lobby id', async () => {
     const ownerAuthCookie = await signupRandomUser(server);
     const createResponse = await createLobby(server, ownerAuthCookie);

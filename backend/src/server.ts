@@ -11,4 +11,4 @@ const server = app.listen(3012, '0.0.0.0', () => {
   console.log('Swagger docs: http://localhost:3012/api/v0/docs');
 });
 
-createSocketServer(server)
+createSocketServer(server);

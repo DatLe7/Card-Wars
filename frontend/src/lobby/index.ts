@@ -1,4 +1,16 @@
+export interface LobbySummary {
+  id: string;
+  name: string;
+}
+
+export interface LobbyUser {
+  name: string | null;
+  deck: string;
+}
+
 export interface Lobby {
-	name: string
-	id: string
+  id: string;
+	name: string;
+	owner: LobbyUser;
+	player: LobbyUser;
 }

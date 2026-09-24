@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react'
-import { server } from '../../../vitest.setup'
-import { http, HttpResponse } from 'msw'
+import { render, screen } from '@testing-library/react';
+import { server } from '../../../vitest.setup';
+import { http, HttpResponse } from 'msw';
 
-import LobbyPage from '../../pages/lobby'
+import LobbyPage from '../../pages/lobby';
 import { MemoryRouter } from 'react-router';
 import userEvent from '@testing-library/user-event';
 
@@ -31,28 +31,28 @@ describe('lobby', () => {
 						name: 'random lobby',
 						id: '321'
 					}
-				])
+				]);
 			}),
 			http.post('/api/v0/lobby/:lobbyId/join', () => {
 				return HttpResponse.json({
 					success: true,
-				})
+				});
 			}),
-		)
+		);
 		render(
 			<MemoryRouter>
 				<LobbyPage />
 			</MemoryRouter>
-		)
-	})
+		);
+	});
 	it('renders', () => {
-		expect(screen.getByText('Lobbies')).toBeInTheDocument()
-	})
+		expect(screen.getByText('Lobbies')).toBeInTheDocument();
+	});
 	it('renders lobbies', async () => {
-		expect(await screen.findByText('random lobby')).toBeInTheDocument()
-	})
+		expect(await screen.findByText('random lobby')).toBeInTheDocument();
+	});
 	it('routes to game room on click', async () => {
-		await userEvent.click(await screen.findByRole('button', { name: 'Dat\'s Lobby' }))
-		expect(mockNavigate).toHaveBeenCalledWith('/room/123')
-	})
-})
+		await userEvent.click(await screen.findByRole('button', { name: 'Dat\'s Lobby' }));
+		expect(mockNavigate).toHaveBeenCalledWith('/room/123');
+	});
+});

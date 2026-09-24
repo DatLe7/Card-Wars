@@ -1,41 +1,41 @@
-import { useState, SubmitEvent, ChangeEvent } from 'react'
-import { login } from './model'
-import { useNavigate } from 'react-router'
+import { useState, SubmitEvent, ChangeEvent } from 'react';
+import { login } from './model';
+import { useNavigate } from 'react-router';
 
 const Login = () => {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 
-	const [identifier, setIdentifier] = useState('')
-	const [password, setPassword] = useState('')
-	const [error, setError] = useState('')
+	const [identifier, setIdentifier] = useState('');
+	const [password, setPassword] = useState('');
+	const [error, setError] = useState('');
 
 	const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
-		event.preventDefault()
+		event.preventDefault();
 		try {
 			const missing = [
 				!identifier.trim() ? 'Username Or Email' : '',
 				!password.trim() ? 'Password' : '',
-			].filter(Boolean)
+			].filter(Boolean);
 
 			if (missing.length > 0) {
-				setError(`${missing.join(', ')} Required`)
-				return
+				setError(`${missing.join(', ')} Required`);
+				return;
 			}
 
-			await login(identifier, password)
-			navigate('/')
+			await login(identifier, password);
+			navigate('/');
 		} catch (err) {
-			setError((err as Error).message)
+			setError((err as Error).message);
 		}
-	}
+	};
 
 	const handleChange = (
 		event: ChangeEvent<HTMLInputElement>,
 		setValue: (value: string) => void,
 	) => {
-		setValue(event.currentTarget.value)
-		setError('')
-	}
+		setValue(event.currentTarget.value);
+		setError('');
+	};
 
 	return (
 		<form onSubmit={handleSubmit}>
@@ -59,7 +59,7 @@ const Login = () => {
 			/>
 			<button type="submit">Log in</button>
 		</form>
-	)
-}
+	);
+};
 
-export default Login
+export default Login;
