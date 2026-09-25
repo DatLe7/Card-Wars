@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { mockSocket } from '../../vitest.setup';
@@ -88,4 +88,27 @@ describe('Room', () => {
 
 		expect(screen.getByRole('alert')).toHaveTextContent('Missing room ID');
 	});
+	it('view updates on new lobby:state', async () => {
+		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);
+		renderRoom();
+
+		await screen.findByText(lobby.name);
+
+		const updatedLobby: Lobby = {
+			...lobby,
+			player: { name: 'Jake', deck: 'finn' },
+		};
+
+		const onLobbyState = mockSocket.on.mock.calls.find(
+			([event]) => event === 'lobby:state'
+		)?.[1];
+
+		await act(async () => {
+			onLobbyState(updatedLobby);
+		});
+
+		expect(screen.getByLabelText('Player name')).toHaveTextContent('Jake');
+	});
+	// change deck button
+	// change deck button changes view
 });

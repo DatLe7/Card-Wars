@@ -28,6 +28,10 @@ const Room = () => {
 
 		void join();
 
+		socket.on('lobby:state', (lobby: Lobby) => {
+			setLobby(lobby);
+		});
+
 		return () => {
 			socket.disconnect();
 		};
