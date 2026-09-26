@@ -70,7 +70,7 @@ export class AuthService {
         values: [user.username],
       });
       if (existingUsers[0]) {
-        throw new HttpError(400, 'Username in use');
+        throw new HttpError(409, 'Username in use');
       }
       throw new HttpError(409, 'Email in use');
     }

@@ -1,4 +1,5 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { mockSocket } from '../../vitest.setup';
@@ -109,6 +110,36 @@ describe('Room', () => {
 
 		expect(screen.getByLabelText('Player name')).toHaveTextContent('Jake');
 	});
-	// change deck button
-	// change deck button changes view
+	it('Toggle deck renders', async () => {
+		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);
+		renderRoom();
+
+		expect(await screen.findByRole('button', { name: 'Toggle deck' })).toBeInTheDocument();
+	});
+	it('change deck button changes view', async () => {
+		const user = userEvent.setup();
+		const updatedLobby: Lobby = {
+			...lobby,
+			owner: { ...lobby.owner, deck: 'jake' },
+		};
+		mockSocket.emitWithAck
+			.mockResolvedValueOnce(lobby)
+			.mockResolvedValueOnce(updatedLobby)
+			.mockResolvedValueOnce(lobby);
+		renderRoom();
+
+		expect(await screen.findByLabelText('Owner deck')).toHaveTextContent('finn');
+
+		await user.click(screen.getByRole('button', { name: 'Toggle deck' }));
+
+		await waitFor(() => {
+			expect(screen.getByLabelText('Owner deck')).toHaveTextContent('jake');
+		});
+
+		await user.click(screen.getByRole('button', { name: 'Toggle deck' }));
+
+		await waitFor(() => {
+			expect(screen.getByLabelText('Owner deck')).toHaveTextContent('finn');
+		});
+	});
 });

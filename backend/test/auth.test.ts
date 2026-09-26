@@ -19,16 +19,16 @@ describe('Auth Signup', () => {
       email: 'dat@gmail.com',
       password: 'password'
     });
-    expect(res.status).toBe(201)
-  })
+    expect(res.status).toBe(201);
+  });
   it('returns auth token', async () => {
     await signup(server, {
       username: 'cookie-test',
       email: 'cookie-test@gmail.com',
       password: 'password'
     })
-      .expect('Set-Cookie', /authToken=/)
-  })
+      .expect('Set-Cookie', /authToken=/);
+  });
   it('cannot signup with a used email', async () => {
     await signup(server, {
       username: 'dat1',
@@ -40,24 +40,24 @@ describe('Auth Signup', () => {
       email: 'datDupe@gmail.com',
       password: 'password'
     });
-    expect(res.status).toBe(409)
-  })
+    expect(res.status).toBe(409);
+  });
   it('cannot signup with invalid email', async () => {
     const res = await signup(server, {
       username: 'dat1',
       email: 'com',
       password: 'password'
     });
-    expect(res.status).toBe(400)
-  })
+    expect(res.status).toBe(400);
+  });
   it('cannot signup using a invalid username', async () => {
     const res = await signup(server, {
       username: '',
       email: 'invalid-username@gmail.com',
       password: 'password'
     });
-    expect(res.status).toBe(400)
-  })
+    expect(res.status).toBe(400);
+  });
   it('cannot signup using a used username', async () => {
     await signup(server, {
       username: 'usernameDupe',
@@ -69,9 +69,10 @@ describe('Auth Signup', () => {
       email: 'usernameDupe2@gmail.com',
       password: 'password'
     });
-    expect(res.status).toBe(400)
-  })
-})
+    expect(res.status).toBe(409);
+    expect(res.body.message).toBe('Username in use');
+  });
+});
 
 describe('Auth Login', () => {
   beforeAll(async () => {
@@ -80,50 +81,50 @@ describe('Auth Login', () => {
       email: 'dat@gmail.com',
       password: 'password'
     });
-  })
+  });
   it('return code', async () => {
     const res = await login(server, {
       identifier: 'dat@gmail.com',
       password: 'password'
-    })
-    expect(res.status).toBe(200)
-  })
+    });
+    expect(res.status).toBe(200);
+  });
   it('returns auth token', async () => {
     await login(server, {
       identifier: 'dat@gmail.com',
       password: 'password'
     })
-      .expect('Set-Cookie', /authToken=/)
-  })
+      .expect('Set-Cookie', /authToken=/);
+  });
   it('can login using username', async () => {
     const res = await login(server, {
       identifier: 'dat',
       password: 'password'
-    })
-    expect(res.status).toBe(200)
-  })
+    });
+    expect(res.status).toBe(200);
+  });
   it('cannot login with invalid identifier', async () => {
     const res = await login(server, {
       identifier: '',
       password: 'password'
     });
-    expect(res.status).toBe(400)
-  })
+    expect(res.status).toBe(400);
+  });
   it('cannot login to fake user', async () => {
     const res = await login(server, {
       identifier: 'fake@fakes.com',
       password: 'password'
     });
-    expect(res.status).toBe(401)
-  })
+    expect(res.status).toBe(401);
+  });
   it('cannot login with wrong password', async () => {
     const res = await login(server, {
       identifier: 'dat@gmail.com',
       password: 'fakepass'
-    })
-    expect(res.status).toBe(401)
-  })
-})
+    });
+    expect(res.status).toBe(401);
+  });
+});
 
 describe('Cookie check', () => {
   let authCookie: string;
@@ -194,7 +195,7 @@ describe('Cookie check', () => {
 
     expect(res.status).toBe(401);
   });
-})
+});
 
 describe('logout', () => {
   let authCookie: string;
@@ -268,7 +269,7 @@ describe('logout', () => {
       .expect(204);
     await supertest(server).post('/api/v0/auth/logout').expect(204);
   });
-})
+});
 
 describe('JWT verification', () => {
   it('rejects a JWT with the wrong payload structure', () => {

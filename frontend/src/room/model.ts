@@ -12,3 +12,11 @@ export const joinRoom = async (lobbyId: string): Promise<Lobby> => {
 
   return response;
 };
+
+export const changeDeck = async (lobbyId: string) => {
+	const response = await socket
+    .timeout(5000)
+    .emitWithAck('lobby:deck-change', { lobbyId });
+
+  return response;
+};

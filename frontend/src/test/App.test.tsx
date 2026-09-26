@@ -11,7 +11,7 @@ describe('App', () => {
 		server.use(
 			http.get('/api/v0/auth/me', () => {
 				return HttpResponse.json(
-					{ id: '123', username: 'testuser' },
+					{ id: '123', name: 'testuser' },
 					{ status: 200 },
 				);
 			}),

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 import type { Lobby } from '../lobby';
-import { joinRoom } from './model';
+import { changeDeck, joinRoom } from './model';
 import { socket } from '../socket';
 
 const Room = () => {
@@ -37,6 +37,10 @@ const Room = () => {
 		};
 	}, [id]);
 
+	const handleDeckChange = async () => {
+		setLobby(await changeDeck(id as string));
+	};
+
 	if (!id) return <p role="alert">Missing room ID</p>;
 	if (error) return <p role="alert">{error}</p>;
 	if (lobby == undefined) return <p>Loading...</p>;
@@ -56,6 +60,9 @@ const Room = () => {
 				<dt>Player deck</dt>
 				<dd aria-label="Player deck">{lobby.player.deck}</dd>
 			</dl>
+			<button type="button" onClick={handleDeckChange}>
+				Toggle deck
+			</button>
 		</>
 	);
 };

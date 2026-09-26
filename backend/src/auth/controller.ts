@@ -32,8 +32,8 @@ export class AuthController extends Controller {
 
   @Post('signup')
   @SuccessResponse('201', 'User created')
-  @Response('400', 'Invalid signup details or username in use')
-  @Response('409', 'Email in use')
+  @Response('400', 'Invalid signup details')
+  @Response('409', 'Username or email in use')
   public async signup(
     @Body() request: SignupRequest,
     @Res() setCookie: TsoaResponse<201, void, { 'Set-Cookie': string }>,
