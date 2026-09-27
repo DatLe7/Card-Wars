@@ -5,7 +5,11 @@ import { describe, expect, it } from 'vitest';
 import { mockSocket } from '../../vitest.setup';
 
 import Room from '../room/room';
-import type { Lobby } from '../lobby';
+import { Lobby } from '../lobby';
+import { SessionUser } from '../auth';
+import { UserContext } from '@/context/userContext';
+
+const user: SessionUser = { id: '12313-321321-312321', name: 'Dat' };
 
 const lobby: Lobby = {
 	id: '123',
@@ -17,7 +21,11 @@ const lobby: Lobby = {
 const renderRoom = () => render(
 	<MemoryRouter initialEntries={['/room/123']}>
 		<Routes>
-			<Route path='/room/:id' element={<Room />} />
+			<Route path='/room/:id' element={
+				<UserContext.Provider value={user}>
+					<Room />
+				</UserContext.Provider>
+			} />
 		</Routes>
 	</MemoryRouter>
 );
@@ -141,5 +149,24 @@ describe('Room', () => {
 		await waitFor(() => {
 			expect(screen.getByLabelText('Owner deck')).toHaveTextContent('finn');
 		});
+	});
+	it('renders start game button for owner', async () => {
+		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);
+		renderRoom();
+
+		expect(await screen.findByRole('button', { name: 'Start' })).toBeInTheDocument();
+	});
+	it('does not renders start game button for player', async () => {
+		mockSocket.emitWithAck.mockResolvedValueOnce({
+			id: '321',
+			name: 'Someones\'s Lobby',
+			owner: { name: 'someone', deck: 'finn' },
+			player: { name: 'dat', deck: 'finn' },
+		});
+		renderRoom();
+
+		expect(
+			screen.queryByRole('button', { name: 'Start' })
+		).not.toBeInTheDocument();
 	});
 });
