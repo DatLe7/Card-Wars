@@ -1,0 +1,8 @@
+{
+  "name": "cardwars",
+  "private": true,
+  "scripts": {
+    "predev": "docker compose -f backend/docker-compose.yml up -d --force-recreate --wait",
+    "dev": "npm exec --prefix backend --no -- concurrently --kill-others --names backend,frontend \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\""
+  }
+}

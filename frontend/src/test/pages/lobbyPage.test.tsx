@@ -51,6 +51,9 @@ describe('lobby', () => {
 	it('renders lobbies', async () => {
 		expect(await screen.findByText('random lobby')).toBeInTheDocument();
 	});
+	it('renders the create lobby button', () => {
+		expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+	});
 	it('routes to game room on click', async () => {
 		await userEvent.click(await screen.findByRole('button', { name: 'Dat\'s Lobby' }));
 		expect(mockNavigate).toHaveBeenCalledWith('/room/123');

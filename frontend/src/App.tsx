@@ -5,11 +5,13 @@ import ProtectedRoute from './auth/protectedRoute';
 import LobbyPage from './pages/lobby';
 import Room from './pages/room';
 import LoginPage from './pages/login';
+import SignupPage from './pages/signup';
 
 const App = () => {
 	return (
 		<Routes>
 			<Route path="/login" element={<LoginPage />} />
+			<Route path="/signup" element={<SignupPage />} />
 			<Route
 				path="/room/:id"
 				element={

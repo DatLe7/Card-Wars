@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
-import * as path from 'path';
 
-dotenv.config({ path: path.resolve(process.cwd(), '../../../.env') });
+dotenv.config();
 
 import app from './app';
 import { createSocketServer } from './sockets';
