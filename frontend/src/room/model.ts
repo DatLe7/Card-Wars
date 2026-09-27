@@ -26,3 +26,14 @@ export const leaveRoom = async (lobbyId: string): Promise<void> => {
     .timeout(5000)
     .emitWithAck('lobby:leave', { lobbyId });
 };
+
+export const startGame = async (lobbyId: string): Promise<void> => {
+//  const response = 
+ await socket
+    .timeout(5000)
+    .emitWithAck('lobby:start', { lobbyId });
+
+  // if ('error' in response) {
+  //   throw new Error(response.error);
+  // }
+};

@@ -1,8 +1,9 @@
 import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockSocket } from '../../vitest.setup';
+import { sampleGameView } from './testutils';
 
 import Room from '../room/room';
 import { Lobby } from '../lobby';
@@ -41,6 +42,9 @@ const renderRoom = () => render(
 );
 
 describe('Room', () => {
+	beforeEach(() => {
+		mockNavigate.mockClear();
+	});
 	it('renders lobby name', async () => {
 		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);
 		renderRoom();
@@ -167,7 +171,9 @@ describe('Room', () => {
 		expect(await screen.findByRole('button', { name: 'Leave' })).toBeInTheDocument();
 	});
 	it('leave button calls leave event', async () => {
-		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);
+		mockSocket.emitWithAck
+			.mockResolvedValueOnce(lobby)
+			.mockResolvedValueOnce({ lobbyId: lobby.id });
 		renderRoom();
 
 		await userEvent.click(await screen.findByRole('button', { name: 'Leave' }));
@@ -205,5 +211,57 @@ describe('Room', () => {
 		expect(
 			screen.queryByRole('button', { name: 'Start' })
 		).not.toBeInTheDocument();
+	});
+	it('start button call start event', async () => {
+		mockSocket.emitWithAck
+			.mockResolvedValueOnce(lobby)
+			.mockResolvedValueOnce({ lobbyId: lobby.id });
+		renderRoom();
+
+		await userEvent.click(await screen.findByRole('button', { name: 'Start' }));
+
+		expect(mockSocket.emitWithAck).toHaveBeenCalledWith(
+			'lobby:start',
+			{ lobbyId: lobby.id }
+		);
+	});
+	it('start button routes to game', async () => {
+		mockSocket.emitWithAck
+			.mockResolvedValueOnce({
+				...lobby,
+				player: { name: 'player-2', deck: 'finn' },
+			})
+			.mockImplementationOnce(async () => {
+				const onGameState = mockSocket.on.mock.calls.find(
+					([event]) => event === 'game:state'
+				)?.[1];
+
+				onGameState(sampleGameView(user));
+
+				return { gameId: lobby.id };
+			});
+
+		renderRoom();
+
+		await userEvent.click(await screen.findByRole('button', { name: 'Start' }));
+
+		expect(mockNavigate).toHaveBeenCalledWith('/game'); // this route will probs change in the future
+	});
+	it('routes other player to game on gamestart', () => {
+		mockSocket.emitWithAck
+			.mockResolvedValueOnce({
+				...lobby,
+				player: { name: 'player-2', deck: 'finn' },
+			});
+
+		renderRoom();
+
+		const onGameState = mockSocket.on.mock.calls.find(
+			([event]) => event === 'game:state'
+		)?.[1];
+
+		onGameState(sampleGameView(user));
+
+		expect(mockNavigate).toHaveBeenCalledWith('/game');
 	});
 });

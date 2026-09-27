@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import type { Lobby } from '../lobby';
-import { changeDeck, joinRoom, leaveRoom } from './model';
+import { changeDeck, joinRoom, leaveRoom, startGame } from './model';
 import { socket } from '../socket';
 import { UserContext } from '../context/userContext';
 
@@ -29,18 +29,24 @@ const Room = () => {
 			}
 		};
 
+		const gameStart = () => {
+			navigate('/game');
+		};
+
 		socket.connect();
 
 		void join();
 
-		socket.on('lobby:state', (lobby: Lobby) => {
-			setLobby(lobby);
-		});
+		socket.on('lobby:state', setLobby);
+
+		socket.on('game:state', gameStart);
 
 		return () => {
+			socket.off('lobby:state', setLobby);
+			socket.off('game:state', gameStart);
 			socket.disconnect();
 		};
-	}, [id]);
+	}, [id, navigate]);
 
 	const handleDeckChange = async () => {
 		setLobby(await changeDeck(id as string));
@@ -49,6 +55,10 @@ const Room = () => {
 	const handleLeave = async () => {
 		await leaveRoom(id as string);
 		navigate('/');
+	};
+
+	const handleStart = async () => {
+		await startGame(id as string);
 	};
 
 	if (!id) return <p role="alert">Missing room ID</p>;
@@ -77,7 +87,7 @@ const Room = () => {
 				Leave
 			</button>
 			{user?.name === lobby.owner.name && (
-				<button type="button">Start</button>
+				<button type="button" onClick={handleStart}>Start</button>
 			)}
 		</>
 	);
