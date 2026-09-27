@@ -150,13 +150,19 @@ describe('Room', () => {
 			expect(screen.getByLabelText('Owner deck')).toHaveTextContent('finn');
 		});
 	});
+	it('renders leave button', async () => {
+		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);
+		renderRoom();
+
+		expect(await screen.findByRole('button', { name: 'Leave' })).toBeInTheDocument();
+	});
 	it('renders start game button for owner', async () => {
 		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);
 		renderRoom();
 
 		expect(await screen.findByRole('button', { name: 'Start' })).toBeInTheDocument();
 	});
-	it('does not renders start game button for player', async () => {
+	it('does not renders start game button for player', () => {
 		mockSocket.emitWithAck.mockResolvedValueOnce({
 			id: '321',
 			name: 'Someones\'s Lobby',

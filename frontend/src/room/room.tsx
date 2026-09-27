@@ -66,6 +66,9 @@ const Room = () => {
 			<button type="button" onClick={handleDeckChange}>
 				Toggle deck
 			</button>
+			<button type="button">
+				Leave
+			</button>
 			{user?.name === lobby.owner.name && (
 				<button type="button">Start</button>
 			)}
