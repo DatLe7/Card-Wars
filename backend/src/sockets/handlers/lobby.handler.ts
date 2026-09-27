@@ -119,9 +119,6 @@ export function registerLobbyHandlers(
         const room = `lobby:${request.lobbyId}`;
 
         if (result.kind === 'deleted') {
-          socket.to(room).emit('lobby:closed', {
-            lobbyId: result.lobbyId,
-          });
           await socket.nsp.in(room).socketsLeave(room);
         } else {
           socket.to(room).emit('lobby:state', result.lobby);

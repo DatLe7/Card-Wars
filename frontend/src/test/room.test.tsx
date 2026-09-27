@@ -1,13 +1,23 @@
 import { render, screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mockSocket } from '../../vitest.setup';
 
 import Room from '../room/room';
 import { Lobby } from '../lobby';
 import { SessionUser } from '../auth';
 import { UserContext } from '@/context/userContext';
+
+const mockNavigate = vi.fn();
+
+vi.mock('react-router', async () => {
+	const actual = await vi.importActual('react-router');
+	return {
+		...actual,
+		useNavigate: () => mockNavigate,
+	};
+});
 
 const user: SessionUser = { id: '12313-321321-312321', name: 'Dat' };
 
@@ -155,6 +165,27 @@ describe('Room', () => {
 		renderRoom();
 
 		expect(await screen.findByRole('button', { name: 'Leave' })).toBeInTheDocument();
+	});
+	it('leave button calls leave event', async () => {
+		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);
+		renderRoom();
+
+		await userEvent.click(await screen.findByRole('button', { name: 'Leave' }));
+
+		expect(mockSocket.emitWithAck).toHaveBeenCalledWith(
+			'lobby:leave',
+			{ lobbyId: lobby.id }
+		);
+	});
+	it('leave button routes to home page', async () => {
+		mockSocket.emitWithAck
+			.mockResolvedValueOnce(lobby)
+			.mockResolvedValueOnce({ lobbyId: lobby.id });
+		renderRoom();
+
+		await userEvent.click(await screen.findByRole('button', { name: 'Leave' }));
+
+		expect(mockNavigate).toHaveBeenCalledWith('/');
 	});
 	it('renders start game button for owner', async () => {
 		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);

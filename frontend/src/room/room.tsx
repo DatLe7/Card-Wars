@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 import type { Lobby } from '../lobby';
-import { changeDeck, joinRoom } from './model';
+import { changeDeck, joinRoom, leaveRoom } from './model';
 import { socket } from '../socket';
 import { UserContext } from '../context/userContext';
 
 const Room = () => {
+	const navigate = useNavigate();
+
 	const [lobby, setLobby] = useState<Lobby | undefined>(undefined);
 	const [error, setError] = useState<string>();
 
@@ -44,6 +46,11 @@ const Room = () => {
 		setLobby(await changeDeck(id as string));
 	};
 
+	const handleLeave = async () => {
+		await leaveRoom(id as string);
+		navigate('/');
+	};
+
 	if (!id) return <p role="alert">Missing room ID</p>;
 	if (error) return <p role="alert">{error}</p>;
 	if (lobby == undefined) return <p>Loading...</p>;
@@ -66,7 +73,7 @@ const Room = () => {
 			<button type="button" onClick={handleDeckChange}>
 				Toggle deck
 			</button>
-			<button type="button">
+			<button type="button" onClick={handleLeave}>
 				Leave
 			</button>
 			{user?.name === lobby.owner.name && (

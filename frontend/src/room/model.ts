@@ -13,10 +13,16 @@ export const joinRoom = async (lobbyId: string): Promise<Lobby> => {
   return response;
 };
 
-export const changeDeck = async (lobbyId: string) => {
+export const changeDeck = async (lobbyId: string): Promise<Lobby> => {
 	const response = await socket
     .timeout(5000)
     .emitWithAck('lobby:deck-change', { lobbyId });
 
   return response;
+};
+
+export const leaveRoom = async (lobbyId: string): Promise<void> => {
+	await socket
+    .timeout(5000)
+    .emitWithAck('lobby:leave', { lobbyId });
 };
