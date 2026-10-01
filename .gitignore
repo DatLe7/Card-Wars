@@ -5,6 +5,9 @@ node_modules/
 dist/
 build/
 *.tsbuildinfo
+cte-linux-amd64.tar.gz
+cte-linux-amd64.tar
+cte-linux-amd64.tar.gz.*.tmp
 
 # Test and coverage output
 coverage/
