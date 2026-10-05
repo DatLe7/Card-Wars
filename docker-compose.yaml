@@ -35,7 +35,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-cardwars}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in the root .env}
       SECRET: ${SECRET:?Set SECRET in the root .env}
-      APP_ORIGIN: ${APP_ORIGIN:-http://localhost:8080}
+      APP_ORIGIN: ${APP_ORIGIN:-https://cwtcg.online}
     depends_on:
       db:
         condition: service_healthy
@@ -53,13 +53,16 @@ services:
       target: web
     restart: unless-stopped
     ports:
-      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${WEB_PORT:-8080}:80"
+      - "${WEB_BIND_ADDRESS:-0.0.0.0}:80:80"
+      - "${WEB_BIND_ADDRESS:-0.0.0.0}:443:443"
+    volumes:
+      - ${LETSENCRYPT_DIR:-/etc/letsencrypt}:/etc/letsencrypt:ro
     depends_on:
       api:
         condition: service_healthy
         restart: true
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/api/health"]
+      test: ["CMD-SHELL", "wget --no-check-certificate -q -O /dev/null https://127.0.0.1/api/health"]
       interval: 10s
       timeout: 5s
       retries: 5

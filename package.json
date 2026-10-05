@@ -4,6 +4,6 @@
   "scripts": {
     "predev": "docker compose --env-file backend/.env -f backend/docker-compose.yml up -d --force-recreate --wait",
     "dev": "npm exec --prefix backend --no -- concurrently --kill-others --names backend,frontend \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
-    "package": "tar --version && docker buildx build . --target api -t cardwars-api:latest --platform linux/amd64 --load && docker buildx build . --target web -t cardwars-web:latest --platform linux/amd64 --load && docker pull --platform linux/amd64 postgres:18-alpine && docker save --platform linux/amd64 -o cte-linux-amd64.tar cardwars-api:latest cardwars-web:latest postgres:18-alpine && tar -czf cte-linux-amd64.tar.gz @cte-linux-amd64.tar && node -e \"require('node:fs').unlinkSync('cte-linux-amd64.tar')\""
+    "package": "docker buildx build . --target api -t cardwars-api:latest --platform linux/amd64 --load && docker buildx build . --target web -t cardwars-web:latest --platform linux/amd64 --load && docker pull --platform linux/amd64 postgres:18-alpine && docker save --platform linux/amd64 -o cte-linux-amd64.tar cardwars-api:latest cardwars-web:latest postgres:18-alpine"
   }
 }
