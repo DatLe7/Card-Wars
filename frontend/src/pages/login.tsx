@@ -1,13 +1,16 @@
-import { Link } from 'react-router';
-
 import Login from '../auth/login';
+import AuthPage from './authPage';
 
 const LoginPage = () => {
 	return (
-		<div>
+		<AuthPage
+			title="Welcome back."
+			description="Your next great battle is just a hand away."
+			linkTo="/signup"
+			linkText="Create an account"
+		>
 			<Login />
-			<Link to="/signup">Create an account</Link>
-		</div>
+		</AuthPage>
 	);
 };
 

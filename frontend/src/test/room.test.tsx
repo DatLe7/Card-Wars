@@ -60,11 +60,11 @@ describe('Room', () => {
 		expect(screen.getByLabelText('Owner deck')).toHaveTextContent(lobby.owner.deck);
 	});
 
-	it('renders player name as missing and deck as finn', async () => {
+	it('renders an open seat and deck as finn', async () => {
 		mockSocket.emitWithAck.mockResolvedValueOnce(lobby);
 		renderRoom();
 
-		expect(await screen.findByLabelText('Player name')).toHaveTextContent('missing');
+		expect(await screen.findByLabelText('Player name')).toHaveTextContent('Waiting for a challenger');
 		expect(screen.getByLabelText('Player deck')).toHaveTextContent('finn');
 	});
 
