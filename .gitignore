@@ -46,3 +46,5 @@ engine/vitest.config.js
 engine/vitest.config.js.map
 engine/vitest.config.d.ts
 engine/vitest.config.d.ts.map
+
+justfile
