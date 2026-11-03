@@ -23,13 +23,12 @@ const LobbyList = () => {
 
 	return (
 		<div className="grid gap-3" aria-live="polite">
-			{error && <div className="mb-4 rounded-[7px] border border-[#d8ae96] bg-[#fae9da] px-3.5 py-3 text-[13px] wrap-anywhere text-[#853a2d]" role="alert">{error}</div>}
-			{!error && lobbies === null && <p className="rounded-[9px] border border-dashed border-[#c7c8af] px-5 py-10 text-center text-sm text-[#66705e] [&>h3]:text-[25px] [&>h3]:text-[#24382e] [&>p]:mx-auto [&>p]:mt-3 [&>p]:max-w-[350px]" role="status">Finding your next opponent…</p>}
+			{error && <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm wrap-anywhere text-red-800" role="alert">{error}</div>}
+			{!error && lobbies === null && <p className="rounded-xl bg-slate-50 px-5 py-10 text-center text-sm text-slate-600" role="status">Finding your next opponent…</p>}
 			{!error && lobbies?.length === 0 && (
-				<div className="rounded-[9px] border border-dashed border-[#c7c8af] px-5 py-10 text-center text-sm text-[#66705e] [&>h3]:text-[25px] [&>h3]:text-[#24382e] [&>p]:mx-auto [&>p]:mt-3 [&>p]:max-w-[350px]">
-					<span className="mb-2.5 block text-[42px] text-[#6f8155]" aria-hidden="true">♧</span>
-					<h3>The table is yours.</h3>
-					<p>No open lobbies yet. Create one and invite a friend to play.</p>
+				<div className="rounded-xl bg-slate-50 px-5 py-10 text-center text-sm text-slate-600">
+					<h2 className="text-lg font-semibold text-slate-900">The table is yours.</h2>
+					<p className="mx-auto mt-2 max-w-sm">No open lobbies yet. Create one and invite a friend to play.</p>
 				</div>
 			)}
 			{lobbies?.map((lobby) => (

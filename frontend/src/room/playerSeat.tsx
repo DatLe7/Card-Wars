@@ -7,14 +7,22 @@ interface PlayerSeatProps {
 }
 
 const PlayerSeat = ({ player, label, number }: PlayerSeatProps) => (
-	<article className="group min-w-0 self-stretch rounded-xl border border-[#c7d6d1] bg-[linear-gradient(150deg,#e1ece7,#f4f5e9)] p-[22px] text-center data-[deck=jake]:border-[#dec894] data-[deck=jake]:bg-[linear-gradient(150deg,#f0dcaa,#faf4df)] max-[480px]:p-5" data-deck={player.deck}>
-		<div className="flex items-center justify-between [&>span:first-child]:mb-0"><span className="mb-3 text-[10px] font-extrabold tracking-[2.5px] text-[#6b704f] uppercase">{label}</span><span className="text-[11px] text-[#778270]">{number}</span></div>
-		<div className="mx-auto my-6 grid h-[92px] w-[72px] -rotate-7 place-items-center rounded-[9px] border-4 border-double border-[#a0bdb0] bg-[#315a50] font-[Georgia,serif] text-[42px] leading-normal font-bold text-[#fff6d9] shadow-[6px_6px_0_#c2d3c8] group-data-[deck=jake]:rotate-7 group-data-[deck=jake]:border-[#f0ce73] group-data-[deck=jake]:bg-[#9e6b25] group-data-[deck=jake]:shadow-[6px_6px_0_#e1cb94] max-[480px]:my-[18px]" aria-hidden="true">{player.deck.slice(0, 1).toUpperCase()}</div>
+	<article className="group min-w-0 rounded-xl bg-emerald-50 p-5 text-center data-[deck=jake]:bg-amber-50" data-deck={player.deck}>
+		<div className="flex items-center justify-between text-xs text-slate-600">
+			<span className="font-medium">{label}</span>
+			<span>{number}</span>
+		</div>
+		<div className="mx-auto my-5 grid size-14 place-items-center rounded-full bg-emerald-100 text-emerald-800 group-data-[deck=jake]:bg-amber-100 group-data-[deck=jake]:text-amber-800">
+			<svg className="size-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+				<circle cx="12" cy="8" r="4" />
+				<path d="M4 21v-2a8 8 0 0 1 16 0v2" />
+			</svg>
+		</div>
 		<dl>
 			<dt className="sr-only">{label} name</dt>
-			<dd className="min-h-12 text-lg font-bold wrap-anywhere max-[480px]:mb-3 max-[480px]:min-h-0" aria-label={`${label} name`}>{player.name ?? 'Waiting for a challenger'}</dd>
-			<dt className="text-[10px] tracking-[1.3px] text-[#66705e] uppercase">Selected deck</dt>
-			<dd className="pt-1 text-sm capitalize" aria-label={`${label} deck`}>{player.deck}</dd>
+			<dd className="mb-4 text-lg font-semibold wrap-anywhere" aria-label={`${label} name`}>{player.name ?? 'Waiting for a challenger'}</dd>
+			<dt className="text-xs text-slate-600">Selected deck</dt>
+			<dd className="mt-1 text-sm font-medium capitalize" aria-label={`${label} deck`}>{player.deck}</dd>
 		</dl>
 	</article>
 );

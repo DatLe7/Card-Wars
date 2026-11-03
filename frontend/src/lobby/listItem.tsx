@@ -21,17 +21,17 @@ function LobbyListItem({ name, id }: LobbySummary) {
 
 	return (
 		<button
-			className="flex w-full cursor-pointer items-center gap-[18px] rounded-[9px] border border-[#d9d4be] bg-white/45 px-5 py-[18px] text-left text-[#24382e] transition-[background,border-color,transform] duration-150 hover:translate-x-[3px] hover:border-[#a3b095] hover:bg-[#fffdf2] max-[480px]:flex-wrap max-[480px]:gap-3 max-[480px]:p-[15px]"
+			className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left hover:border-emerald-300 hover:bg-emerald-50"
 			type="button"
 			aria-label={error || name}
 			onClick={() => void handleJoin()}
 		>
-			<span className="grid h-[50px] basis-11 shrink-0 grow-0 place-items-center rounded-md border border-[#c6cbb3] bg-[#e5e9d7] text-2xl text-[#526b43]" aria-hidden="true">✦</span>
-			<span className="grid min-w-0 gap-1 max-[480px]:flex-1">
-				<span className="text-[15px] font-bold wrap-anywhere">{error || name}</span>
-				<span className="text-[11px] text-[#66705e] max-[480px]:hidden" aria-hidden="true">A little friendly competition</span>
-			</span>
-			<span className="ml-auto flex shrink-0 items-center gap-5 text-xs font-bold text-[#4c6744] [&>span]:text-[22px] max-[480px]:w-full max-[480px]:justify-end max-[480px]:gap-3.5" aria-hidden="true">Join lobby <span>→</span></span>
+			<svg className="size-5 shrink-0 text-emerald-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+				<rect x="4" y="4" width="16" height="16" rx="3" />
+				<path d="M4 12h16M12 4v16" />
+			</svg>
+			<span className="min-w-0 flex-1 text-sm font-medium wrap-anywhere">{error || name}</span>
+			<span className="flex shrink-0 items-center gap-2 text-sm font-medium text-emerald-800" aria-hidden="true"><span className="hidden sm:inline">Join</span><span className="text-xl">→</span></span>
 		</button>
 	);
 }

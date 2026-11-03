@@ -62,34 +62,33 @@ const Room = () => {
 		await startGame(id as string);
 	};
 
-	if (!id) return <p className="mb-4 rounded-[7px] border border-[#d8ae96] bg-[#fae9da] px-3.5 py-3 text-[13px] wrap-anywhere text-[#853a2d]" role="alert">Missing room ID</p>;
-	if (error) return <p className="mb-4 rounded-[7px] border border-[#d8ae96] bg-[#fae9da] px-3.5 py-3 text-[13px] wrap-anywhere text-[#853a2d]" role="alert">{error}</p>;
-	if (lobby == undefined) return <p className="rounded-[9px] border border-dashed border-[#c7c8af] px-5 py-10 text-center text-sm text-[#66705e] [&>h3]:text-[25px] [&>h3]:text-[#24382e] [&>p]:mx-auto [&>p]:mt-3 [&>p]:max-w-[350px]" role="status">Loading...</p>;
+	if (!id) return <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm wrap-anywhere text-red-800" role="alert">Missing room ID</p>;
+	if (error) return <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm wrap-anywhere text-red-800" role="alert">{error}</p>;
+	if (lobby == undefined) return <p className="rounded-xl bg-slate-50 px-5 py-10 text-center text-sm text-slate-600" role="status">Loading...</p>;
 
 	return (
 		<>
-			<div className="text-center [&>h1]:text-[clamp(26px,3vw,38px)] [&>h1]:leading-[1.2] [&>h1]:wrap-anywhere [&>p:last-child]:mt-3 [&>p:last-child]:mb-7 [&>p:last-child]:text-[13px] [&>p:last-child]:text-[#66705e]">
-				<p className="mb-3 text-[10px] font-extrabold tracking-[2.5px] text-[#6b704f] uppercase">The battle table</p>
-				<h1>{lobby.name}</h1>
-				<p>Pick your deck. Size up your rival. Let the adventure begin.</p>
+			<div className="mb-6">
+				<h1 className="text-2xl font-semibold tracking-tight wrap-anywhere">{lobby.name}</h1>
+				<p className="mt-2 text-sm text-slate-600">Choose your deck and get ready to play.</p>
 			</div>
-			<div className="grid grid-cols-[1fr_56px_1fr] items-center max-[480px]:grid-cols-1 max-[480px]:gap-3.5">
+			<div className="grid items-stretch gap-3 sm:grid-cols-[1fr_auto_1fr]">
 				<PlayerSeat player={lobby.owner} label="Owner" number="01" />
-				<span className="text-center font-[Georgia,serif] text-[19px] font-bold text-[#8b7949] italic" aria-hidden="true">VS</span>
+				<span className="self-center text-center text-xs font-semibold text-slate-500" aria-hidden="true">VS</span>
 				<PlayerSeat player={lobby.player} label="Player" number="02" />
 			</div>
-			<div className="mt-7 flex items-center justify-between gap-3 max-[480px]:flex-wrap">
-				<button className="inline-flex min-h-[46px] cursor-pointer items-center justify-center gap-3 rounded-[7px] border px-6 py-3 text-[13px] leading-[1.4] font-bold transition-[background,transform,box-shadow] duration-150 border-[#d0cbb5] bg-transparent text-[#6d5d49] hover:bg-[#d9dfc9]" type="button" onClick={handleLeave}>Leave</button>
-				<div className="flex items-center gap-3 max-[480px]:flex-1 max-[480px]:flex-wrap max-[480px]:justify-end">
-					<button className="inline-flex min-h-[46px] cursor-pointer items-center justify-center gap-3 rounded-[7px] border px-6 py-3 text-[13px] leading-[1.4] font-bold transition-[background,transform,box-shadow] duration-150 border-[#b9c2a5] bg-[#e4e8d5] text-[#35523a] hover:bg-[#d9dfc9]" type="button" onClick={handleDeckChange}>
-						<span aria-hidden="true">↔ </span>Toggle deck
+			<div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+				<button className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100" type="button" onClick={handleLeave}>Leave</button>
+				<div className="flex flex-wrap items-center gap-3">
+					<button className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-slate-100 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-200" type="button" onClick={handleDeckChange}>
+						<span aria-hidden="true">↔</span>Toggle deck
 					</button>
 					{user?.name === lobby.owner.name && (
-						<button className="inline-flex min-h-[46px] cursor-pointer items-center justify-center gap-3 rounded-[7px] border px-6 py-3 text-[13px] leading-[1.4] font-bold transition-[background,transform,box-shadow] duration-150 border-[#244932] bg-[#2f543b] text-[#fff8df] shadow-[0_3px_0_#203b2a] hover:-translate-y-px hover:bg-[#3c6849] active:translate-y-px active:shadow-[0_1px_0_#203b2a]" type="button" onClick={handleStart}>Start<span aria-hidden="true"> →</span></button>
+						<button className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-800 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-900" type="button" onClick={handleStart}>Start<span aria-hidden="true">→</span></button>
 					)}
 				</div>
 			</div>
-			<p className="mt-[26px] border-t border-[#d9d4bd] pt-5 text-center text-[11px] text-[#66705e]">The host starts the game when both challengers are ready.</p>
+			<p className="mt-6 border-t border-slate-200 pt-4 text-sm text-slate-600">The host starts the game when both challengers are ready.</p>
 		</>
 	);
 };

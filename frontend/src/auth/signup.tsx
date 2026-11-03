@@ -47,10 +47,11 @@ const Signup = () => {
 	};
 
 	return (
-		<form className="flex flex-col [&>label]:mb-2 [&>label]:text-xs [&>label]:font-bold [&>input]:mb-5 [&>input]:min-h-12 [&>input]:w-full [&>input]:rounded-[7px] [&>input]:border [&>input]:border-[#d5d0b9] [&>input]:bg-white/65 [&>input]:px-3.5 [&>input]:py-3 [&>input]:text-base [&>input]:text-[#24382e] [&>input]:transition-[border-color,box-shadow] [&>input]:duration-150 [&>input::placeholder]:text-[13px] [&>input::placeholder]:text-[#818774] [&>input:focus]:border-[#527c60] [&>input:focus]:shadow-[0_0_0_3px_#527c601f] [&>button]:mt-1 [&>button]:justify-between" onSubmit={handleSubmit}>
-			{error && <div className="mb-4 rounded-[7px] border border-[#d8ae96] bg-[#fae9da] px-3.5 py-3 text-[13px] wrap-anywhere text-[#853a2d]" role="alert">{error}</div>}
-			<label htmlFor="username">Username</label>
+		<form className="flex flex-col" onSubmit={handleSubmit}>
+			{error && <div className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm wrap-anywhere text-red-800" role="alert">{error}</div>}
+			<label className="mb-2 text-sm font-medium" htmlFor="username">Username</label>
 			<input
+				className="mb-5 min-h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-base placeholder:text-slate-500 focus:border-emerald-600"
 				id="username"
 				name="username"
 				autoComplete="username"
@@ -59,8 +60,9 @@ const Signup = () => {
 				onChange={(e) => handleChange(e, setUsername)}
 			/>
 
-			<label htmlFor="email">Email</label>
+			<label className="mb-2 text-sm font-medium" htmlFor="email">Email</label>
 			<input
+				className="mb-5 min-h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-base placeholder:text-slate-500 focus:border-emerald-600"
 				id="email"
 				name="email"
 				type="email"
@@ -70,8 +72,9 @@ const Signup = () => {
 				onChange={(e) => handleChange(e, setEmail)}
 			/>
 
-			<label htmlFor="password">Password</label>
+			<label className="mb-2 text-sm font-medium" htmlFor="password">Password</label>
 			<input
+				className="mb-5 min-h-12 w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 text-base placeholder:text-slate-500 focus:border-emerald-600"
 				id="password"
 				name="password"
 				type="password"
@@ -81,7 +84,7 @@ const Signup = () => {
 				onChange={(e) => handleChange(e, setPassword)}
 			/>
 
-			<button className="inline-flex min-h-[46px] cursor-pointer items-center justify-center gap-3 rounded-[7px] border px-6 py-3 text-[13px] leading-[1.4] font-bold transition-[background,transform,box-shadow] duration-150 border-[#244932] bg-[#2f543b] text-[#fff8df] shadow-[0_3px_0_#203b2a] hover:-translate-y-px hover:bg-[#3c6849] active:translate-y-px active:shadow-[0_1px_0_#203b2a]" type="submit">Sign up<span aria-hidden="true"> →</span></button>
+			<button className="mt-1 inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-800 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-900" type="submit">Sign up<span aria-hidden="true"> →</span></button>
 		</form>
 	);
 };
