@@ -8,10 +8,10 @@ From the project root with Docker running:
 
 ```powershell
 npm run package
-just send
+npm run send
 ```
 
-Run `just send` only after packaging succeeds. It uploads the images, Compose file, environment template, and SQL files to `cwtcg:~/cardwars/`.
+Run `npm run send` only after packaging succeeds. It uploads the images, Compose file, environment template, and SQL files to `cwtcg:~/cardwars/`.
 
 ## 2. Update the VPS
 

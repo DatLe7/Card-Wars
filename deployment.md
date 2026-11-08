@@ -25,14 +25,14 @@ Ubuntu provides the [Docker Compose v2 package](https://packages.ubuntu.com/nobl
 
 ## 3. Package and upload from your computer
 
-With Node.js, Docker, and `just` installed locally and Docker running, execute these commands from the project root in a local terminal:
+With Node.js and Docker installed locally and Docker running, execute these commands from the project root in a local terminal:
 
 ```powershell
 npm run package
-just send
+npm run send
 ```
 
-The package command produces **`cte-linux-amd64.tar`**, including the API, frontend/assets, and PostgreSQL images. `just send` creates `~/cardwars/backend` and uploads the archive, Compose file, `.env.example`, and SQL directory. It does not build images, replace the server's `.env`, or start containers.
+The package command produces **`cte-linux-amd64.tar`**, including the API, frontend/assets, and PostgreSQL images. `npm run send` creates `~/cardwars/backend` and uploads the archive, Compose file, `.env.example`, and SQL directory. It does not build images, replace the server's `.env`, or start containers.
 
 ## 4. Configure the VPS
 
@@ -88,7 +88,7 @@ sudo certbot renew --dry-run
 
 ## Deploy updates
 
-Run `npm run package` followed by `just send` locally. Then on the VPS:
+Run `npm run package` followed by `npm run send` locally. Then on the VPS:
 
 ```bash
 cd ~/cardwars
