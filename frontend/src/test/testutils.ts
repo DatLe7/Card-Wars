@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react';
 
 import userEvent from '@testing-library/user-event';
 import type { SessionUser } from '../auth';
+import type { GameView } from '../game';
 
 export const signup = async (username: string, email: string, password: string): Promise<void> => {
 	const user = userEvent.setup();
@@ -29,7 +30,7 @@ export const login = async (identifier: string, password: string): Promise<void>
 	await user.click(signupButton);
 };
 
-export const sampleGameView = (user: SessionUser) => {
+export const sampleGameView = (user: SessionUser): GameView => {
 	const landscapes = ['Blue Plains', 'Blue Plains', 'Blue Plains', 'Blue Plains'];
 	return {
 		id: user.id,
@@ -38,7 +39,7 @@ export const sampleGameView = (user: SessionUser) => {
 			landscape: landscapes,
 			deck: [{ cardId: 'ancient_scholar', count: 40 }],
 		},
-		turn: { number: 1, activePlayerId: user.id, phase: 'READY' },
+		turn: { number: 1, activePlayerId: user.id, phase: 'READY' as const },
 		game: {
 			player: {
 				life: 25,
@@ -49,7 +50,7 @@ export const sampleGameView = (user: SessionUser) => {
 					ownerId: user.id,
 					cardId: 'ancient_scholar',
 					name: 'Ancient Scholar',
-					type: 'creature',
+					type: 'creature' as const,
 					land: 'Blue Plains',
 					cost: 1,
 					attack: 1,
@@ -72,6 +73,6 @@ export const sampleGameView = (user: SessionUser) => {
 				lands: landscapes.map((landscape) => ({ landscape })),
 			},
 		},
-		actions: [{ type: 'NEXT_TURN', playerId: user.id }],
+		actions: [{ type: 'NEXT_TURN' as const, playerId: user.id }],
 	};
 };

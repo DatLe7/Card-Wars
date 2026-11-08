@@ -6,6 +6,7 @@ import LobbyPage from './pages/lobby';
 import Room from './pages/room';
 import LoginPage from './pages/login';
 import SignupPage from './pages/signup';
+import GamePage from './pages/game';
 
 const App = () => {
 	return (
@@ -17,6 +18,14 @@ const App = () => {
 				element={
 					<ProtectedRoute>
 						<Room />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path="/game"
+				element={
+					<ProtectedRoute>
+						<GamePage />
 					</ProtectedRoute>
 				}
 			/>

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 import type { Lobby } from '../lobby';
+import type { GameView } from '../game';
 import { changeDeck, joinRoom, leaveRoom, startGame } from './model';
 import { socket } from '../socket';
 import { UserContext } from '../context/userContext';
@@ -18,6 +19,7 @@ const Room = () => {
 	const { id } = useParams();
 	useEffect(() => {
 		if (!id) return;
+		let transferringToGame = false;
 
 		const join = async () => {
 			try {
@@ -30,8 +32,9 @@ const Room = () => {
 			}
 		};
 
-		const gameStart = () => {
-			navigate('/game');
+		const gameStart = (gameView: GameView) => {
+			transferringToGame = true;
+			navigate('/game', { state: { gameId: id, gameView } });
 		};
 
 		socket.connect();
@@ -45,7 +48,7 @@ const Room = () => {
 		return () => {
 			socket.off('lobby:state', setLobby);
 			socket.off('game:state', gameStart);
-			socket.disconnect();
+			if (!transferringToGame) socket.disconnect();
 		};
 	}, [id, navigate]);
 

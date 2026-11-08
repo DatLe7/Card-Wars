@@ -245,7 +245,9 @@ describe('Room', () => {
 
 		await userEvent.click(await screen.findByRole('button', { name: 'Start' }));
 
-		expect(mockNavigate).toHaveBeenCalledWith('/game'); // this route will probs change in the future
+		expect(mockNavigate).toHaveBeenCalledWith('/game', {
+			state: { gameId: lobby.id, gameView: sampleGameView(user) },
+		});
 	});
 	it('routes other player to game on gamestart', () => {
 		mockSocket.emitWithAck
@@ -262,6 +264,8 @@ describe('Room', () => {
 
 		onGameState(sampleGameView(user));
 
-		expect(mockNavigate).toHaveBeenCalledWith('/game');
+		expect(mockNavigate).toHaveBeenCalledWith('/game', {
+			state: { gameId: lobby.id, gameView: sampleGameView(user) },
+		});
 	});
 });
