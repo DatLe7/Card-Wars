@@ -1,4 +1,4 @@
-import { act, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import userEvent from '@testing-library/user-event';
 
@@ -152,6 +152,40 @@ describe('GameBoard', () => {
 		view.game.enemy.lands.forEach((land, index) => {
 			expect(battlefield.getByText(new RegExp(`^Opponent lane ${index + 1} `)))
 				.toHaveTextContent(land.landscape);
+		});
+	});
+
+	it('sends the play card action when a hand card is dropped onto a land', () => {
+		const view = sampleGameView(user);
+		const card = view.game.player.hand[1];
+		const action = {
+			type: 'PLAY_CARD' as const,
+			playerId: user.id,
+			cardInstanceId: card.instanceId,
+			laneIndex: 1,
+		};
+		view.turn.phase = 'MAIN';
+		view.game.player.actionPoints = 2;
+		view.actions = [action];
+		render(<GameBoard gameId="room-123" initialView={view} />);
+
+		const handCard = within(screen.getByRole('region', { name: 'Your hand' }))
+			.getAllByRole('article', { name: `${card.name} in hand` })[1];
+		const land = screen.getByText(/^Your lane 2 /);
+		const dragData = new Map<string, string>();
+		const dataTransfer = {
+			setData: (format: string, value: string) => { dragData.set(format, value); },
+			getData: (format: string) => dragData.get(format) ?? '',
+		};
+
+		fireEvent.dragStart(handCard, { dataTransfer });
+		fireEvent.dragOver(land, { dataTransfer });
+		fireEvent.drop(land, { dataTransfer });
+		fireEvent.dragEnd(handCard, { dataTransfer });
+
+		expect(mockSocket.emit).toHaveBeenCalledExactlyOnceWith('game:action', {
+			gameId: 'room-123',
+			action,
 		});
 	});
 });
