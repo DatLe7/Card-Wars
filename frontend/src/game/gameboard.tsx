@@ -23,9 +23,9 @@ function actionLabel(action: GameAction, hand: CardView[]): string {
 	}
 }
 
-function Card({ card }: { card: CardView }) {
+function Card({ card, inHand = false }: { card: CardView; inHand?: boolean }) {
 	return (
-		<article className="min-w-36 rounded-xl border border-slate-200 bg-white p-3 shadow-sm" aria-label={card.name}>
+		<article className="min-w-36 rounded-xl border border-slate-200 bg-white p-3 shadow-sm" aria-label={inHand ? `${card.name} in hand` : card.name}>
 			<div className="flex items-start justify-between gap-2">
 				<h3 className="font-semibold">{card.name}</h3>
 				<span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-900">{card.cost}</span>
@@ -141,7 +141,7 @@ const GameBoard = ({ gameId, initialView }: GameBoardProps) => {
 					<span className="text-sm text-slate-500">{view.game.player.hand.length} cards</span>
 				</div>
 				<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-					{view.game.player.hand.map((card) => <Card card={card} key={card.instanceId} />)}
+					{view.game.player.hand.map((card) => <Card card={card} inHand key={card.instanceId} />)}
 				</div>
 			</section>
 

@@ -62,7 +62,7 @@ describe('GameBoard', () => {
 		await emitGameState(sampleGameView(user));
 
 		const hand = screen.getByRole('region', { name: 'Your hand' });
-		expect(within(hand).getAllByText('Ancient Scholar')).toHaveLength(5);
+		expect(within(hand).getAllByRole('article', { name: 'Ancient Scholar in hand' })).toHaveLength(5);
 	});
 
 	it('renders the available next turn action', async () => {
@@ -125,5 +125,33 @@ describe('GameBoard', () => {
 		await emitGameState(updatedView);
 
 		expect(screen.getByLabelText('Opponent life')).toHaveTextContent('19');
+	});
+
+	it('renders all player lands in lane order', async () => {
+		const view = sampleGameView(user);
+		view.game.player.lands = ['Cornfields', 'Blue Plains', 'Useless Swamp', 'NiceLands']
+			.map((landscape) => ({ landscape }));
+		render(<GameBoard />);
+		await emitGameState(view);
+
+		const battlefield = within(screen.getByRole('region', { name: 'Battlefield' }));
+		view.game.player.lands.forEach((land, index) => {
+			expect(battlefield.getByText(new RegExp(`^Your lane ${index + 1} `)))
+				.toHaveTextContent(land.landscape);
+		});
+	});
+
+	it('renders all opponent lands in lane order', async () => {
+		const view = sampleGameView(user);
+		view.game.enemy.lands = ['NiceLands', 'Useless Swamp', 'Blue Plains', 'Cornfields']
+			.map((landscape) => ({ landscape }));
+		render(<GameBoard />);
+		await emitGameState(view);
+
+		const battlefield = within(screen.getByRole('region', { name: 'Battlefield' }));
+		view.game.enemy.lands.forEach((land, index) => {
+			expect(battlefield.getByText(new RegExp(`^Opponent lane ${index + 1} `)))
+				.toHaveTextContent(land.landscape);
+		});
 	});
 });
