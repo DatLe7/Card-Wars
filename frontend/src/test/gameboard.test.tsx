@@ -26,7 +26,7 @@ describe('GameBoard', () => {
 		render(<GameBoard />);
 		await emitGameState(sampleGameView(user));
 
-		expect(screen.getByRole('heading', { name: 'Game board' })).toBeInTheDocument();
+		expect(screen.getByLabelText('Current game board')).toBeInTheDocument();
 	});
 
 	it('renders the player name', async () => {
@@ -61,21 +61,21 @@ describe('GameBoard', () => {
 		render(<GameBoard />);
 		await emitGameState(sampleGameView(user));
 
-		const hand = screen.getByRole('region', { name: 'Your hand' });
-		expect(within(hand).getAllByRole('article', { name: 'Ancient Scholar in hand' })).toHaveLength(5);
+		const hand = screen.getByLabelText('Cards in your hand');
+		expect(within(hand).getAllByLabelText('Ancient Scholar in your hand')).toHaveLength(5);
 	});
 
 	it('renders the available next turn action', async () => {
 		render(<GameBoard />);
 		await emitGameState(sampleGameView(user));
 
-		expect(screen.getByRole('button', { name: 'Next turn' })).toBeInTheDocument();
+		expect(screen.getByLabelText('Game action: Next turn')).toBeInTheDocument();
 	});
 
 	it('sends the selected action to the game socket', async () => {
 		const view = sampleGameView(user);
 		render(<GameBoard gameId="room-123" initialView={view} />);
-		await userEvent.click(screen.getByRole('button', { name: 'Next turn' }));
+		await userEvent.click(screen.getByLabelText('Game action: Next turn'));
 
 		expect(mockSocket.emit).toHaveBeenCalledWith('game:action', {
 			gameId: 'room-123',
@@ -134,7 +134,7 @@ describe('GameBoard', () => {
 		render(<GameBoard />);
 		await emitGameState(view);
 
-		const battlefield = within(screen.getByRole('region', { name: 'Battlefield' }));
+		const battlefield = within(screen.getByLabelText('Battlefield lands and cards'));
 		view.game.player.lands.forEach((land, index) => {
 			expect(battlefield.getByText(new RegExp(`^Your lane ${index + 1} `)))
 				.toHaveTextContent(land.landscape);
@@ -148,7 +148,7 @@ describe('GameBoard', () => {
 		render(<GameBoard />);
 		await emitGameState(view);
 
-		const battlefield = within(screen.getByRole('region', { name: 'Battlefield' }));
+		const battlefield = within(screen.getByLabelText('Battlefield lands and cards'));
 		view.game.enemy.lands.forEach((land, index) => {
 			expect(battlefield.getByText(new RegExp(`^Opponent lane ${index + 1} `)))
 				.toHaveTextContent(land.landscape);
@@ -169,8 +169,8 @@ describe('GameBoard', () => {
 		view.actions = [action];
 		render(<GameBoard gameId="room-123" initialView={view} />);
 
-		const handCard = within(screen.getByRole('region', { name: 'Your hand' }))
-			.getAllByRole('article', { name: `${card.name} in hand` })[1];
+		const handCard = within(screen.getByLabelText('Cards in your hand'))
+			.getAllByLabelText(`${card.name} in your hand`)[1];
 		const land = screen.getByText(/^Your lane 2 /);
 		const dragData = new Map<string, string>();
 		const dataTransfer = {
@@ -198,16 +198,15 @@ describe('GameBoard', () => {
 			ownerId: user.id,
 		};
 		updatedView.game.player.lands[0].creature = creature;
+		const creatureLabel = `${creature.name} on your Blue Plains land in lane 1`;
 		render(<GameBoard />);
 		await emitGameState(initialView);
 
-		const initialLand = screen.getByText(/^Your lane 1 /).parentElement!;
-		expect(within(initialLand).queryByRole('article')).not.toBeInTheDocument();
+		expect(screen.queryByLabelText(creatureLabel)).not.toBeInTheDocument();
 
 		await emitGameState(updatedView);
 
-		const updatedLand = screen.getByText(/^Your lane 1 /).parentElement!;
-		expect(within(updatedLand).getByRole('article', { name: creature.name })).toBeInTheDocument();
+		expect(screen.getByLabelText(creatureLabel)).toBeInTheDocument();
 	});
 
 	it('shows a creature on opponent land when a new game state arrives', async () => {
@@ -219,15 +218,14 @@ describe('GameBoard', () => {
 			ownerId: 'player-2',
 		};
 		updatedView.game.enemy.lands[2].creature = creature;
+		const creatureLabel = `${creature.name} on opponent's Blue Plains land in lane 3`;
 		render(<GameBoard />);
 		await emitGameState(initialView);
 
-		const initialLand = screen.getByText(/^Opponent lane 3 /).parentElement!;
-		expect(within(initialLand).queryByRole('article')).not.toBeInTheDocument();
+		expect(screen.queryByLabelText(creatureLabel)).not.toBeInTheDocument();
 
 		await emitGameState(updatedView);
 
-		const updatedLand = screen.getByText(/^Opponent lane 3 /).parentElement!;
-		expect(within(updatedLand).getByRole('article', { name: creature.name })).toBeInTheDocument();
+		expect(screen.getByLabelText(creatureLabel)).toBeInTheDocument();
 	});
 });

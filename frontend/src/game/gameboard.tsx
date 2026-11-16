@@ -23,11 +23,11 @@ function actionLabel(action: GameAction, hand: CardView[]): string {
 	}
 }
 
-function Card({ card, inHand = false }: { card: CardView; inHand?: boolean }) {
+function Card({ card, inHand = false, location }: { card: CardView; inHand?: boolean; location?: string }) {
 	return (
 		<article
 			className="min-w-36 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
-			aria-label={inHand ? `${card.name} in hand` : card.name}
+			aria-label={inHand ? `${card.name} in your hand` : location ? `${card.name} on ${location}` : card.name}
 			draggable={inHand}
 			onDragStart={(event) => {
 				if (!inHand) return;
@@ -80,7 +80,7 @@ const GameBoard = ({ gameId, initialView }: GameBoardProps) => {
 	};
 
 	return (
-		<section className="space-y-6" aria-label="Game board">
+		<section className="space-y-6" aria-label="Current game board">
 			<header className="flex flex-wrap items-start justify-between gap-4">
 				<div>
 					<h1 className="text-2xl font-semibold tracking-tight">Game board</h1>
@@ -123,14 +123,14 @@ const GameBoard = ({ gameId, initialView }: GameBoardProps) => {
 				</section>
 			</div>
 
-			<section className="space-y-3" aria-label="Battlefield">
+			<section className="space-y-3" aria-label="Battlefield lands and cards">
 				<h2 className="text-lg font-semibold">Battlefield</h2>
 				<div className="grid gap-3 sm:grid-cols-2">
 					{view.game.enemy.lands.map((land, index) => (
 						<div className="min-h-24 rounded-xl border border-slate-200 bg-slate-50 p-3" key={`enemy-${index}`}>
 							<p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Opponent lane {index + 1} · {land.landscape}</p>
-							{land.creature && <div className="mt-2"><Card card={land.creature} /></div>}
-							{land.building && <div className="mt-2"><Card card={land.building} /></div>}
+							{land.creature && <div className="mt-2"><Card card={land.creature} location={`opponent's ${land.landscape} land in lane ${index + 1}`} /></div>}
+							{land.building && <div className="mt-2"><Card card={land.building} location={`opponent's ${land.landscape} land in lane ${index + 1}`} /></div>}
 						</div>
 					))}
 					{view.game.player.lands.map((land, index) => (
@@ -152,14 +152,14 @@ const GameBoard = ({ gameId, initialView }: GameBoardProps) => {
 							}}
 						>
 							<p className="text-xs font-semibold uppercase tracking-wide text-emerald-900">Your lane {index + 1} · {land.landscape}</p>
-							{land.creature && <div className="mt-2"><Card card={land.creature} /></div>}
-							{land.building && <div className="mt-2"><Card card={land.building} /></div>}
+							{land.creature && <div className="mt-2"><Card card={land.creature} location={`your ${land.landscape} land in lane ${index + 1}`} /></div>}
+							{land.building && <div className="mt-2"><Card card={land.building} location={`your ${land.landscape} land in lane ${index + 1}`} /></div>}
 						</div>
 					))}
 				</div>
 			</section>
 
-			<section className="space-y-3" aria-label="Your hand">
+			<section className="space-y-3" aria-label="Cards in your hand">
 				<div className="flex items-center justify-between gap-3">
 					<h2 className="text-lg font-semibold">Your hand</h2>
 					<span className="text-sm text-slate-500">{view.game.player.hand.length} cards</span>
@@ -174,6 +174,7 @@ const GameBoard = ({ gameId, initialView }: GameBoardProps) => {
 					<button
 						className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl bg-emerald-800 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-900 disabled:cursor-not-allowed disabled:opacity-50"
 						type="button"
+						aria-label={`Game action: ${actionLabel(action, view.game.player.hand)}`}
 						key={`${action.type}-${action.laneIndex ?? ''}-${action.cardInstanceId ?? index}`}
 						disabled={!gameId}
 						onClick={() => sendAction(action)}
