@@ -188,4 +188,46 @@ describe('GameBoard', () => {
 			action,
 		});
 	});
+
+	it('shows a creature on your land when a new game state arrives', async () => {
+		const initialView = sampleGameView(user);
+		const updatedView = sampleGameView(user);
+		const creature = {
+			...initialView.game.player.hand[0],
+			instanceId: `${user.id}-creature`,
+			ownerId: user.id,
+		};
+		updatedView.game.player.lands[0].creature = creature;
+		render(<GameBoard />);
+		await emitGameState(initialView);
+
+		const initialLand = screen.getByText(/^Your lane 1 /).parentElement!;
+		expect(within(initialLand).queryByRole('article')).not.toBeInTheDocument();
+
+		await emitGameState(updatedView);
+
+		const updatedLand = screen.getByText(/^Your lane 1 /).parentElement!;
+		expect(within(updatedLand).getByRole('article', { name: creature.name })).toBeInTheDocument();
+	});
+
+	it('shows a creature on opponent land when a new game state arrives', async () => {
+		const initialView = sampleGameView(user);
+		const updatedView = sampleGameView(user);
+		const creature = {
+			...initialView.game.player.hand[0],
+			instanceId: 'player-2-creature',
+			ownerId: 'player-2',
+		};
+		updatedView.game.enemy.lands[2].creature = creature;
+		render(<GameBoard />);
+		await emitGameState(initialView);
+
+		const initialLand = screen.getByText(/^Opponent lane 3 /).parentElement!;
+		expect(within(initialLand).queryByRole('article')).not.toBeInTheDocument();
+
+		await emitGameState(updatedView);
+
+		const updatedLand = screen.getByText(/^Opponent lane 3 /).parentElement!;
+		expect(within(updatedLand).getByRole('article', { name: creature.name })).toBeInTheDocument();
+	});
 });
