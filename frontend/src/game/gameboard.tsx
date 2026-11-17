@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { socket } from '../socket';
 import type { CardView, GameAction, GameView } from '.';
+import Card from './card';
+import LifeTotal from './lifeTotal';
 
 type GameBoardProps = {
 	gameId?: string;
@@ -21,40 +23,6 @@ function actionLabel(action: GameAction, hand: CardView[]): string {
 		case 'SELECT_BATTLE_LANE':
 			return `Battle in lane ${(action.laneIndex ?? 0) + 1}`;
 	}
-}
-
-function Card({ card, inHand = false, location }: { card: CardView; inHand?: boolean; location?: string }) {
-	return (
-		<article
-			className="min-w-36 rounded-xl border border-slate-200 bg-white p-3 shadow-sm"
-			aria-label={inHand ? `${card.name} in your hand` : location ? `${card.name} on ${location}` : card.name}
-			draggable={inHand}
-			onDragStart={(event) => {
-				if (!inHand) return;
-				event.dataTransfer.setData('text/plain', card.instanceId);
-			}}
-		>
-			<div className="flex items-start justify-between gap-2">
-				<h3 className="font-semibold">{card.name}</h3>
-				<span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-900">{card.cost}</span>
-			</div>
-			<p className="mt-1 text-xs capitalize text-slate-500">{card.type} · {card.land}</p>
-			{card.type === 'creature' && (
-				<p className="mt-3 text-sm font-medium" aria-label={`${card.name} stats`}>
-					{card.attack + card.atkMod} ATK · {card.defence + card.defMod - card.damage} DEF
-				</p>
-			)}
-		</article>
-	);
-}
-
-function LifeTotal({ label, value }: { label: string; value: number }) {
-	return (
-		<div className="rounded-xl bg-slate-50 px-4 py-3">
-			<p className="text-xs font-medium text-slate-500">{label}</p>
-			<output className="mt-1 block text-2xl font-semibold tabular-nums" aria-label={label}>{value}</output>
-		</div>
-	);
 }
 
 const GameBoard = ({ gameId, initialView }: GameBoardProps) => {
